@@ -5,8 +5,13 @@
   height: 100%;
   width: 100%;
 }
-textarea.jsoneditor-text{min-height:350px;}
 
-:host ::ng-deep .jsoneditor-poweredBy{
+textarea.jsoneditor-text {
+  min-height: 350px;
+}
+
+:host ::ng-deep .jsoneditor-poweredBy {
   visibility: hidden;
 }
+
+/*# sourceMappingURL=app.component.css.map */

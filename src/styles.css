@@ -1,0 +1,47 @@
+@import '~jsoneditor/dist/jsoneditor.min.css';
+pre {
+  font-weight: 400;
+  background: #3b3b3b;
+  color: #727990;
+  width: 100%;
+  margin: 0;
+  overflow: auto;
+  padding: 15px;
+}
+pre .number-line {
+  color: #adadaf;
+}
+pre .string {
+  color: #95c602;
+}
+pre .number {
+  color: #f2b619;
+}
+pre .boolean {
+  color: #0097f1;
+}
+pre .null {
+  color: #727990;
+}
+pre .key {
+  color: #fff;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.content {
+  display: flex;
+  height: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  flex-direction: row;
+}
+
+/*# sourceMappingURL=styles.css.map */
