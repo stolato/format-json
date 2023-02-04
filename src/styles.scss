@@ -7,7 +7,6 @@ pre {
   width: 100%;
   margin: 0;
   overflow: auto;
-  padding: 15px;
 
   .number-line {
     color: #adadaf;
@@ -34,11 +33,22 @@ html, body {
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .content{
   display: flex;
-  height: 100%;
+  height: calc(100% - 64px);
   flex-wrap: nowrap;
   justify-content: space-around;
   flex-direction: row;
 }
-
-
-
+.json{
+  display: flex;
+  height: 100%;
+  .list-numbers{
+    background-color: #ebebeb;
+    color: #1a1a1a;
+  }
+  .numbers{
+    font-size: 12px;
+    display: grid;
+    padding: 0 5px 0px 5px;
+    background-color: #ebebeb;
+  }
+}

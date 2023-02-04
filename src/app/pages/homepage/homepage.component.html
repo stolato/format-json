@@ -1,0 +1,5 @@
+<div class="content">
+  <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+  <pre [innerHTML]="visibleData | prettyjson: [true, 3]"></pre>
+</div>
+<footer></footer>

@@ -66,12 +66,12 @@ export class PrettyJsonPipe implements PipeTransform {
     /**
      * Regex for the start of the line, insert a number-line themeClass tag before each line
      */
-    return showNumebrLine
-      ? obj.replace(
-          /^/gm,
-          () =>
-            `<span class="number-line pl-3 select-none" >${String(line++).padEnd(padding)}</span>`
-        )
-      : obj;
+    const total_lines = (obj.match(/\n/g) || '').length + 1
+    let lines = '';
+    for(let i = 1; i<= total_lines; i++){
+      lines += `<span class="line">${i}</span>`;
+    }
+    return `<div class='json'><div class="list-numbers"><div class="numbers">${lines}</div></div><div class="context">${obj}</div></div>`;
+
   }
 }
