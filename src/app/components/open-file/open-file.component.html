@@ -1,0 +1,5 @@
+<h2>Abrir arquivo JSON</h2>
+<form class="example-form" [formGroup]="form">
+  <label for="arquivo">Enviar arquivo</label>
+  <input type="file" name="arquivo" id="arquivo" (change)="readText($event)" formControlName="file" placeholder="Ex. pat@example.com">
+</form>

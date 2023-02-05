@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
+import {J} from "@angular/cdk/keycodes";
+import {Clipboard} from "@angular/cdk/clipboard";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-homepage',
@@ -8,6 +11,7 @@ import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 })
 export class HomepageComponent {
   public dummyJsonObject = {};
+  @Input() json = '';
 
   title = 'formatjson';
 
@@ -15,14 +19,26 @@ export class HomepageComponent {
   public initialData: any;
   public visibleData: any;
 
-  constructor() {
+  constructor(private clipboard: Clipboard, private snackBar: MatSnackBar) {
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
     this.editorOptions.modes = ['code', 'tree', 'text'];
     this.editorOptions.indentation = 3;
 
-    this.initialData = {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}
+    this.initialData = this.json || {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}
     this.visibleData = this.initialData;
+  }
+
+  copy(){
+    this.clipboard.copy(JSON.stringify(this.visibleData));
+    this.snackBar.open('JSON copiado!!','OK', {
+      duration: 3000
+    })
+  }
+
+  newJson(data: any){
+    this.visibleData = data;
+    this.initialData = data;
   }
 
   showJson(d: Event) {

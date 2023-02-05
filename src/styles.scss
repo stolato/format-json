@@ -5,6 +5,7 @@ pre {
   background: #3b3b3b;
   color: #727990;
   width: 100%;
+  height: 100%;
   margin: 0;
   overflow: auto;
 
@@ -38,17 +39,34 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   justify-content: space-around;
   flex-direction: row;
 }
-.json{
-  display: flex;
+.formater {
+  width: 100%;
   height: 100%;
-  .list-numbers{
-    background-color: #ebebeb;
-    color: #1a1a1a;
+  overflow: auto;
+  .copy{
+    position: fixed;
+    bottom: 10px;
+    right: 25px;
   }
-  .numbers{
-    font-size: 12px;
-    display: grid;
-    padding: 0 5px 0px 5px;
-    background-color: #ebebeb;
+  .json {
+    display: flex;
+    height: 100%;
+
+    .context{
+      padding-left: 5px;
+    }
+
+    .list-numbers {
+      background-color: #ebebeb;
+      color: #1a1a1a;
+    }
+
+    .numbers {
+      font-size: 12px;
+      display: grid;
+      justify-items: end;
+      padding: 0 5px 0px 5px;
+      background-color: #ebebeb;
+    }
   }
 }

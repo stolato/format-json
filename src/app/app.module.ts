@@ -10,8 +10,14 @@ import {AngJsoneditorModule} from "@maaxgr/ang-jsoneditor";
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { HeaderComponent } from './components/header/header.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatIcon, MatIconModule} from "@angular/material/icon";
+import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
+import {ClipboardModule} from "@angular/cdk/clipboard";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import { OpenFileComponent } from './components/open-file/open-file.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -19,6 +25,7 @@ import {MatButtonModule} from "@angular/material/button";
     PrettyJsonPipe,
     HomepageComponent,
     HeaderComponent,
+    OpenFileComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,6 +37,11 @@ import {MatButtonModule} from "@angular/material/button";
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    ClipboardModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatBottomSheetModule,
+    MatFormFieldModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
