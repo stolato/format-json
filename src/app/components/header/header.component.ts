@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {OpenFileComponent} from "../open-file/open-file.component";
 
@@ -20,5 +19,9 @@ export class HeaderComponent {
         this.json.emit(data);
       }
     })
+  }
+
+  open(){
+    window.open('https://github.com/stolato/format-json', '_blank');
   }
 }

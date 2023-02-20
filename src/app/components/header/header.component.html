@@ -4,8 +4,13 @@
   </button>
   <span>TiLT - JSON EDITOR</span>
   <span class="example-spacer"></span>
-  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-    <mat-icon>favorite</mat-icon>
+  <mat-chip-listbox aria-label="Dog selection">
+  <mat-chip>
+    1.0.1
+  </mat-chip>
+</mat-chip-listbox>
+  <button mat-icon-button (click)="open()" class="example-icon favorite-icon" matTooltip='Github'>
+    <mat-icon>hub</mat-icon>
   </button>
   <button (click)="openUpload()" matTooltip="Enviar Arquivo" [matTooltipPosition]="'above'" mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
     <mat-icon>upload</mat-icon>

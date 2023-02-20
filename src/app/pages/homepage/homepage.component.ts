@@ -1,6 +1,5 @@
 import {Component, Input} from '@angular/core';
 import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
-import {J} from "@angular/cdk/keycodes";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 
@@ -22,7 +21,7 @@ export class HomepageComponent {
   constructor(private clipboard: Clipboard, private snackBar: MatSnackBar) {
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
-    this.editorOptions.modes = ['code', 'tree', 'text'];
+    this.editorOptions.modes = ['code', 'tree'];
     this.editorOptions.indentation = 3;
 
     this.initialData = this.json || {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}

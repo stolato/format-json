@@ -18,6 +18,13 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import { OpenFileComponent } from './components/open-file/open-file.component';
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 import {MatFormFieldModule} from "@angular/material/form-field";
+import { NotfoundComponent } from './pages/notfound/notfound.component';
+import {LottieModule} from "ngx-lottie";
+import {MatChipsModule} from "@angular/material/chips";
+
+export function playerFactory() {
+  return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
+}
 
 @NgModule({
   declarations: [
@@ -26,6 +33,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     HomepageComponent,
     HeaderComponent,
     OpenFileComponent,
+    NotfoundComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,6 +50,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     MatTooltipModule,
     MatBottomSheetModule,
     MatFormFieldModule,
+    MatChipsModule,
+    LottieModule.forRoot({ player: playerFactory })
   ],
   providers: [],
   bootstrap: [AppComponent]
