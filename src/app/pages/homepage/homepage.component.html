@@ -2,7 +2,7 @@
 <div class="content">
   <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
   <div class="formater">
-    <pre [innerHTML]="visibleData | prettyjson: [true, 3]"></pre>
+    <pre [innerHTML]="visibleData | prettyjson"></pre>
     <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'" mat-icon-button aria-label="Example icon-button with a heart icon">
       <mat-icon>content_copy</mat-icon>
     </button>

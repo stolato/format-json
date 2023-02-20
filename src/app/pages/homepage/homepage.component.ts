@@ -35,14 +35,14 @@ export class HomepageComponent {
     })
   }
 
-  newJson(data: any){
+  newJson(data: string){
     this.visibleData = data;
     this.initialData = data;
   }
 
   showJson(d: Event) {
     if(!d.isTrusted) {
-      this.visibleData = d;
+      this.visibleData = `d`;
     }
   }
 }

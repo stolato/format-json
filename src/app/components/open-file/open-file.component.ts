@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
@@ -10,6 +10,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 })
 
 export class OpenFileComponent implements OnInit {
+  form: FormGroup | any;
+  
   constructor(
     private bottomSheetRef: MatBottomSheetRef<OpenFileComponent>,
     private formBuilder: FormBuilder,
@@ -17,7 +19,6 @@ export class OpenFileComponent implements OnInit {
   ) {
   }
 
-  form: FormGroup | any;
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -25,16 +26,17 @@ export class OpenFileComponent implements OnInit {
     })
   }
 
-  async readText(event: any) {
-    const file = event.target.files.item(0);
-    if (file.type === 'application/json') {
+  async readText(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.item(0);
+    if (file?.type === 'application/json') {
       const text = await file.text();
       this.snackBar.open(`Arquivo ${file.name} aberto`, 'OK', {
         duration: 3000,
       });
       this.bottomSheetRef.dismiss(JSON.parse(text))
     } else {
-      this.snackBar.open(`Opss!! O Arquivo ${file.name} não é um json`, 'Fechar', {
+      this.snackBar.open(`Opss!! O Arquivo ${file?.name} não é um json`, 'Fechar', {
         duration: 3000
       });
       this.bottomSheetRef.dismiss();

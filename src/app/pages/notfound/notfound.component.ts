@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {AnimationOptions} from "ngx-lottie";
-import {AnimationItem} from "ngx-lottie/lib/symbols";
 
 @Component({
   selector: 'app-notfound',
@@ -12,5 +11,7 @@ export class NotfoundComponent {
     path: '/assets/not_found.json',
   };
 
-  animationCreated(animationItem: AnimationItem): void {}
+  animationCreated() {
+    return true;
+  }
 }

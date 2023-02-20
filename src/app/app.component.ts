@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,9 +6,6 @@ import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 })
 
 export class AppComponent{
+  title = 'Json Formatter'
 
 }
-
-
-
-

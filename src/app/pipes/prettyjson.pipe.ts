@@ -1,35 +1,29 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'prettyjson',
-  pure:true
+  pure: true
 })
 export class PrettyJsonPipe implements PipeTransform {
-  transform(value: any, args: any[]): any {
-    if (!value) { return ''};
+  transform(value: object): string {
+    if (!value) {
+      return ''
+    }
     try {
       /**
        * check and try to parse value if it's not an object
        * if it fails to parse which means it is an invalid JSON
        */
       return this.applyColors(
-        typeof value === 'object' ? value : JSON.parse(value),
-        args[0],
-        args[1]
+        typeof value === 'object' ? value : JSON.parse(value)
       );
     } catch (e) {
-      return this.applyColors({ error: 'Invalid JSON' }, args[0], args[1]);
+      return this.applyColors({error: 'Invalid JSON'});
     }
   }
 
-  applyColors(obj: any, showNumebrLine: boolean = false, padding: number = 4) {
-    // line number start from 1
-    let line = 1;
-
-    if (typeof obj != 'string') {
-      obj = JSON.stringify(obj, undefined, 3);
-    }
-
+  applyColors(objt: object) {
+    let obj: string = JSON.stringify(objt, null, 3);
     /**
      * Converts special charaters like &, <, > to equivalent HTML code of it
      */
@@ -44,8 +38,8 @@ export class PrettyJsonPipe implements PipeTransform {
      * @return final bunch of span tags after all conversion
      */
     obj = obj.replace(
-      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-      (match: any) => {
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+]?\d+)?)/g,
+      (match: string) => {
         // class to be applied inside pre tag
         let themeClass = 'number';
         if (/^"/.test(match)) {
@@ -68,7 +62,7 @@ export class PrettyJsonPipe implements PipeTransform {
      */
     const total_lines = (obj.match(/\n/g) || '').length + 1
     let lines = '';
-    for(let i = 1; i<= total_lines; i++){
+    for (let i = 1; i <= total_lines; i++) {
       lines += `<span class="line">${i}</span>`;
     }
     return `<div class='json'><div class="list-numbers"><div class="numbers">${lines}</div></div><div class="context">${obj}</div></div>`;
