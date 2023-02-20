@@ -33,7 +33,11 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "lottie-web",
+              "jsoneditor"
+            ]
           },
           "configurations": {
             "production": {

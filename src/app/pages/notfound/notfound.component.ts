@@ -8,7 +8,7 @@ import {AnimationOptions} from "ngx-lottie";
 })
 export class NotfoundComponent {
   options: AnimationOptions = {
-    path: '/assets/not_found.json',
+    path: './assets/not_found.json',
   };
 
   animationCreated() {
