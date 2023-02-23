@@ -42,7 +42,7 @@ export class HomepageComponent {
 
   showJson(d: Event) {
     if(!d.isTrusted) {
-      this.visibleData = `d`;
+      this.visibleData = d;
     }
   }
 }
