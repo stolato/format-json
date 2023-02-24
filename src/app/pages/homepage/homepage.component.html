@@ -1,9 +1,12 @@
-<app-header (json)="newJson($event)"></app-header>
+<app-header (json)="newJson($event)" (preview)="setPreview($event)"></app-header>
 <div class="content">
   <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
-  <div class="formater">
+  <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"
+               (change)="showJson($event)"></json-editor>
+  <div *ngIf="!preview" class="formater">
     <pre [innerHTML]="visibleData | prettyjson"></pre>
-    <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'" mat-icon-button aria-label="Example icon-button with a heart icon">
+    <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
+            mat-icon-button aria-label="Example icon-button with a heart icon">
       <mat-icon>content_copy</mat-icon>
     </button>
   </div>

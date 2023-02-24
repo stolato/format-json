@@ -22,6 +22,7 @@ import { NotfoundComponent } from './pages/notfound/notfound.component';
 import {LottieModule} from "ngx-lottie";
 import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -52,6 +53,7 @@ export function playerFactory() {
     MatBottomSheetModule,
     MatFormFieldModule,
     MatChipsModule,
+    MatSlideToggleModule,
     LottieModule.forRoot({ player: playerFactory })
   ],
   providers: [

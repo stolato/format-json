@@ -10,38 +10,62 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 })
 export class HomepageComponent {
   public dummyJsonObject = {};
+  private save_preview = localStorage.getItem('preview');
   @Input() json = '';
+  @Input() preview = this.save_preview ? JSON.parse(this.save_preview) : false;
 
   title = 'formatjson';
 
   public editorOptions: JsonEditorOptions;
+  public editorOptions_view: JsonEditorOptions;
   public initialData: any;
   public visibleData: any;
 
   constructor(private clipboard: Clipboard, private snackBar: MatSnackBar) {
+    console.log(Boolean(localStorage.getItem('preview')));
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
     this.editorOptions.modes = ['code', 'tree'];
     this.editorOptions.indentation = 3;
 
-    this.initialData = this.json || {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}
+    this.editorOptions_view = new JsonEditorOptions()
+    this.editorOptions_view.mode = 'view';
+    this.editorOptions_view.expandAll = true;
+
+    this.initialData = this.json || {
+      "products": [{
+        "name": "car",
+        "product": [{
+          "name": "honda",
+          "model": [{"id": "civic", "name": "civic"}, {"id": "accord", "name": "accord"}, {
+            "id": "crv",
+            "name": "crv"
+          }, {"id": "pilot", "name": "pilot"}, {"id": "odyssey", "name": "odyssey"}]
+        }]
+      }]
+    }
     this.visibleData = this.initialData;
   }
 
-  copy(){
+  copy() {
     this.clipboard.copy(JSON.stringify(this.visibleData));
-    this.snackBar.open('JSON copiado!!','OK', {
+    this.snackBar.open('JSON copiado!!', 'OK', {
       duration: 3000
     })
   }
 
-  newJson(data: string){
+  newJson(data: string) {
     this.visibleData = data;
     this.initialData = data;
   }
 
+  setPreview(prev: boolean) {
+    localStorage.setItem('preview', `${prev}`);
+    this.preview = prev;
+  }
+
   showJson(d: Event) {
-    if(!d.isTrusted) {
+    if (!d.isTrusted) {
       this.visibleData = d;
     }
   }
