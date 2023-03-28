@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Compartilhar JSON</h2>
+<mat-dialog-content class="mat-typography">
+  <h3 *ngIf="!link">Deseja compartilhar esse json??</h3>
+  <div *ngIf="link">
+    <h3>
+      Link gerado:
+    </h3>
+    <p>
+      https://tiltbr.com.br/json/{{link}}
+    </p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Fechar</button>
+  <button mat-button (click)="shared()" cdkFocusInitial>Compartilhar</button>
+</mat-dialog-actions>

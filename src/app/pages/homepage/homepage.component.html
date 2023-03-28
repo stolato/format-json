@@ -1,4 +1,4 @@
-<app-header (json)="newJson($event)" (preview)="setPreview($event)"></app-header>
+<app-header (json)="newJson($event)" (preview)="setPreview($event)" [current_json]="this.visibleData" [id]="id"></app-header>
 <div class="content">
   <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
   <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"

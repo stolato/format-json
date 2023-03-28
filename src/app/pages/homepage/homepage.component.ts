@@ -1,14 +1,16 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ActivatedRoute} from "@angular/router";
+import {ApiService} from "../../services/api.service";
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']
 })
-export class HomepageComponent {
+export class HomepageComponent implements OnInit{
   public dummyJsonObject = {};
   private save_preview = localStorage.getItem('preview');
   @Input() json = '';
@@ -19,9 +21,10 @@ export class HomepageComponent {
   public editorOptions: JsonEditorOptions;
   public editorOptions_view: JsonEditorOptions;
   public initialData: any;
-  public visibleData: any;
+  public visibleData: any = null;
+  public id: any;
 
-  constructor(private clipboard: Clipboard, private snackBar: MatSnackBar) {
+  constructor(private clipboard: Clipboard, private snackBar: MatSnackBar, private route: ActivatedRoute, private apiService: ApiService) {
     console.log(Boolean(localStorage.getItem('preview')));
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
@@ -45,6 +48,17 @@ export class HomepageComponent {
       }]
     }
     this.visibleData = this.initialData;
+  }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.paramMap.get('id');
+    if(this.id){
+      this.apiService.getJson(this.id).subscribe((resp: any) => {
+        console.log(resp);
+        this.initialData = JSON.parse(resp.json);
+        this.visibleData = JSON.parse(resp.json);
+      });
+    }
   }
 
   copy() {
