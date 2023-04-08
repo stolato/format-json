@@ -24,6 +24,7 @@
     "@maaxgr/ang-jsoneditor": "^14.0.0",
     "jsoneditor": "^9.9.2",
     "ngx-lottie": "^10.0.0",
+    "ngx-socket-io": "^4.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.5.0",
     "zone.js": "~0.12.0"

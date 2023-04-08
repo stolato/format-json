@@ -25,10 +25,12 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {HttpClientModule} from "@angular/common/http";
 import { SharedComponent } from './components/shared/shared.component';
+import { SocketIoModule} from "ngx-socket-io";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
 }
+
 
 @NgModule({
   declarations: [
@@ -41,6 +43,10 @@ export function playerFactory() {
     SharedComponent,
   ],
   imports: [
+    SocketIoModule.forRoot({ url: 'https://green-gharial-belt.cyclic.app/items', options: {
+      transports: ['websocket'],
+      reconnection: true,
+    } }),
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
