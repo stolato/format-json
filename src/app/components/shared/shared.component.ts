@@ -16,13 +16,16 @@ export class SharedComponent{
   public link = null;
   json = '';
   id: '';
+  loading = false;
 
   shared() {
     if(!this.id) {
+      this.loading = true;
       this.apiService.getIPAddress().subscribe((res: any) => {
         this.apiService.shareJson(this.json, res.ip).subscribe((resp: any) => {
           this.id = resp._id;
           this.link = resp._id;
+          this.loading = false;
         });
       });
     }

@@ -25,6 +25,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {HttpClientModule} from "@angular/common/http";
 import { SharedComponent } from './components/shared/shared.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -56,6 +57,7 @@ export function playerFactory() {
     MatSnackBarModule,
     MatTooltipModule,
     MatBottomSheetModule,
+    MatProgressSpinnerModule,
     MatFormFieldModule,
     MatChipsModule,
     MatSlideToggleModule,
