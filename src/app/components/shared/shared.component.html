@@ -9,7 +9,11 @@
       Link gerado:
     </h3>
     <p>
-      https://tiltbr.com.br/json/{{link}}
+      <mat-form-field class="example-full-width">
+          <mat-label>Link</mat-label>
+          <input type="tel" value="{{base_url}}/{{link}}" readonly matInput>
+          <mat-icon matSuffix (click)="copy()">content_copy</mat-icon>
+        </mat-form-field>
     </p>
   </div>
 </mat-dialog-content>
