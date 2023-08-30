@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {OpenFileComponent} from "../open-file/open-file.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -6,6 +6,7 @@ import {SharedComponent} from "../shared/shared.component";
 import {ApiService} from "../../services/api.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
+import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +14,14 @@ import {Router} from "@angular/router";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  constructor(private bottomSheet: MatBottomSheet, private dialog: MatDialog, private apiService: ApiService, private snackBar: MatSnackBar, private router: Router) {
+  constructor(
+    private bottomSheet: MatBottomSheet,
+    private dialog: MatDialog,
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private loading: NgxSpinnerService,
+  ) {
   }
 
   private save_preview = localStorage.getItem('preview');
@@ -41,10 +49,9 @@ export class HeaderComponent {
     this.dialog.open(SharedComponent, {
       width: '550px',
       disableClose: true,
-      data: { json: this.current_json, id: this.id },
+      data: {json: this.current_json, id: this.id},
     }).afterClosed().subscribe((resp) => {
-      console.log(resp);
-      if(resp){
+      if (resp) {
         this.router.navigate([resp]).then(r => r);
         this.id = resp;
       }
@@ -56,10 +63,14 @@ export class HeaderComponent {
   }
 
   saveJson() {
+    this.loading.show();
     this.apiService.updateJson(this.id, this.current_json).subscribe(() => {
       this.snackBar.open('json salvo!!', 'Ok', {
         duration: 3000,
       })
+      this.loading.hide();
+    }, () => {
+      this.loading.hide();
     });
   }
 }

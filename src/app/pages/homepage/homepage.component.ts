@@ -1,16 +1,17 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActivatedRoute} from "@angular/router";
 import {ApiService} from "../../services/api.service";
+import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']
 })
-export class HomepageComponent implements OnInit{
+export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};
   private save_preview = localStorage.getItem('preview');
   @Input() json = '';
@@ -23,9 +24,15 @@ export class HomepageComponent implements OnInit{
   public initialData: any;
   public visibleData: any = null;
   public id: any;
+  public showFiller = false;
 
-  constructor(private clipboard: Clipboard, private snackBar: MatSnackBar, private route: ActivatedRoute, private apiService: ApiService) {
-    console.log(Boolean(localStorage.getItem('preview')));
+  constructor(
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private apiService: ApiService,
+    private loading: NgxSpinnerService,
+  ) {
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
     this.editorOptions.modes = ['code', 'tree'];
@@ -35,29 +42,41 @@ export class HomepageComponent implements OnInit{
     this.editorOptions_view.mode = 'view';
     this.editorOptions_view.expandAll = true;
 
-    this.initialData = this.json || {
-      "products": [{
-        "name": "car",
-        "product": [{
-          "name": "honda",
-          "model": [{"id": "civic", "name": "civic"}, {"id": "accord", "name": "accord"}, {
-            "id": "crv",
-            "name": "crv"
-          }, {"id": "pilot", "name": "pilot"}, {"id": "odyssey", "name": "odyssey"}]
-        }]
-      }]
-    }
+    this.initialData = this.json;
     this.visibleData = this.initialData;
   }
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
-    if(this.id){
+    if (this.id) {
+      this.loading.show();
       this.apiService.getJson(this.id).subscribe((resp: any) => {
-        console.log(resp);
         this.initialData = JSON.parse(resp.json);
         this.visibleData = JSON.parse(resp.json);
+        this.loading.hide();
+      }, () => {
+        this.loading.hide();
+        this.snackBar.open(
+          'Ops, não foi possivel recuperar o json solicitado',
+          'Ok',
+          {duration: 3000}
+        );
       });
+    }else{
+      const init = {
+        "products": [{
+          "name": "car",
+          "product": [{
+            "name": "honda",
+            "model": [{"id": "civic", "name": "civic"}, {"id": "accord", "name": "accord"}, {
+              "id": "crv",
+              "name": "crv"
+            }, {"id": "pilot", "name": "pilot"}, {"id": "odyssey", "name": "odyssey"}]
+          }]
+        }]
+      };
+      this.initialData = init;
+      this.visibleData = init;
     }
   }
 

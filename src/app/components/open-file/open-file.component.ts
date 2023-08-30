@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
   selector: 'app-open-file',
@@ -16,6 +17,7 @@ export class OpenFileComponent implements OnInit {
     private bottomSheetRef: MatBottomSheetRef<OpenFileComponent>,
     private formBuilder: FormBuilder,
     private snackBar: MatSnackBar,
+    private loading: NgxSpinnerService,
   ) {
   }
 
@@ -27,6 +29,7 @@ export class OpenFileComponent implements OnInit {
   }
 
   async readText(event: Event) {
+    this.loading.show();
     const input = event.target as HTMLInputElement;
     const file = input.files?.item(0);
     if (file?.type === 'application/json') {
@@ -41,5 +44,6 @@ export class OpenFileComponent implements OnInit {
       });
       this.bottomSheetRef.dismiss();
     }
+    this.loading.hide();
   }
 }

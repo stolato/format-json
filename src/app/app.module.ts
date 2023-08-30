@@ -26,6 +26,10 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {HttpClientModule} from "@angular/common/http";
 import { SharedComponent } from './components/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {NgxSpinnerModule} from "ngx-spinner";
+import {MatInputModule} from "@angular/material/input";
+import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
+import {NgIf} from "@angular/common";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -45,6 +49,8 @@ export function playerFactory() {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    NgxSpinnerModule,
+    MatSidenavModule,
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
@@ -59,6 +65,7 @@ export function playerFactory() {
     MatBottomSheetModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
+    MatInputModule,
     MatChipsModule,
     MatSlideToggleModule,
     LottieModule.forRoot({ player: playerFactory })
