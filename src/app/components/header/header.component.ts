@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {OpenFileComponent} from "../open-file/open-file.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -7,13 +7,14 @@ import {ApiService} from "../../services/api.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
 import {NgxSpinnerService} from "ngx-spinner";
+import {DialogLoginComponent} from "../dialog-login/dialog-login.component";
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit{
   constructor(
     private bottomSheet: MatBottomSheet,
     private dialog: MatDialog,
@@ -27,9 +28,13 @@ export class HeaderComponent {
   private save_preview = localStorage.getItem('preview');
   @Output() json = new EventEmitter<string>();
   @Output() preview = new EventEmitter<boolean>();
+  @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = '';
   @Input() id = '';
+  @Input() sideBarStatus = false;
+  @Output() updateSideBar = new EventEmitter<boolean>();
 
+  public nameUser = '';
   public isChecked = this.save_preview ? JSON.parse(this.save_preview) : false;
 
   openUpload() {
@@ -63,14 +68,49 @@ export class HeaderComponent {
   }
 
   saveJson() {
+    console.log(this.id);
     this.loading.show();
     this.apiService.updateJson(this.id, this.current_json).subscribe(() => {
       this.snackBar.open('json salvo!!', 'Ok', {
         duration: 3000,
       })
+      this.updateSideBar.emit(true);
       this.loading.hide();
     }, () => {
       this.loading.hide();
     });
   }
+
+  openSidebarClick(){
+    console.log(this.openSideBar);
+    this.sideBarStatus = !this.sideBarStatus;
+    this.openSideBar.emit(this.sideBarStatus);
+  }
+
+  openLogin(){
+    const loginDialog = this.dialog.open(DialogLoginComponent,{
+      width: '550px',
+      disableClose: false,
+    });
+    loginDialog.afterClosed().subscribe({
+      next: (resp) => {
+        if(resp) {
+          this.nameUser = resp.name;
+          this.updateSideBar.emit(true);
+        }
+      }
+    })
+  }
+
+  ngOnInit(): void {
+    this.nameUser = localStorage.getItem("name") || '';
+  }
+
+  logout(){
+    this.nameUser = '';
+    localStorage.clear();
+    this.updateSideBar.emit(true);
+  }
 }
+
+

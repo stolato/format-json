@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="openSidebarClick()">
     <mat-icon>menu</mat-icon>
   </button>
   <span>TiLT - JSON EDITOR</span>
@@ -7,7 +7,7 @@
   <mat-chip-listbox aria-label="Dog selection">
     <mat-slide-toggle [(ngModel)]="isChecked" (change)="test()">Preview Tree</mat-slide-toggle>
     <mat-chip>
-      1.2.2
+      1.3-beta
     </mat-chip>
   </mat-chip-listbox>
   <button mat-icon-button (click)="open()" class="example-icon favorite-icon" matTooltip='Github'>
@@ -23,4 +23,19 @@
           class="example-icon" aria-label="Example icon-button with share icon">
     <mat-icon>upload</mat-icon>
   </button>
+  <button mat-icon-button matTooltip="Meus JSONs" (click)="openSidebarClick()" [matTooltipPosition]="'above'" class="example-icon">
+    <mat-icon>data_object</mat-icon>
+  </button>
+  <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
+    <mat-icon>person</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button *ngIf="nameUser === ''" mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
+    <button *ngIf="nameUser === ''" mat-menu-item><mat-icon>how_to_reg</mat-icon> Cadastro</button>
+    <button *ngIf="nameUser !== ''" mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
+    <mat-divider *ngIf="nameUser !== ''"></mat-divider>
+    <button *ngIf="nameUser !== ''" mat-menu-item (click)="openSidebarClick()"><mat-icon>data_object</mat-icon> Meus JSONs</button>
+    <mat-divider *ngIf="nameUser !== ''"></mat-divider>
+    <button *ngIf="nameUser !== ''" mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
+  </mat-menu>
 </mat-toolbar>

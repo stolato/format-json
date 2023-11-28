@@ -10,3 +10,11 @@ textarea.jsoneditor-text{min-height:350px;}
 :host ::ng-deep .jsoneditor-poweredBy{
   visibility: hidden;
 }
+:host ::ng-deep .mat-drawer-container{
+  height: calc(100% - 64px);
+}
+.close-side-bar{
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+}

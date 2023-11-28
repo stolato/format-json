@@ -34,13 +34,13 @@ html, body {
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .content{
   display: flex;
-  height: calc(100% - 64px);
+  height: 100%;
   flex-wrap: nowrap;
   justify-content: space-around;
   flex-direction: row;
 }
 .copy{
-  position: fixed !important;
+  position: absolute !important;
   bottom: 10px;
   right: 25px;
 }

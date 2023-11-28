@@ -30,6 +30,11 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
 import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {NgIf} from "@angular/common";
+import {MatMenuModule} from "@angular/material/menu";
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { DialogLoginComponent } from './components/dialog-login/dialog-login.component';
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatDividerModule} from "@angular/material/divider";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -44,6 +49,8 @@ export function playerFactory() {
     OpenFileComponent,
     NotfoundComponent,
     SharedComponent,
+    SidebarComponent,
+    DialogLoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,6 +58,9 @@ export function playerFactory() {
     BrowserAnimationsModule,
     NgxSpinnerModule,
     MatSidenavModule,
+    MatMenuModule,
+    MatExpansionModule,
+    MatDividerModule,
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
