@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Login</h1>
+<div mat-dialog-content>
+  <form class="example-form" (submit)="login()" [formGroup]="form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" placeholder="Nome Completo" type="text">
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email" placeholder="test@example.com" type="email">
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" placeholder="123456" type="password">
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button mat-dialog-close="">Fechar</button>
+      <button mat-button cdkFocusInitial type="submit">Logar</button>
+    </div>
+  </form>
+</div>
+

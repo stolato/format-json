@@ -29,7 +29,6 @@ export class DialogLoginComponent {
   getMe(token: string){
     this.api.me(token).subscribe({
       next: (resp) => {
-        console.log(resp);
         localStorage.setItem("name", resp.name);
         this.dialog.close({ name: resp.name });
       }
@@ -41,6 +40,7 @@ export class DialogLoginComponent {
       this.api.auth(this.form.get("email").value, this.form.get("password").value).subscribe({
         next: (resp: any) => {
           localStorage.setItem("key", resp.token);
+          localStorage.setItem("refresh", resp.refresh_token);
           this.getMe(resp.token);
           this.snackBar.open("Logado com sucesso!", "OK", {
             duration: 3000,
@@ -52,7 +52,7 @@ export class DialogLoginComponent {
         }
       })
     }else{
-      console.log('errr');
+      this.snackBar.open("Preencha todos os dados corretamente", "Ok");
     }
   }
 }

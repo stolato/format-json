@@ -31,7 +31,7 @@
   </button>
   <mat-menu #menu="matMenu">
     <button *ngIf="nameUser === ''" mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
-    <button *ngIf="nameUser === ''" mat-menu-item><mat-icon>how_to_reg</mat-icon> Cadastro</button>
+    <button *ngIf="nameUser === ''" mat-menu-item (click)="openRegister()"><mat-icon>how_to_reg</mat-icon> Cadastro</button>
     <button *ngIf="nameUser !== ''" mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
     <mat-divider *ngIf="nameUser !== ''"></mat-divider>
     <button *ngIf="nameUser !== ''" mat-menu-item (click)="openSidebarClick()"><mat-icon>data_object</mat-icon> Meus JSONs</button>

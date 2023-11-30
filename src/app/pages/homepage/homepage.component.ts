@@ -116,8 +116,7 @@ export class HomepageComponent implements OnInit {
     this.id = $event
   }
 
-  updateSideBarFunc($event: boolean) {
-    console.log($event);
+  updateSideBarFunc() {
     this.updateSidebar = !this.updateSidebar;
   }
 }

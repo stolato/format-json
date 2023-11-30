@@ -1,5 +1,5 @@
 <app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event)" (preview)="setPreview($event)" [current_json]="this.visibleData"
-            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc($event)"></app-header>
+            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()"></app-header>
 <mat-drawer-container class="example-container" autosize>
   <mat-drawer #drawer class="example-sidenav" [opened]="sidebar" mode="side" position="end">
     <div class="close-side-bar"><mat-icon (click)="openSideBarEvent(!sidebar)">close</mat-icon></div>

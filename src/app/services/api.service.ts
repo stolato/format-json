@@ -19,7 +19,6 @@ export class ApiService {
         'Authorization': `Bearer ${token}`,
       })};
     }
-    console.log(config);
     return this.http.post(`${this.baseUrl}/items`, {
       json: JSON.stringify(json),
       ip: ip,
@@ -44,6 +43,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/auth`, { email: email, password: pass});
   }
 
+  register(payload: any) {
+    return this.http.post(`${this.baseUrl}/register`, payload);
+  }
+
   me(token: string): Observable<any>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
@@ -63,5 +66,12 @@ export class ApiService {
       'Authorization': `Bearer ${token}`,
     });
     return this.http.delete(`${this.baseUrl}/items/${id}`, { headers: headers });
+  }
+
+  refreshToken(token: string | null, refresh: string | null) : Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+    return this.http.post(`${this.baseUrl}/refresh`,{ refresh_token: refresh}, { headers: headers });
   }
 }

@@ -8,6 +8,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
 import {NgxSpinnerService} from "ngx-spinner";
 import {DialogLoginComponent} from "../dialog-login/dialog-login.component";
+import {DialogRegisterComponent} from "../dialog-register/dialog-register.component";
 
 @Component({
   selector: 'app-header',
@@ -68,7 +69,6 @@ export class HeaderComponent implements OnInit{
   }
 
   saveJson() {
-    console.log(this.id);
     this.loading.show();
     this.apiService.updateJson(this.id, this.current_json).subscribe(() => {
       this.snackBar.open('json salvo!!', 'Ok', {
@@ -82,7 +82,6 @@ export class HeaderComponent implements OnInit{
   }
 
   openSidebarClick(){
-    console.log(this.openSideBar);
     this.sideBarStatus = !this.sideBarStatus;
     this.openSideBar.emit(this.sideBarStatus);
   }
@@ -100,6 +99,13 @@ export class HeaderComponent implements OnInit{
         }
       }
     })
+  }
+
+  openRegister(){
+    this.dialog.open(DialogRegisterComponent,{
+      width: '550px',
+      disableClose: false,
+    });
   }
 
   ngOnInit(): void {
