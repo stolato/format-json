@@ -31,13 +31,13 @@ export class SharedComponent {
     if (!this.id) {
       const token = localStorage.getItem("key") || null;
       this.loading = true;
-      this.apiService.getIPAddress().subscribe((res: any) => {
-        this.apiService.shareJson(this.json, res.ip, token).subscribe((resp: any) => {
+      //this.apiService.getIPAddress().subscribe((res: any) => {
+        this.apiService.shareJson(this.json, '127.0.0.1', token).subscribe((resp: any) => {
           this.id = resp.InsertedID;
           this.link = resp.InsertedID;
           this.loading = false;
         });
-      });
+      //});
     }
   }
 

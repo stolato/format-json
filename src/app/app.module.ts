@@ -37,6 +37,7 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatDividerModule} from "@angular/material/divider";
 import { DialogRegisterComponent } from './components/dialog-register/dialog-register.component';
 import {HttpRequestInterceptor} from "./services/intercepctor";
+import { DialogConfirmComponent } from './components/dialog-confirm/dialog-confirm.component';
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -54,6 +55,7 @@ export function playerFactory() {
     SidebarComponent,
     DialogLoginComponent,
     DialogRegisterComponent,
+    DialogConfirmComponent,
   ],
   imports: [
     BrowserModule,
