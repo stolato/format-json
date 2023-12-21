@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ApiService} from "../../services/api.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
@@ -12,7 +12,13 @@ import {JsonDefault} from "../../services/json-default";
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  constructor(private api: ApiService, private router: Router, private snack: MatSnackBar, private dialog: MatDialog) {
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private snack: MatSnackBar,
+    private dialog: MatDialog
+  ) {
   }
 
   panelOpenState = false;
@@ -66,7 +72,7 @@ export class SidebarComponent implements OnInit {
               next: () => {
                 this.snack.open("JSON Removido com sucesso.")
                 this.getAll();
-                this.clear();
+                this.clear(items.id);
               }
             })
           }
@@ -75,9 +81,12 @@ export class SidebarComponent implements OnInit {
     })
   }
 
-  private clear(){
-    this.id.emit('');
-    this.router.navigate(['/']).then(r => r);
-    this.json.emit(JSON.stringify(JsonDefault.default()));
+  private clear(id: string){
+    const url_id = this.route.snapshot.paramMap.get('id');
+    if(id === url_id) {
+      this.id.emit('');
+      this.router.navigate(['/']).then(r => r);
+      this.json.emit(JSON.stringify(JsonDefault.default()));
+    }
   }
 }
