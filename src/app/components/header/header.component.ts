@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, signal} from '@angular/core';
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {OpenFileComponent} from "../open-file/open-file.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -9,6 +9,8 @@ import {Router} from "@angular/router";
 import {NgxSpinnerService} from "ngx-spinner";
 import {DialogLoginComponent} from "../dialog-login/dialog-login.component";
 import {DialogRegisterComponent} from "../dialog-register/dialog-register.component";
+import {JsonDefault} from "../../services/json-default";
+import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
 
 @Component({
   selector: 'app-header',
@@ -27,7 +29,7 @@ export class HeaderComponent implements OnInit{
   }
 
   private save_preview = localStorage.getItem('preview');
-  @Output() json = new EventEmitter<string>();
+  @Output() json = new EventEmitter<string | object>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = '';
@@ -116,6 +118,28 @@ export class HeaderComponent implements OnInit{
     this.nameUser = '';
     localStorage.clear();
     this.updateSideBar.emit(true);
+  }
+
+  newJson(){
+    const dialog = this.dialog.open(DialogConfirmComponent, {
+      data: {
+        title: 'Novo',
+        text: 'Tem certeza que deseja iniciar um novo json?'
+      }
+    })
+    dialog.afterClosed().subscribe({
+      next: (resp) => {
+        if(resp) {
+          this.clear()
+        }
+      }
+    })
+  }
+
+  private clear(){
+    this.id = '';
+    this.router.navigate(['/']).then(r => r);
+    this.json.emit(JsonDefault.default());
   }
 }
 

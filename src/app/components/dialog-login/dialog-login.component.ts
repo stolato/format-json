@@ -11,6 +11,7 @@ import {MatDialogRef} from "@angular/material/dialog";
 })
 export class DialogLoginComponent {
   form: FormGroup | any;
+  loading: boolean = false;
 
   constructor(
     private dialog: MatDialogRef<DialogLoginComponent>,
@@ -37,6 +38,7 @@ export class DialogLoginComponent {
 
   login(){
     if(this.form.valid){
+      this.loading = true;
       this.api.auth(this.form.get("email").value, this.form.get("password").value).subscribe({
         next: (resp: any) => {
           localStorage.setItem("key", resp.token);
@@ -49,6 +51,7 @@ export class DialogLoginComponent {
         error: () => {
           this.snackBar.open("ops, nao foi possivel efetuar seu login, valide os dados", "Ok");
           this.form.get("password").setValue(null);
+          this.loading = false;
         }
       })
     }else{

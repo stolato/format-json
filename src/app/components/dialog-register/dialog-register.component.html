@@ -1,5 +1,8 @@
-<h1 mat-dialog-title>Login</h1>
+<h1 mat-dialog-title>Cadastro</h1>
 <div mat-dialog-content>
+  <div class="loading" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
   <form class="example-form" (submit)="login()" [formGroup]="form">
     <mat-form-field class="example-full-width">
       <mat-label>Nome</mat-label>

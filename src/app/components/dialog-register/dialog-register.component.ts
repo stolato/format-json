@@ -11,12 +11,13 @@ import {MatDialogRef} from "@angular/material/dialog";
 })
 export class DialogRegisterComponent implements OnInit{
   form: FormGroup | any;
+  loading: boolean = false;
 
   constructor(
     private dialog: MatDialogRef<DialogRegisterComponent>,
     private formBuilder: FormBuilder,
     private api: ApiService,
-    private snackBar: MatSnackBar,
+    private snackBar: MatSnackBar
     ) {
   }
 
@@ -30,6 +31,7 @@ export class DialogRegisterComponent implements OnInit{
 
   login() {
     if(this.form.valid){
+      this.loading = true;
       this.api.register(this.form.value).subscribe({
         next: () => {
           this.snackBar.open("Registrado com sucesso!", "OK", {
@@ -39,6 +41,7 @@ export class DialogRegisterComponent implements OnInit{
         },
         error: () => {
           this.snackBar.open("ops, nao foi possivel efetuar o seu registro", "Ok");
+          this.loading = false;
         }
       })
     }else{

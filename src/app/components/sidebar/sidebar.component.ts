@@ -4,27 +4,30 @@ import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
+import {JsonDefault} from "../../services/json-default";
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit{
-  constructor(private api: ApiService, private router: Router, private snack: MatSnackBar, private dialog: MatDialog) {}
+export class SidebarComponent implements OnInit {
+  constructor(private api: ApiService, private router: Router, private snack: MatSnackBar, private dialog: MatDialog) {
+  }
+
   panelOpenState = false;
   showFiller = false;
-  public list:any = []
+  public list: any = []
   @Output() json = new EventEmitter<string>();
   @Output() id = new EventEmitter<string>();
   @Input() updateSideBar: any = false;
   public token: string | null = '';
 
   ngOnInit(): void {
-   this.getAll()
+    this.getAll()
   }
 
-  ngOnChanges(){
+  ngOnChanges() {
     this.getAll()
   }
 
@@ -34,9 +37,9 @@ export class SidebarComponent implements OnInit{
     this.router.navigate([item.id]).then(r => r);
   }
 
-  getAll(){
+  getAll() {
     this.token = localStorage.getItem("key")
-    if(this.token) {
+    if (this.token) {
       this.api.allItems(this.token).subscribe({
         next: (resp) => {
           this.list = resp;
@@ -56,21 +59,25 @@ export class SidebarComponent implements OnInit{
     })
     dialog.afterClosed().subscribe({
       next: (resp) => {
-        if(resp) {
-          if(resp) {
-            this.token = localStorage.getItem("key")
-            if(this.token) {
-              this.api.deleteItem(items.id, this.token).subscribe({
-                next: () => {
-                  this.snack.open("JSON Removido com sucesso.")
-                  this.getAll();
-                }
-              })
-            }
+        if (resp) {
+          this.token = localStorage.getItem("key")
+          if (this.token) {
+            this.api.deleteItem(items.id, this.token).subscribe({
+              next: () => {
+                this.snack.open("JSON Removido com sucesso.")
+                this.getAll();
+                this.clear();
+              }
+            })
           }
         }
       }
     })
+  }
 
+  private clear(){
+    this.id.emit('');
+    this.router.navigate(['/']).then(r => r);
+    this.json.emit(JSON.stringify(JsonDefault.default()));
   }
 }

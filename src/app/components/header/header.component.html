@@ -7,13 +7,16 @@
   <mat-chip-listbox aria-label="Dog selection">
     <mat-slide-toggle [(ngModel)]="isChecked" (change)="test()">Preview Tree</mat-slide-toggle>
     <mat-chip>
-      1.3-beta
+      1.3.1-beta
     </mat-chip>
   </mat-chip-listbox>
   <button mat-icon-button (click)="open()" class="example-icon favorite-icon" matTooltip='Github'>
     <mat-icon>hub</mat-icon>
   </button>
-  <button *ngIf="id" mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" matTooltip='Salvar Json'>
+  <button *ngIf="id" mat-icon-button (click)="newJson()" class="example-icon favorite-icon" matTooltip='Novo JSON'>
+    <mat-icon>add_circle</mat-icon>
+  </button>
+  <button *ngIf="id" mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" matTooltip='Salvar JSON'>
     <mat-icon>save</mat-icon>
   </button>
   <button *ngIf="!id" mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" matTooltip='Compartilhar'>

@@ -79,3 +79,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #FFF;
   font-weight: bold !important;
 }
+
+
+.loading{
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  margin: 0 auto;
+  width: 100%;
+  top: 0;
+  background: rgba(0,0,0,0.2);
+  height: 100%;
+  left: 0;
+  align-items: center;
+  z-index: 9;
+}

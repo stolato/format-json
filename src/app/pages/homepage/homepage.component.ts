@@ -5,6 +5,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActivatedRoute} from "@angular/router";
 import {ApiService} from "../../services/api.service";
 import {NgxSpinnerService} from "ngx-spinner";
+import {JsonDefault} from "../../services/json-default";
 
 @Component({
   selector: 'app-homepage',
@@ -67,18 +68,8 @@ export class HomepageComponent implements OnInit {
         );
       });
     }else{
-      const init = {
-        "products": [{
-          "name": "car",
-          "product": [{
-            "name": "honda",
-            "model": [{"id": "civic", "name": "civic"}, {"id": "accord", "name": "accord"}, {
-              "id": "crv",
-              "name": "crv"
-            }, {"id": "pilot", "name": "pilot"}, {"id": "odyssey", "name": "odyssey"}]
-          }]
-        }]
-      };
+
+      const init = JsonDefault.default();
       this.initialData = init;
       this.visibleData = init;
     }
