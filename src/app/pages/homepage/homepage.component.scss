@@ -7,7 +7,7 @@
 }
 // DARK
   :host ::ng-deep .dark .jsoneditor {
-    border: var(--ds-surface-raised) 1px solid;
+    border: var(--ds-surface) 1px solid;
   }
 
   :host ::ng-deep .dark .jsoneditor-menu {
