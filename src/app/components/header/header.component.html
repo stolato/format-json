@@ -4,14 +4,16 @@
   </button>
   <span>TiLT - JSON EDITOR</span>
   <span class="example-spacer"></span>
-  <mat-chip-listbox aria-label="Dog selection">
-    <mat-slide-toggle [(ngModel)]="isChecked" (change)="test()">Preview Tree</mat-slide-toggle>
+  <mat-chip-listbox aria-label="Dog selection" matTooltip='Add Dark mode, alter icons'>
     <mat-chip>
       1.4.0
     </mat-chip>
   </mat-chip-listbox>
   <button mat-icon-button (click)="open()" class="example-icon favorite-icon" matTooltip='Github'>
     <mat-icon>hub</mat-icon>
+  </button>
+  <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip='JSON Tree'>
+    <mat-icon>account_tree</mat-icon>
   </button>
   <button mat-icon-button (click)="setDark()" matTooltip='Dark Mode'>
     <mat-icon>{{ DarkMode ? 'wb_sunny' : 'nights_stay' }}</mat-icon>

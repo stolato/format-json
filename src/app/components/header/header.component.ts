@@ -70,6 +70,7 @@ export class HeaderComponent implements OnInit{
   }
 
   test() {
+    this.isChecked = !this.isChecked;
     this.preview.emit(this.isChecked);
   }
 
@@ -146,7 +147,6 @@ export class HeaderComponent implements OnInit{
   }
 
   setDark() {
-    console.log('click');
     this.DarkMode = !this.DarkMode;
     this.setDarkMode.emit(this.DarkMode);
   }

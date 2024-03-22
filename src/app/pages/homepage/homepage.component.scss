@@ -105,3 +105,13 @@ textarea.jsoneditor-text{min-height:350px;}
   right: 0;
   cursor: pointer;
 }
+:host ::ng-deep .dark .formater{
+    .list-numbers {
+      background: #2b2d30 !important;
+      color: #5e5b4d !important;
+    }
+
+    .numbers {
+      background-color: #2b2d30 !important;
+    }
+  }
