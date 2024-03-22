@@ -5,6 +5,84 @@
   height: 100%;
   width: 100%;
 }
+// DARK
+  :host ::ng-deep .dark .jsoneditor {
+    border: var(--ds-surface-raised) 1px solid;
+  }
+
+  :host ::ng-deep .dark .jsoneditor-menu {
+    background: var(--ds-surface-raised);
+    border: var(--ds-surface-raised);
+  }
+
+  :host ::ng-deep .dark .jsoneditor-statusbar {
+    background: var(--ds-surface-raised);
+    border: var(--ds-surface-raised);
+  }
+
+  :host ::ng-deep .dark .jsoneditor-outer {
+    .ace_gutter{
+      background: #2b2d30;
+      color: #5e5b4d;
+    }
+    .ace_gutter-active-line{
+      background: none;
+      color: #99988c;
+    }
+  }
+
+  :host ::ng-deep .dark .jsoneditor-tree{
+    background: #272727;
+    .jsoneditor-field{
+      color: #9976ae;
+    }
+
+    .jsoneditor-string{
+      color: #618554;
+    }
+    .jsoneditor-object{
+      color: gray;
+    }
+  }
+
+  :host ::ng-deep .dark .jsoneditor-navigation-bar{
+    background: #2b2d30;
+    color: #5e5b4d;
+  }
+
+  :host ::ng-deep .dark .ace_content {
+    background: #272727;
+
+    .ace_variable {
+      color: #9976ae;
+    }
+
+    .ace_paren ace_lparen {
+      color: #585e6f;
+    }
+
+    .ace_indent-guide {
+      border-right: 1px solid #4b4b4b;
+      background: none;
+    }
+
+    .ace_numeric{
+      color: #2f4b86;
+    }
+
+    .ace_string {
+      color: #618554;
+    }
+  }
+
+  :host ::ng-deep .dark .ace-jsoneditor .ace_marker-layer .ace_active-line {
+    background: #2e2e2e;
+  }
+
+:host ::ng-deep .dark .jsoneditor-frame {
+  border-radius: 20px;
+}
+//DARK
 textarea.jsoneditor-text{min-height:350px;}
 
 :host ::ng-deep .jsoneditor-poweredBy{

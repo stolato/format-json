@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit{
   }
 
   private save_preview = localStorage.getItem('preview');
+  private dark_mode = localStorage.getItem('dark_mode');
   @Output() json = new EventEmitter<string | object>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
@@ -36,8 +37,10 @@ export class HeaderComponent implements OnInit{
   @Input() id = '';
   @Input() sideBarStatus = false;
   @Output() updateSideBar = new EventEmitter<boolean>();
+  @Output() setDarkMode = new EventEmitter<boolean>();
 
   public nameUser = '';
+  DarkMode = this.dark_mode ? JSON.parse(this.dark_mode) : false;
   public isChecked = this.save_preview ? JSON.parse(this.save_preview) : false;
 
   openUpload() {
@@ -140,6 +143,12 @@ export class HeaderComponent implements OnInit{
     this.id = '';
     this.router.navigate(['/']).then(r => r);
     this.json.emit(JsonDefault.default());
+  }
+
+  setDark() {
+    console.log('click');
+    this.DarkMode = !this.DarkMode;
+    this.setDarkMode.emit(this.DarkMode);
   }
 }
 

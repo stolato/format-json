@@ -1,11 +1,14 @@
-<app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event.toString())" (preview)="setPreview($event)" [current_json]="this.visibleData"
-            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()"></app-header>
+<app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event.toString())" (preview)="setPreview($event)"
+            [current_json]="this.visibleData"
+            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()" (setDarkMode)="setDark($event)"></app-header>
 <mat-drawer-container class="example-container" autosize>
   <mat-drawer #drawer class="example-sidenav" [opened]="sidebar" mode="side" position="end">
-    <div class="close-side-bar"><mat-icon (click)="openSideBarEvent(!sidebar)">close</mat-icon></div>
+    <div class="close-side-bar">
+      <mat-icon (click)="openSideBarEvent(!sidebar)">close</mat-icon>
+    </div>
     <app-sidebar (id)="changeId($event)" (json)="newJson($event)" [updateSideBar]="updateSidebar"></app-sidebar>
   </mat-drawer>
-  <div class="content">
+  <div class="content" [class.dark]="darkMode">
     <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
     <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"
                  (change)="showJson($event)"></json-editor>
