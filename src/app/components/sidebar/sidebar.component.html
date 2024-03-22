@@ -1,0 +1,26 @@
+<div class="sidebar">
+  <h3>Meus JSONs</h3>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let items of list" (opened)="panelOpenState = true"
+                         (closed)="panelOpenState = false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{items.name}}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{items.id}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="formater">
+        <pre [innerHTML]="items.json | prettyjson"></pre>
+      </div>
+      <mat-action-row>
+        <button mat-button color="primary" (click)="deleteItem(items)"><mat-icon>delete</mat-icon> Delete</button>
+        <button mat-button color="primary" (click)="edit(items)"><mat-icon>edit</mat-icon> Editar</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <p *ngIf="token && !list">Nenhum JSON salvo ainda!</p>
+
+  <p *ngIf="!token">Para ver seus JSONs basta fazer login ou criar uma nova conta!</p>
+</div>

@@ -29,7 +29,8 @@
           {
             "type": "element",
             "prefix": "app",
-            "style": "kebab-case"
+            "style": "kebab-case",
+            "teste": 1,
           }
         ]
       }
