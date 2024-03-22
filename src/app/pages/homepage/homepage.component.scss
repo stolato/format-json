@@ -43,6 +43,12 @@
     .jsoneditor-object{
       color: gray;
     }
+    .jsoneditor-array{
+      color: gray;
+    }
+    .jsoneditor-number{
+      color: #2f4b86;
+    }
   }
 
   :host ::ng-deep .dark .jsoneditor-navigation-bar{
@@ -72,6 +78,9 @@
 
     .ace_string {
       color: #618554;
+    }
+    .jsoneditor-null{
+      color: gray;
     }
   }
 
