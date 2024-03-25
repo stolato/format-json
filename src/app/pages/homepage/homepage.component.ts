@@ -14,14 +14,13 @@ import {JsonDefault} from "../../services/json-default";
 })
 export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};
-  private save_preview = localStorage.getItem('preview');
-  private dark_mode = localStorage.getItem('dark_mode');
+  private settings = JSON.parse(<string>localStorage.getItem('settings'));
   @Output() sidebarStatus = new EventEmitter<boolean>;
   public updateSidebar = false;
   @Output() idChange = new EventEmitter<string>;
   @Input() json = '';
-  @Input() preview = this.save_preview ? JSON.parse(this.save_preview) : false;
-  @Input() darkMode = this.dark_mode ? JSON.parse(this.dark_mode) : false;
+  @Input() preview = this.settings?.preview || false;
+  @Input() darkMode = this.settings?.dark_mode || false;
 
   title = 'formatjson';
 
@@ -54,6 +53,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getSettings();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) {
       this.loading.show();
@@ -90,7 +90,6 @@ export class HomepageComponent implements OnInit {
   }
 
   setPreview(prev: boolean) {
-    localStorage.setItem('preview', `${prev}`);
     this.preview = prev;
   }
 
@@ -114,7 +113,22 @@ export class HomepageComponent implements OnInit {
   }
 
   setDark($event: boolean) {
-    localStorage.setItem('dark_mode', `${$event}`);
     this.darkMode = $event;
+  }
+
+  getSettings(){
+    const token = localStorage.getItem("key")
+    if (token) {
+      this.apiService.getSettings(token).subscribe((resp) => {
+        localStorage.setItem("settings", resp.settings);
+        const settings = JSON.parse(resp.settings);
+        if(settings.preview) {
+          this.preview = settings.preview;
+        }
+        if(settings.dark_mode) {
+          this.darkMode = settings.dark_mode;
+        }
+      });
+    }
   }
 }

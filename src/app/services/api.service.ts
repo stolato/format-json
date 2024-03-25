@@ -75,4 +75,19 @@ export class ApiService {
     });
     return this.http.post(`${this.baseUrl}/refresh`,{ refresh_token: refresh}, { headers: headers });
   }
+
+
+  getSettings(token: string): Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+    return this.http.get(`${this.baseUrl}/user/settings`, { headers: headers });
+  }
+
+  setSettings(token: string, data: object): Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+    return this.http.put(`${this.baseUrl}/user/settings`, {settings: JSON.stringify(data)},{ headers: headers });
+  }
 }

@@ -28,20 +28,19 @@ export class HeaderComponent implements OnInit{
   ) {
   }
 
-  private save_preview = localStorage.getItem('preview');
-  private dark_mode = localStorage.getItem('dark_mode');
+  private settings = JSON.parse(<string>localStorage.getItem('settings'));
   @Output() json = new EventEmitter<string | object>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = '';
   @Input() id = '';
+  @Input() isChecked = this.settings?.preview || false;
+  @Input() DarkMode = this.settings?.dark_mode || false;
   @Input() sideBarStatus = false;
   @Output() updateSideBar = new EventEmitter<boolean>();
   @Output() setDarkMode = new EventEmitter<boolean>();
 
   public nameUser = '';
-  DarkMode = this.dark_mode ? JSON.parse(this.dark_mode) : false;
-  public isChecked = this.save_preview ? JSON.parse(this.save_preview) : false;
 
   openUpload() {
     const open = this.bottomSheet.open(OpenFileComponent)
@@ -72,6 +71,9 @@ export class HeaderComponent implements OnInit{
   test() {
     this.isChecked = !this.isChecked;
     this.preview.emit(this.isChecked);
+    this.settings.preview = this.isChecked;
+    this.updateSettings();
+    localStorage.setItem("settings", JSON.stringify(this.settings));
   }
 
   saveJson() {
@@ -102,6 +104,7 @@ export class HeaderComponent implements OnInit{
         if(resp) {
           this.nameUser = resp.name;
           this.updateSideBar.emit(true);
+          this.getSettings();
         }
       }
     })
@@ -149,6 +152,36 @@ export class HeaderComponent implements OnInit{
   setDark() {
     this.DarkMode = !this.DarkMode;
     this.setDarkMode.emit(this.DarkMode);
+    this.settings.dark_mode = this.DarkMode;
+    this.updateSettings();
+    localStorage.setItem("settings", JSON.stringify(this.settings));
+  }
+
+  updateSettings(){
+    const token = localStorage.getItem("key")
+    if (token) {
+      this.apiService.setSettings(token, this.settings).subscribe((resp) =>{
+        console.log(resp);
+      });
+    }
+  }
+
+  getSettings(){
+    const token = localStorage.getItem("key")
+    if (token) {
+      this.apiService.getSettings(token).subscribe((resp) => {
+        localStorage.setItem("settings", resp.settings);
+        const settings = JSON.parse(resp.settings);
+        if(settings.preview) {
+          this.isChecked = settings.preview;
+          this.preview.emit(this.isChecked);
+        }
+        if(settings.dark_mode) {
+          this.DarkMode = settings.dark_mode;
+          this.setDarkMode.emit(this.DarkMode);
+        }
+      });
+    }
   }
 }
 

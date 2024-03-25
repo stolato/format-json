@@ -1,6 +1,6 @@
 <app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event.toString())" (preview)="setPreview($event)"
             [current_json]="this.visibleData"
-            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()" (setDarkMode)="setDark($event)"></app-header>
+            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()" (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview"></app-header>
 <mat-drawer-container class="example-container" autosize>
   <mat-drawer #drawer class="example-sidenav" [opened]="sidebar" mode="side" position="end">
     <div class="close-side-bar">
