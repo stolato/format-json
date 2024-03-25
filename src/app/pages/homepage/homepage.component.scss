@@ -20,6 +20,10 @@
     border: var(--ds-surface-raised);
   }
 
+  :host ::ng-deep .dark .ace_scrollbar{
+    background: #272727;
+  }
+
   :host ::ng-deep .dark .jsoneditor-outer {
     .ace_gutter{
       background: #2b2d30;
