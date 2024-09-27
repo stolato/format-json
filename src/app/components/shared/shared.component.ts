@@ -25,7 +25,7 @@ export class SharedComponent {
   json = '';
   id: '';
   loading = false;
-  public base_url = 'https://tiltbr.com.br/json';
+  public base_url = 'https://jsonedit.com.br';
 
   shared() {
     if (!this.id) {
