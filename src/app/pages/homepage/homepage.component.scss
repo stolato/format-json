@@ -10,7 +10,16 @@
     border: var(--ds-surface) 1px solid;
   }
 
-:host ::ng-deep .dark .ace-jsoneditor .ace_cursor { border-left-color: gray; margin-left: 5px }
+:host ::ng-deep .dark .ace-jsoneditor .ace_marker-layer .ace_selection {
+  background: rgba(255, 255, 255, 0.1);
+  margin-left: 5px;
+}
+
+:host ::ng-deep .dark .ace_cursor-layer {
+  margin-left: 5px;
+}
+
+:host ::ng-deep .dark .ace-jsoneditor .ace_cursor { border-left-color: gray; }
 
 :host ::ng-deep .dark .jsoneditor-menu {
     background: var(--ds-surface-raised);
