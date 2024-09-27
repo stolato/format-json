@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActivatedRoute} from "@angular/router";
 import {ApiService} from "../../services/api.service";
 import {NgxSpinnerService} from "ngx-spinner";
+import {JsonDefault} from "../../services/json-default";
 
 @Component({
   selector: 'app-homepage',
@@ -13,9 +14,13 @@ import {NgxSpinnerService} from "ngx-spinner";
 })
 export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};
-  private save_preview = localStorage.getItem('preview');
+  private settings = JSON.parse(<string>localStorage.getItem('settings'));
+  @Output() sidebarStatus = new EventEmitter<boolean>;
+  public updateSidebar = false;
+  @Output() idChange = new EventEmitter<string>;
   @Input() json = '';
-  @Input() preview = this.save_preview ? JSON.parse(this.save_preview) : false;
+  @Input() preview = this.settings?.preview || false;
+  @Input() darkMode = this.settings?.dark_mode || false;
 
   title = 'formatjson';
 
@@ -25,6 +30,7 @@ export class HomepageComponent implements OnInit {
   public visibleData: any = null;
   public id: any;
   public showFiller = false;
+  public sidebar: boolean = false;
 
   constructor(
     private clipboard: Clipboard,
@@ -47,6 +53,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getSettings();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) {
       this.loading.show();
@@ -63,18 +70,8 @@ export class HomepageComponent implements OnInit {
         );
       });
     }else{
-      const init = {
-        "products": [{
-          "name": "car",
-          "product": [{
-            "name": "honda",
-            "model": [{"id": "civic", "name": "civic"}, {"id": "accord", "name": "accord"}, {
-              "id": "crv",
-              "name": "crv"
-            }, {"id": "pilot", "name": "pilot"}, {"id": "odyssey", "name": "odyssey"}]
-          }]
-        }]
-      };
+
+      const init = JsonDefault.default();
       this.initialData = init;
       this.visibleData = init;
     }
@@ -93,13 +90,45 @@ export class HomepageComponent implements OnInit {
   }
 
   setPreview(prev: boolean) {
-    localStorage.setItem('preview', `${prev}`);
     this.preview = prev;
   }
 
   showJson(d: Event) {
     if (!d.isTrusted) {
       this.visibleData = d;
+    }
+  }
+
+  openSideBarEvent($event: boolean) {
+    this.sidebarStatus.emit($event);
+    this.sidebar = $event
+  }
+
+  changeId($event: string){
+    this.id = $event
+  }
+
+  updateSideBarFunc() {
+    this.updateSidebar = !this.updateSidebar;
+  }
+
+  setDark($event: boolean) {
+    this.darkMode = $event;
+  }
+
+  getSettings(){
+    const token = localStorage.getItem("key")
+    if (token) {
+      this.apiService.getSettings(token).subscribe((resp) => {
+        localStorage.setItem("settings", resp.settings);
+        const settings = JSON.parse(resp.settings);
+        if(settings.preview) {
+          this.preview = settings.preview;
+        }
+        if(settings.dark_mode) {
+          this.darkMode = settings.dark_mode;
+        }
+      });
     }
   }
 }
