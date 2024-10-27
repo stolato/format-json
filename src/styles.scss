@@ -66,14 +66,14 @@ html, body {
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .content{
   display: flex;
-  height: 100%;
+  height: calc(100% - 104px);
   flex-wrap: nowrap;
   justify-content: space-around;
   flex-direction: row;
 }
 .copy{
   position: absolute !important;
-  bottom: 10px;
+  bottom: 50px;
   right: 25px;
 }
 .formater {

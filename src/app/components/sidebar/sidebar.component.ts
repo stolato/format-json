@@ -3,7 +3,7 @@ import {ApiService} from "../../services/api.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
-import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
+import {DialogConfirmComponent} from "../dialogs/dialog-confirm/dialog-confirm.component";
 import {JsonDefault} from "../../services/json-default";
 
 @Component({
@@ -48,7 +48,7 @@ export class SidebarComponent implements OnInit {
     if (this.token) {
       this.api.allItems(this.token).subscribe({
         next: (resp) => {
-          this.list = resp;
+          this.list = resp.data;
         }
       })
     } else {
@@ -67,6 +67,7 @@ export class SidebarComponent implements OnInit {
       next: (resp) => {
         if (resp) {
           this.token = localStorage.getItem("key")
+          console.log(this.token)
           if (this.token) {
             this.api.deleteItem(items.id, this.token).subscribe({
               next: () => {

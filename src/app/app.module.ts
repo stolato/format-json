@@ -28,16 +28,19 @@ import { SharedComponent } from './components/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
-import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
-import {NgIf} from "@angular/common";
+import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatMenuModule} from "@angular/material/menu";
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { DialogLoginComponent } from './components/dialog-login/dialog-login.component';
+import { DialogLoginComponent } from './components/dialogs/dialog-login/dialog-login.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatDividerModule} from "@angular/material/divider";
-import { DialogRegisterComponent } from './components/dialog-register/dialog-register.component';
+import { DialogRegisterComponent } from './components/dialogs/dialog-register/dialog-register.component';
 import {HttpRequestInterceptor} from "./services/intercepctor";
-import { DialogConfirmComponent } from './components/dialog-confirm/dialog-confirm.component';
+import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dialog-confirm.component';
+import {DialogListJsonComponent} from "./components/dialogs/dialog-list-json/dialog-list-json.component";
+import {MatTableModule} from "@angular/material/table";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import { DialogOrganizationComponent } from './components/dialogs/dialog-organization/dialog-organization.component';
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -56,6 +59,8 @@ export function playerFactory() {
     DialogLoginComponent,
     DialogRegisterComponent,
     DialogConfirmComponent,
+    DialogListJsonComponent,
+    DialogOrganizationComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,7 +88,9 @@ export function playerFactory() {
     MatInputModule,
     MatChipsModule,
     MatSlideToggleModule,
-    LottieModule.forRoot({ player: playerFactory })
+    LottieModule.forRoot({player: playerFactory}),
+    MatTableModule,
+    MatPaginatorModule
   ],
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },

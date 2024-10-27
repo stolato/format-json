@@ -7,10 +7,12 @@ import { ApiService } from "../../services/api.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DialogLoginComponent } from "../dialog-login/dialog-login.component";
-import { DialogRegisterComponent } from "../dialog-register/dialog-register.component";
+import { DialogLoginComponent } from "../dialogs/dialog-login/dialog-login.component";
+import { DialogRegisterComponent } from "../dialogs/dialog-register/dialog-register.component";
 import { JsonDefault } from "../../services/json-default";
-import { DialogConfirmComponent } from "../dialog-confirm/dialog-confirm.component";
+import { DialogConfirmComponent } from "../dialogs/dialog-confirm/dialog-confirm.component";
+import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-json.component";
+import {DialogOrganizationComponent} from "../dialogs/dialog-organization/dialog-organization.component";
 
 @Component({
   selector: "app-header",
@@ -51,10 +53,6 @@ export class HeaderComponent implements OnInit {
         this.json.emit(data);
       }
     });
-  }
-
-  open() {
-    window.open("https://github.com/stolato/format-json", "_blank");
   }
 
   shareJson() {
@@ -191,5 +189,19 @@ export class HeaderComponent implements OnInit {
         }
       });
     }
+  }
+
+  openList(){
+    this.dialog.open(DialogListJsonComponent, {
+      width: "70%",
+      disableClose: false,
+    });
+  }
+
+  openOrg() {
+    this.dialog.open(DialogOrganizationComponent, {
+      width: "70%",
+      disableClose: false,
+    })
   }
 }

@@ -14,7 +14,10 @@ import {JsonDefault} from "../../services/json-default";
 })
 export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};
-  private settings = JSON.parse(<string>localStorage.getItem('settings'));
+  private settings = {
+    dark_mode: false,
+    preview: false,
+  };
   @Output() sidebarStatus = new EventEmitter<boolean>;
   public updateSidebar = false;
   @Output() idChange = new EventEmitter<string>;
@@ -53,6 +56,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.settings)
     this.getSettings();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) {
@@ -118,6 +122,7 @@ export class HomepageComponent implements OnInit {
 
   getSettings(){
     const token = localStorage.getItem("key")
+    console.log(token);
     if (token) {
       this.apiService.getSettings(token).subscribe((resp) => {
         localStorage.setItem("settings", resp.settings);
@@ -130,5 +135,9 @@ export class HomepageComponent implements OnInit {
         }
       });
     }
+  }
+
+  open() {
+    window.open("https://github.com/stolato/format-json", "_blank");
   }
 }

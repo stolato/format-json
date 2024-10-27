@@ -113,7 +113,7 @@ textarea.jsoneditor-text{min-height:350px;}
   visibility: hidden;
 }
 :host ::ng-deep .mat-drawer-container{
-  height: calc(100% - 64px);
+  height: calc(100% - 104px);
 }
 .close-side-bar{
   position: absolute;
@@ -130,3 +130,23 @@ textarea.jsoneditor-text{min-height:350px;}
       background-color: #2b2d30 !important;
     }
   }
+
+footer{
+  color: #FFF;
+  height: 20px;
+  background-color: var(--ds-surface-raised);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  font-size: 12px;
+  padding: 10px;
+  .right{
+    display: flex;
+    align-items: center;
+    .social{
+      margin-right: 15px;
+      margin-top: 10px;
+    }
+  }
+}

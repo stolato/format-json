@@ -1,17 +1,6 @@
 <mat-toolbar color="primary" [class.dark]="DarkMode">
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="openSidebarClick()">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span class="title">{{ '{}' }} JSONEDIT </span>
+  <span class="title">JSONEDIT</span>
   <span class="example-spacer"></span>
-  <mat-chip-listbox aria-label="Dog selection" matTooltip='Add Dark mode, alter icons'>
-    <mat-chip>
-      1.4.2
-    </mat-chip>
-  </mat-chip-listbox>
-  <button mat-icon-button (click)="open()" class="example-icon favorite-icon" matTooltip='Github'>
-    <mat-icon>hub</mat-icon>
-  </button>
   <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip='JSON Tree'>
     <mat-icon>account_tree</mat-icon>
   </button>
@@ -27,12 +16,15 @@
   <button *ngIf="!id" mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" matTooltip='Compartilhar'>
     <mat-icon>share</mat-icon>
   </button>
-  <button (click)="openUpload()" matTooltip="Enviar Arquivo" [matTooltipPosition]="'above'" mat-icon-button
+  <button (click)="openUpload()" matTooltip="Abrir Arquivo" [matTooltipPosition]="'above'" mat-icon-button
           class="example-icon" aria-label="Example icon-button with share icon">
     <mat-icon>upload</mat-icon>
   </button>
-  <button mat-icon-button matTooltip="Meus JSONs" (click)="openSidebarClick()" [matTooltipPosition]="'above'" class="example-icon">
+  <button *ngIf="nameUser !== ''" mat-icon-button matTooltip="Meus JSONs" (click)="openList()" [matTooltipPosition]="'above'" class="example-icon">
     <mat-icon>data_object</mat-icon>
+  </button>
+  <button mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
+    <mat-icon>group</mat-icon>
   </button>
   <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
     <mat-icon>person</mat-icon>
