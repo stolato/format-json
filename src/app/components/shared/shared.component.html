@@ -1,12 +1,19 @@
 <h2 mat-dialog-title>Compartilhar JSON</h2>
 <mat-dialog-content class="mat-typography">
   <h3 *ngIf="!link">Deseja compartilhar esse json??</h3>
+  <div class="loading" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
   <div *ngIf="link">
     <h3>
       Link gerado:
     </h3>
     <p>
-      https://tiltbr.com.br/json/{{link}}
+      <mat-form-field class="example-full-width">
+          <mat-label>Link</mat-label>
+          <input type="tel" value="{{base_url}}/{{link}}" readonly matInput>
+          <mat-icon matSuffix (click)="copy()">content_copy</mat-icon>
+        </mat-form-field>
     </p>
   </div>
 </mat-dialog-content>

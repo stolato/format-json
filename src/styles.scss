@@ -1,8 +1,40 @@
 @import '~jsoneditor/dist/jsoneditor.min.css';
+:root{
+  --ds-surface: #1D2125;
+  --ds-surface-hovered: #22272B;
+  --ds-surface-pressed: #282E33;
+  --ds-surface-overlay: #282E33;
+  --ds-surface-overlay-hovered: #2C333A;
+  --ds-surface-overlay-pressed: #38414A;
+  --ds-surface-raised: #22272B;
+  --ds-surface-raised-hovered: #282E33;
+  --ds-surface-raised-pressed: #2C333A;
+  --ds-surface-sunken: #161A1D;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 
 pre {
   font-weight: 400;
-  background: #3b3b3b;
+  background: #272727;
   color: #727990;
   width: 100%;
   height: 100%;
@@ -13,7 +45,7 @@ pre {
     color: #adadaf;
   }
   .string {
-    color: #95c602;
+    color: #618554;
   }
   .number {
     color: #f2b619;
@@ -25,7 +57,7 @@ pre {
     color: #727990;
   }
   .key {
-    color: #fff;
+    color: #9976ae;
   }
 }
 html, body {
@@ -34,20 +66,21 @@ html, body {
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .content{
   display: flex;
-  height: calc(100% - 64px);
+  height: 100%;
   flex-wrap: nowrap;
   justify-content: space-around;
   flex-direction: row;
+}
+.copy{
+  position: absolute !important;
+  bottom: 10px;
+  right: 25px;
 }
 .formater {
   width: 100%;
   height: 100%;
   overflow: auto;
-  .copy{
-    position: fixed;
-    bottom: 10px;
-    right: 25px;
-  }
+
   .json {
     display: flex;
     height: 100%;
@@ -73,6 +106,25 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       background-color: #ebebeb;
     }
   }
+}
+.mdc-label{
+  color: #FFF;
+  font-weight: bold !important;
+}
+
+
+.loading{
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  margin: 0 auto;
+  width: 100%;
+  top: 0;
+  background: rgba(0,0,0,0.2);
+  height: 100%;
+  left: 0;
+  align-items: center;
+  z-index: 9;
 }
 
 .mat-mdc-snack-bar-container {

@@ -1,14 +1,27 @@
-<app-header (json)="newJson($event)" (preview)="setPreview($event)" [current_json]="this.visibleData" [id]="id"></app-header>
-<div class="content">
-  <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
-  <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"
-               (change)="showJson($event)"></json-editor>
-  <div *ngIf="!preview" class="formater">
-    <pre [innerHTML]="visibleData | prettyjson"></pre>
+<app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event.toString())" (preview)="setPreview($event)"
+            [current_json]="this.visibleData"
+            [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()" (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview"></app-header>
+<mat-drawer-container class="example-container" autosize>
+  <mat-drawer #drawer class="example-sidenav" [opened]="sidebar" mode="side" position="end">
+    <div class="close-side-bar">
+      <mat-icon (click)="openSideBarEvent(!sidebar)">close</mat-icon>
+    </div>
+    <app-sidebar (id)="changeId($event)" (json)="newJson($event)" [updateSideBar]="updateSidebar"></app-sidebar>
+  </mat-drawer>
+  <div class="content" [class.dark]="darkMode">
+    <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+    <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"
+                 (change)="showJson($event)"></json-editor>
+    <div *ngIf="!preview" class="formater">
+      <pre [innerHTML]="visibleData | prettyjson"></pre>
+    </div>
     <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
             mat-icon-button aria-label="Example icon-button with a heart icon">
       <mat-icon>content_copy</mat-icon>
     </button>
   </div>
-</div>
-<footer></footer>
+
+</mat-drawer-container>
+
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner>
+

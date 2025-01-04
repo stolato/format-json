@@ -23,8 +23,20 @@ import {LottieModule} from "ngx-lottie";
 import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { SharedComponent } from './components/shared/shared.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {NgxSpinnerModule} from "ngx-spinner";
+import {MatInputModule} from "@angular/material/input";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatMenuModule} from "@angular/material/menu";
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { DialogLoginComponent } from './components/dialog-login/dialog-login.component';
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatDividerModule} from "@angular/material/divider";
+import { DialogRegisterComponent } from './components/dialog-register/dialog-register.component';
+import {HttpRequestInterceptor} from "./services/intercepctor";
+import { DialogConfirmComponent } from './components/dialog-confirm/dialog-confirm.component';
 import { SocketIoModule} from "ngx-socket-io";
 
 export function playerFactory() {
@@ -41,6 +53,10 @@ export function playerFactory() {
     OpenFileComponent,
     NotfoundComponent,
     SharedComponent,
+    SidebarComponent,
+    DialogLoginComponent,
+    DialogRegisterComponent,
+    DialogConfirmComponent,
   ],
   imports: [
     SocketIoModule.forRoot({ url: 'https://api.jsonedit.com.br:8001/items', options: {
@@ -50,6 +66,11 @@ export function playerFactory() {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    NgxSpinnerModule,
+    MatSidenavModule,
+    MatMenuModule,
+    MatExpansionModule,
+    MatDividerModule,
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
@@ -62,7 +83,9 @@ export function playerFactory() {
     MatSnackBarModule,
     MatTooltipModule,
     MatBottomSheetModule,
+    MatProgressSpinnerModule,
     MatFormFieldModule,
+    MatInputModule,
     MatChipsModule,
     MatSlideToggleModule,
     LottieModule.forRoot({ player: playerFactory })
@@ -70,6 +93,7 @@ export function playerFactory() {
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: {} },
+    { provide: HTTP_INTERCEPTORS , useClass: HttpRequestInterceptor, multi: true}
     ],
   bootstrap: [AppComponent]
 })
