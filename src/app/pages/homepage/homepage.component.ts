@@ -4,6 +4,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ActivatedRoute} from "@angular/router";
 import {ApiService} from "../../services/api.service";
+import {SocketService} from "../../services/socket.service";
 import {NgxSpinnerService} from "ngx-spinner";
 import {JsonDefault} from "../../services/json-default";
 
@@ -22,7 +23,10 @@ export class HomepageComponent implements OnInit {
   @Input() preview = this.settings?.preview || false;
   @Input() darkMode = this.settings?.dark_mode || false;
 
+  timeOut = 0;
   title = 'formatjson';
+  write = 0;
+  json_old = {};
 
   public editorOptions: JsonEditorOptions;
   public editorOptions_view: JsonEditorOptions;
@@ -38,6 +42,7 @@ export class HomepageComponent implements OnInit {
     private route: ActivatedRoute,
     private apiService: ApiService,
     private loading: NgxSpinnerService,
+    private socket: SocketService,
   ) {
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
@@ -55,8 +60,29 @@ export class HomepageComponent implements OnInit {
   ngOnInit(): void {
     this.getSettings();
     this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id) {
+    if (this.id){
       this.loading.show();
+      this.socket.joinChannel(this.id);
+      this.socket.getMessage('new-json').subscribe((resp: any) => {
+        if(!this.timeOut){
+          this.initialData = JSON.parse(resp);
+          this.snackBar.open('atulizado', 'OK', {
+            duration: 1000,
+          })
+        }
+        this.visibleData = JSON.parse(resp);
+        this.write = 0;
+        this.timeOut = 0;
+      })
+      this.socket.getMessage('write').subscribe(() => {
+        if(!this.timeOut && !this.write){
+          this.snackBar.open('alguem esta digitando...', '', {
+            verticalPosition: "top",
+            panelClass: ['blue']
+          });
+          this.write = 1;
+        }
+      })
       this.apiService.getJson(this.id).subscribe((resp: any) => {
         this.initialData = JSON.parse(resp.json);
         this.visibleData = JSON.parse(resp.json);
@@ -95,6 +121,13 @@ export class HomepageComponent implements OnInit {
 
   showJson(d: Event) {
     if (!d.isTrusted) {
+      if(this.id) {
+        this.socket.sendMessage('', this.id, 'write');
+        clearTimeout(this.timeOut);
+        this.timeOut = setTimeout(()=> {
+          this.socket.sendMessage(JSON.stringify(d), this.id, 'new-json');
+        }, 1000);
+      }
       this.visibleData = d;
     }
   }

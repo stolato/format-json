@@ -28,8 +28,7 @@ import { SharedComponent } from './components/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
-import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
-import {NgIf} from "@angular/common";
+import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatMenuModule} from "@angular/material/menu";
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { DialogLoginComponent } from './components/dialog-login/dialog-login.component';
@@ -38,10 +37,12 @@ import {MatDividerModule} from "@angular/material/divider";
 import { DialogRegisterComponent } from './components/dialog-register/dialog-register.component';
 import {HttpRequestInterceptor} from "./services/intercepctor";
 import { DialogConfirmComponent } from './components/dialog-confirm/dialog-confirm.component';
+import { SocketIoModule} from "ngx-socket-io";
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
 }
+
 
 @NgModule({
   declarations: [
@@ -58,6 +59,10 @@ export function playerFactory() {
     DialogConfirmComponent,
   ],
   imports: [
+    SocketIoModule.forRoot({ url: 'https://api.jsonedit.com.br:8001/items', options: {
+      transports: ['websocket'],
+      reconnection: true,
+    } }),
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
