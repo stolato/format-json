@@ -43,7 +43,7 @@ export function playerFactory() {
     SharedComponent,
   ],
   imports: [
-    SocketIoModule.forRoot({ url: 'https://green-gharial-belt.cyclic.app/items', options: {
+    SocketIoModule.forRoot({ url: 'https://api.jsonedit.com.br:8001/items', options: {
       transports: ['websocket'],
       reconnection: true,
     } }),
