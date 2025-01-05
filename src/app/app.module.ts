@@ -59,7 +59,7 @@ export function playerFactory() {
     DialogConfirmComponent,
   ],
   imports: [
-    SocketIoModule.forRoot({ url: 'https://api.jsonedit.com.br:8001/items', options: {
+    SocketIoModule.forRoot({ url: 'ws://api.jsonedit.com.br:8001/items', options: {
       transports: ['websocket'],
       reconnection: true,
     } }),

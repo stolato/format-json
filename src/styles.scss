@@ -134,3 +134,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     --mdc-snackbar-supporting-text-color: #fff;
   }
 }
+
+@media (max-width: 667px) {
+  .content{
+    flex-wrap: wrap;
+  }
+}

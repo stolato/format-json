@@ -48,7 +48,7 @@ export class SidebarComponent implements OnInit {
     if (this.token) {
       this.api.allItems(this.token).subscribe({
         next: (resp) => {
-          this.list = resp;
+          this.list = resp.data;
         }
       })
     } else {
