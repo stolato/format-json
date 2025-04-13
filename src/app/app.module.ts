@@ -24,7 +24,7 @@ import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import { SharedComponent } from './components/shared/shared.component';
+import { SharedComponent } from './components/dialogs/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
@@ -41,6 +41,10 @@ import {DialogListJsonComponent} from "./components/dialogs/dialog-list-json/dia
 import {MatTableModule} from "@angular/material/table";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import { DialogOrganizationComponent } from './components/dialogs/dialog-organization/dialog-organization.component';
+import {MatSortModule} from "@angular/material/sort";
+import {MatSelectModule} from "@angular/material/select";
+import {DialogAddUserOrgComponent} from "./components/dialogs/dialog-add-user-org/dialog-add-user-org.component";
+import { DialogAddOrgComponent } from './components/dialogs/dialog-add-org/dialog-add-org.component';
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -61,6 +65,8 @@ export function playerFactory() {
     DialogConfirmComponent,
     DialogListJsonComponent,
     DialogOrganizationComponent,
+    DialogAddUserOrgComponent,
+    DialogAddOrgComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,7 +96,9 @@ export function playerFactory() {
     MatSlideToggleModule,
     LottieModule.forRoot({player: playerFactory}),
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSortModule,
+    MatSelectModule
   ],
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },

@@ -1,1 +1,71 @@
-<p>dialog-organization works!</p>
+<h1 mat-dialog-title class="title-panel">Organizacoes</h1>
+<div mat-dialog-content>
+  <div class="add-org">
+    <button mat-raised-button color="primary" (click)="addOrg()">Add Organizacao</button>
+  </div>
+  <mat-accordion class="example-headers-align" multi>
+    <mat-expansion-panel *ngFor="let orgs of organization">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ orgs.name }}
+        </mat-panel-title>
+        <mat-panel-description>
+          total de usuarios: {{ orgs.users.length }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="content-panel">
+
+        <div class="add">
+          <button mat-raised-button color="primary" (click)="addUser(orgs.id)">Add user</button>
+        </div>
+
+
+        <table mat-table [dataSource]="orgs.users" class="mat-elevation-z8">
+          <!-- Position Column -->
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef> ID.</th>
+            <td mat-cell *matCellDef="let element"> {{ element.id }}</td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name</th>
+            <td mat-cell *matCellDef="let element"> {{ element.name }}</td>
+          </ng-container>
+
+          <!-- Weight Column -->
+          <ng-container matColumnDef="weight">
+            <th mat-header-cell *matHeaderCellDef> E-mail</th>
+            <td mat-cell *matCellDef="let element"> {{ element.email }}</td>
+          </ng-container>
+
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="symbol">
+            <th mat-header-cell *matHeaderCellDef> Options</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+                      *ngIf="orgs.owner_id !== element.id">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="removeUser(orgs.id, element)">
+                  <mat-icon>remove</mat-icon>
+                  <span>Remover</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+<mat-dialog-actions class="close" align="end">
+  <button mat-button matDialogClose>Fechar</button>
+</mat-dialog-actions>

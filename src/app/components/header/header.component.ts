@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { OpenFileComponent } from "../open-file/open-file.component";
 import { MatDialog } from "@angular/material/dialog";
-import { SharedComponent } from "../shared/shared.component";
+import { SharedComponent } from "../dialogs/shared/shared.component";
 import { ApiService } from "../../services/api.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
@@ -200,7 +200,8 @@ export class HeaderComponent implements OnInit {
 
   openOrg() {
     this.dialog.open(DialogOrganizationComponent, {
-      width: "70%",
+      width: "80%",
+      height: "80%",
       disableClose: false,
     })
   }
