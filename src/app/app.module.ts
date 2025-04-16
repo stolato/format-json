@@ -30,7 +30,6 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatMenuModule} from "@angular/material/menu";
-import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { DialogLoginComponent } from './components/dialogs/dialog-login/dialog-login.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatDividerModule} from "@angular/material/divider";
@@ -59,7 +58,6 @@ export function playerFactory() {
     OpenFileComponent,
     NotfoundComponent,
     SharedComponent,
-    SidebarComponent,
     DialogLoginComponent,
     DialogRegisterComponent,
     DialogConfirmComponent,

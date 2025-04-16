@@ -33,15 +33,13 @@ export class HeaderComponent implements OnInit {
     dark_mode: false,
     preview: false,
   };
-  @Output() json = new EventEmitter<string | object>();
+  @Output() json = new EventEmitter<string>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = "";
   @Input() id = "";
   @Input() isChecked = this.settings?.preview || false;
   @Input() DarkMode = this.settings?.dark_mode || false;
-  @Input() sideBarStatus = false;
-  @Output() updateSideBar = new EventEmitter<boolean>();
   @Output() setDarkMode = new EventEmitter<boolean>();
 
   public nameUser = "";
@@ -86,18 +84,12 @@ export class HeaderComponent implements OnInit {
         this.snackBar.open("json salvo!!", "Ok", {
           duration: 3000,
         });
-        this.updateSideBar.emit(true);
         this.loading.hide();
       },
       () => {
         this.loading.hide();
       },
     );
-  }
-
-  openSidebarClick() {
-    this.sideBarStatus = !this.sideBarStatus;
-    this.openSideBar.emit(this.sideBarStatus);
   }
 
   openLogin() {
@@ -109,7 +101,6 @@ export class HeaderComponent implements OnInit {
       next: (resp) => {
         if (resp) {
           this.nameUser = resp.name;
-          this.updateSideBar.emit(true);
           this.getSettings();
         }
       },
@@ -130,7 +121,6 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.nameUser = "";
     localStorage.clear();
-    this.updateSideBar.emit(true);
   }
 
   newJson() {
@@ -152,7 +142,7 @@ export class HeaderComponent implements OnInit {
   private clear() {
     this.id = "";
     this.router.navigate(["/"]).then((r) => r);
-    this.json.emit(JsonDefault.default());
+    this.json.emit(JSON.stringify(JsonDefault.default()));
   }
 
   setDark() {
@@ -192,10 +182,20 @@ export class HeaderComponent implements OnInit {
   }
 
   openList(){
-    this.dialog.open(DialogListJsonComponent, {
+    const list = this.dialog.open(DialogListJsonComponent, {
       width: "70%",
       disableClose: false,
     });
+    list.afterClosed().subscribe({
+      next: (resp) => {
+        if (resp?.item) {
+          const item = JSON.parse(resp.item);
+          this.json.emit(item.json);
+          this.router.navigate([item.id]).then((r) => r);
+          this.id = item.id;
+        }
+      }
+    })
   }
 
   openOrg() {

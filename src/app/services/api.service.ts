@@ -101,6 +101,13 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/organization`, { name: name},  { headers: headers });
   }
 
+  deleteOrganization(token: string | null, id: string) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.delete(`${this.baseUrl}/organization/${id}`, { headers: headers });
+  }
+
   addUserToOrganization(token: string | null, org_id: string, email: string) : Observable<any>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,

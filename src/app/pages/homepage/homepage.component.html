@@ -1,5 +1,5 @@
-<app-header (openSideBar)="openSideBarEvent($event)" (json)="newJson($event.toString())" (preview)="setPreview($event)"
-            [current_json]="this.visibleData" [id]="id" [sideBarStatus]="sidebar" (updateSideBar)="updateSideBarFunc()"
+<app-header (json)="newJson($event.toString())" (preview)="setPreview($event)"
+            [current_json]="this.visibleData" [id]="id"
             (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview">
 </app-header>
 
@@ -24,7 +24,7 @@
       <mat-icon (click)="open()" matTooltip='Github'>hub</mat-icon>
     </div>
     <div class="version">
-      version: 1.5.0 - preview
+      version: 1.6.0
     </div>
   </div>
 </footer>

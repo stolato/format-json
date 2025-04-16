@@ -23,7 +23,7 @@
   <button *ngIf="nameUser !== ''" mat-icon-button matTooltip="Meus JSONs" (click)="openList()" [matTooltipPosition]="'above'" class="example-icon">
     <mat-icon>data_object</mat-icon>
   </button>
-  <button mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
+  <button *ngIf="nameUser !== ''" mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
     <mat-icon>group</mat-icon>
   </button>
   <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
@@ -33,8 +33,6 @@
     <button *ngIf="nameUser === ''" mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
     <button *ngIf="nameUser === ''" mat-menu-item (click)="openRegister()"><mat-icon>how_to_reg</mat-icon> Cadastro</button>
     <button *ngIf="nameUser !== ''" mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
-    <mat-divider *ngIf="nameUser !== ''"></mat-divider>
-    <button *ngIf="nameUser !== ''" mat-menu-item (click)="openSidebarClick()"><mat-icon>data_object</mat-icon> Meus JSONs</button>
     <mat-divider *ngIf="nameUser !== ''"></mat-divider>
     <button *ngIf="nameUser !== ''" mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
   </mat-menu>

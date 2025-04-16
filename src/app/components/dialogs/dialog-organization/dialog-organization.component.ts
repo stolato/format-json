@@ -70,6 +70,24 @@ export class DialogOrganizationComponent implements OnInit {
     })
   }
 
+  deleteOrg(org_id: string){
+    const confirm = this.dialog.open(DialogConfirmComponent, {
+      data: { title: "Remover usuario", text: `Deseja remover a organizacao?` },
+    })
+    confirm.afterClosed().subscribe({ next: (resp) => {
+        if(resp){
+          this.api.deleteOrganization(this.token, org_id).subscribe({
+            next: () => {
+              this.initOrgs()
+            },
+            error: (err) => {
+              this.snackBar.open(`Erro ${err.error.message}`, 'ok', { duration: 2000 });
+            }
+          });
+        }
+      }});
+  }
+
   removeUser(org_id: string, user: any){
     const confirm = this.dialog.open(DialogConfirmComponent, {
       data: { title: "Remover usuario", text: `Deseja remover o usuario ${user.name} de sua organizacao?` },

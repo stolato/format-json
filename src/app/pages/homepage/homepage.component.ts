@@ -18,8 +18,7 @@ export class HomepageComponent implements OnInit {
     dark_mode: false,
     preview: false,
   };
-  @Output() sidebarStatus = new EventEmitter<boolean>;
-  public updateSidebar = false;
+
   @Output() idChange = new EventEmitter<string>;
   @Input() json = '';
   @Input() preview = this.settings?.preview || false;
@@ -56,7 +55,6 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.settings)
     this.getSettings();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) {
@@ -89,8 +87,8 @@ export class HomepageComponent implements OnInit {
   }
 
   newJson(data: string) {
-    this.visibleData = data;
-    this.initialData = data;
+    this.visibleData = JSON.parse(data);
+    this.initialData = JSON.parse(data);
   }
 
   setPreview(prev: boolean) {
@@ -103,17 +101,8 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  openSideBarEvent($event: boolean) {
-    this.sidebarStatus.emit($event);
-    this.sidebar = $event
-  }
-
   changeId($event: string){
     this.id = $event
-  }
-
-  updateSideBarFunc() {
-    this.updateSidebar = !this.updateSidebar;
   }
 
   setDark($event: boolean) {
@@ -122,7 +111,6 @@ export class HomepageComponent implements OnInit {
 
   getSettings(){
     const token = localStorage.getItem("key")
-    console.log(token);
     if (token) {
       this.apiService.getSettings(token).subscribe((resp) => {
         localStorage.setItem("settings", resp.settings);
