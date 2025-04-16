@@ -43,6 +43,7 @@ export class HeaderComponent implements OnInit {
   @Output() setDarkMode = new EventEmitter<boolean>();
 
   public nameUser = "";
+  @Output() newId = new EventEmitter<string>();
 
   openUpload() {
     const open = this.bottomSheet.open(OpenFileComponent);
@@ -193,6 +194,7 @@ export class HeaderComponent implements OnInit {
           this.json.emit(item.json);
           this.router.navigate([item.id]).then((r) => r);
           this.id = item.id;
+          this.newId.emit(this.id);
         }
       }
     })

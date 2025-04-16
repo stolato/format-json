@@ -1,6 +1,6 @@
 <app-header (json)="newJson($event.toString())" (preview)="setPreview($event)"
             [current_json]="this.visibleData" [id]="id"
-            (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview">
+            (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)">
 </app-header>
 
   <div class="content" [class.dark]="darkMode">

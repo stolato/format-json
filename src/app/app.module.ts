@@ -44,10 +44,13 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatSelectModule} from "@angular/material/select";
 import {DialogAddUserOrgComponent} from "./components/dialogs/dialog-add-user-org/dialog-add-user-org.component";
 import { DialogAddOrgComponent } from './components/dialogs/dialog-add-org/dialog-add-org.component';
+import { SocketIoModule} from "ngx-socket-io";
+
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
 }
+
 
 @NgModule({
   declarations: [
@@ -67,6 +70,10 @@ export function playerFactory() {
     DialogAddOrgComponent,
   ],
   imports: [
+    SocketIoModule.forRoot({ url: 'wss://api.jsonedit.com.br:8002/items', options: {
+      transports: ['websocket'],
+      reconnection: true,
+    } }),
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
