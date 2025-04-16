@@ -24,20 +24,28 @@ import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import { SharedComponent } from './components/shared/shared.component';
+import { SharedComponent } from './components/dialogs/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgxSpinnerModule} from "ngx-spinner";
 import {MatInputModule} from "@angular/material/input";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatMenuModule} from "@angular/material/menu";
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { DialogLoginComponent } from './components/dialog-login/dialog-login.component';
+import { DialogLoginComponent } from './components/dialogs/dialog-login/dialog-login.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatDividerModule} from "@angular/material/divider";
-import { DialogRegisterComponent } from './components/dialog-register/dialog-register.component';
+import { DialogRegisterComponent } from './components/dialogs/dialog-register/dialog-register.component';
 import {HttpRequestInterceptor} from "./services/intercepctor";
-import { DialogConfirmComponent } from './components/dialog-confirm/dialog-confirm.component';
+import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dialog-confirm.component';
+import {DialogListJsonComponent} from "./components/dialogs/dialog-list-json/dialog-list-json.component";
+import {MatTableModule} from "@angular/material/table";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import { DialogOrganizationComponent } from './components/dialogs/dialog-organization/dialog-organization.component';
+import {MatSortModule} from "@angular/material/sort";
+import {MatSelectModule} from "@angular/material/select";
+import {DialogAddUserOrgComponent} from "./components/dialogs/dialog-add-user-org/dialog-add-user-org.component";
+import { DialogAddOrgComponent } from './components/dialogs/dialog-add-org/dialog-add-org.component';
 import { SocketIoModule} from "ngx-socket-io";
+
 
 export function playerFactory() {
   return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
@@ -53,10 +61,13 @@ export function playerFactory() {
     OpenFileComponent,
     NotfoundComponent,
     SharedComponent,
-    SidebarComponent,
     DialogLoginComponent,
     DialogRegisterComponent,
     DialogConfirmComponent,
+    DialogListJsonComponent,
+    DialogOrganizationComponent,
+    DialogAddUserOrgComponent,
+    DialogAddOrgComponent,
   ],
   imports: [
     SocketIoModule.forRoot({ url: 'wss://api.jsonedit.com.br:8002/items', options: {
@@ -88,7 +99,11 @@ export function playerFactory() {
     MatInputModule,
     MatChipsModule,
     MatSlideToggleModule,
-    LottieModule.forRoot({ player: playerFactory })
+    LottieModule.forRoot({player: playerFactory}),
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatSelectModule
   ],
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },

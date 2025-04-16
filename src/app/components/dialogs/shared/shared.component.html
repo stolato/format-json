@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Compartilhar JSON</h2>
+<mat-dialog-content class="mat-typography">
+  <h3 *ngIf="!link">Deseja compartilhar esse json??</h3>
+  <form [formGroup]="sendForm" *ngIf="!link && token">
+    <div class="name">
+      <mat-form-field class="example-full-width">
+        <mat-label>Nome do Json</mat-label>
+        <input formControlName="name" matInput placeholder="Ex. integracao google" value="Sushi">
+      </mat-form-field>
+    </div>
+    <div class="organization">
+      <mat-form-field>
+        <mat-label>Organizacao</mat-label>
+        <mat-select formControlName="organization_id">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let org of organization" [value]="org.id">
+            {{ org.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+  <div class="loading" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  <div *ngIf="link">
+    <h3>
+      Link gerado:
+    </h3>
+    <p>
+      <mat-form-field class="example-full-width">
+        <mat-label>Link</mat-label>
+        <input type="tel" value="{{base_url}}/{{link}}" readonly matInput>
+        <mat-icon matSuffix (click)="copy()">content_copy</mat-icon>
+      </mat-form-field>
+    </p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Fechar</button>
+  <button mat-button (click)="shared()" cdkFocusInitial>Compartilhar</button>
+</mat-dialog-actions>

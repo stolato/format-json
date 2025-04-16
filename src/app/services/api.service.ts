@@ -14,7 +14,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  shareJson(json: string, ip: string, token: any = null) {
+  shareJson(json: string, ip: string, name: string, org_id: string, token: any = null) {
     let config = {};
     if(token) {
       config = { headers: new HttpHeaders({
@@ -24,6 +24,8 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/items`, {
       json: JSON.stringify(json),
       ip: ip,
+      name: name,
+      organization_id: org_id
     }, config);
   }
 
@@ -83,6 +85,41 @@ export class ApiService {
       'Authorization': `Bearer ${token}`,
     });
     return this.http.get(`${this.baseUrl}/user/settings`, { headers: headers });
+  }
+
+  getOrganization(token: string | null) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.get(`${this.baseUrl}/organization`, { headers: headers });
+  }
+
+  addOrganization(token: string | null, name: string) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.post(`${this.baseUrl}/organization`, { name: name},  { headers: headers });
+  }
+
+  deleteOrganization(token: string | null, id: string) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.delete(`${this.baseUrl}/organization/${id}`, { headers: headers });
+  }
+
+  addUserToOrganization(token: string | null, org_id: string, email: string) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.post(`${this.baseUrl}/organization/${org_id}/users`, { email: email},  { headers: headers });
+  }
+
+  removeUserToOrganization(token: string | null, org_id: string, userid: string) : Observable<any>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    })
+    return this.http.delete(`${this.baseUrl}/organization/${org_id}/users/${userid}`,  { headers: headers });
   }
 
   setSettings(token: string, data: object): Observable<any>{

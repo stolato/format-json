@@ -2,15 +2,17 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { OpenFileComponent } from "../open-file/open-file.component";
 import { MatDialog } from "@angular/material/dialog";
-import { SharedComponent } from "../shared/shared.component";
+import { SharedComponent } from "../dialogs/shared/shared.component";
 import { ApiService } from "../../services/api.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DialogLoginComponent } from "../dialog-login/dialog-login.component";
-import { DialogRegisterComponent } from "../dialog-register/dialog-register.component";
+import { DialogLoginComponent } from "../dialogs/dialog-login/dialog-login.component";
+import { DialogRegisterComponent } from "../dialogs/dialog-register/dialog-register.component";
 import { JsonDefault } from "../../services/json-default";
-import { DialogConfirmComponent } from "../dialog-confirm/dialog-confirm.component";
+import { DialogConfirmComponent } from "../dialogs/dialog-confirm/dialog-confirm.component";
+import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-json.component";
+import {DialogOrganizationComponent} from "../dialogs/dialog-organization/dialog-organization.component";
 
 @Component({
   selector: "app-header",
@@ -31,18 +33,17 @@ export class HeaderComponent implements OnInit {
     dark_mode: false,
     preview: false,
   };
-  @Output() json = new EventEmitter<string | object>();
+  @Output() json = new EventEmitter<string>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = "";
   @Input() id = "";
   @Input() isChecked = this.settings?.preview || false;
   @Input() DarkMode = this.settings?.dark_mode || false;
-  @Input() sideBarStatus = false;
-  @Output() updateSideBar = new EventEmitter<boolean>();
   @Output() setDarkMode = new EventEmitter<boolean>();
 
   public nameUser = "";
+  @Output() newId = new EventEmitter<string>();
 
   openUpload() {
     const open = this.bottomSheet.open(OpenFileComponent);
@@ -51,10 +52,6 @@ export class HeaderComponent implements OnInit {
         this.json.emit(data);
       }
     });
-  }
-
-  open() {
-    window.open("https://github.com/stolato/format-json", "_blank");
   }
 
   shareJson() {
@@ -88,18 +85,12 @@ export class HeaderComponent implements OnInit {
         this.snackBar.open("json salvo!!", "Ok", {
           duration: 3000,
         });
-        this.updateSideBar.emit(true);
         this.loading.hide();
       },
       () => {
         this.loading.hide();
       },
     );
-  }
-
-  openSidebarClick() {
-    this.sideBarStatus = !this.sideBarStatus;
-    this.openSideBar.emit(this.sideBarStatus);
   }
 
   openLogin() {
@@ -111,7 +102,6 @@ export class HeaderComponent implements OnInit {
       next: (resp) => {
         if (resp) {
           this.nameUser = resp.name;
-          this.updateSideBar.emit(true);
           this.getSettings();
         }
       },
@@ -132,7 +122,6 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.nameUser = "";
     localStorage.clear();
-    this.updateSideBar.emit(true);
   }
 
   newJson() {
@@ -154,7 +143,7 @@ export class HeaderComponent implements OnInit {
   private clear() {
     this.id = "";
     this.router.navigate(["/"]).then((r) => r);
-    this.json.emit(JsonDefault.default());
+    this.json.emit(JSON.stringify(JsonDefault.default()));
   }
 
   setDark() {
@@ -191,5 +180,31 @@ export class HeaderComponent implements OnInit {
         }
       });
     }
+  }
+
+  openList(){
+    const list = this.dialog.open(DialogListJsonComponent, {
+      width: "70%",
+      disableClose: false,
+    });
+    list.afterClosed().subscribe({
+      next: (resp) => {
+        if (resp?.item) {
+          const item = JSON.parse(resp.item);
+          this.json.emit(item.json);
+          this.router.navigate([item.id]).then((r) => r);
+          this.id = item.id;
+          this.newId.emit(this.id);
+        }
+      }
+    })
+  }
+
+  openOrg() {
+    this.dialog.open(DialogOrganizationComponent, {
+      width: "80%",
+      height: "80%",
+      disableClose: false,
+    })
   }
 }

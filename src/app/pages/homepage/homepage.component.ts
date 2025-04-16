@@ -15,9 +15,11 @@ import {JsonDefault} from "../../services/json-default";
 })
 export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};
-  private settings = JSON.parse(<string>localStorage.getItem('settings'));
-  @Output() sidebarStatus = new EventEmitter<boolean>;
-  public updateSidebar = false;
+  private settings = {
+    dark_mode: false,
+    preview: false,
+  };
+
   @Output() idChange = new EventEmitter<string>;
   @Input() json = '';
   @Input() preview = this.settings?.preview || false;
@@ -62,27 +64,7 @@ export class HomepageComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id){
       this.loading.show();
-      this.socket.joinChannel(this.id);
-      this.socket.getMessage('new-json').subscribe((resp: any) => {
-        if(!this.timeOut){
-          this.initialData = JSON.parse(resp);
-          this.snackBar.open('atulizado', 'OK', {
-            duration: 1000,
-          })
-        }
-        this.visibleData = JSON.parse(resp);
-        this.write = 0;
-        this.timeOut = 0;
-      })
-      this.socket.getMessage('write').subscribe(() => {
-        if(!this.timeOut && !this.write){
-          this.snackBar.open('alguem esta digitando...', '', {
-            verticalPosition: "top",
-            panelClass: ['blue']
-          });
-          this.write = 1;
-        }
-      })
+      this.joinChannel()
       this.apiService.getJson(this.id).subscribe((resp: any) => {
         this.initialData = JSON.parse(resp.json);
         this.visibleData = JSON.parse(resp.json);
@@ -111,8 +93,8 @@ export class HomepageComponent implements OnInit {
   }
 
   newJson(data: string) {
-    this.visibleData = data;
-    this.initialData = data;
+    this.visibleData = JSON.parse(data);
+    this.initialData = JSON.parse(data);
   }
 
   setPreview(prev: boolean) {
@@ -132,17 +114,37 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  openSideBarEvent($event: boolean) {
-    this.sidebarStatus.emit($event);
-    this.sidebar = $event
+  joinChannel(){
+    this.socket.joinChannel(this.id);
+    this.socket.getMessage('new-json').subscribe((resp: any) => {
+      if(!this.timeOut){
+        this.initialData = JSON.parse(resp);
+        this.snackBar.open('atulizado', 'OK', {
+          duration: 1000,
+        })
+      }
+      this.visibleData = JSON.parse(resp);
+      this.write = 0;
+      this.timeOut = 0;
+    })
+    this.socket.getMessage('write').subscribe(() => {
+      if(!this.timeOut && !this.write){
+        this.snackBar.open('alguem esta digitando...', '', {
+          verticalPosition: "top",
+          panelClass: ['blue']
+        });
+        this.write = 1;
+      }
+    })
   }
 
   changeId($event: string){
+    if (this.id){
+      this.socket.disconnectChannel(this.id)
+    }
     this.id = $event
-  }
 
-  updateSideBarFunc() {
-    this.updateSidebar = !this.updateSidebar;
+    this.joinChannel()
   }
 
   setDark($event: boolean) {
@@ -163,5 +165,9 @@ export class HomepageComponent implements OnInit {
         }
       });
     }
+  }
+
+  open() {
+    window.open("https://github.com/stolato/format-json", "_blank");
   }
 }

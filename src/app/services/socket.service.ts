@@ -16,6 +16,10 @@ export class SocketService {
     this.socket.emit('events', JSON.stringify({ room: room, event: event, data: data}));
   }
 
+  disconnectChannel(room: string) {
+    this.socket.emit('disconnect', room);
+  }
+
   getMessage(event: string) {
     return this.socket.fromEvent(event);
   }

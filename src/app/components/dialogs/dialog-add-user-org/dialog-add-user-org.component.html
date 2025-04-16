@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Adicionar Usuario a Organizacao</h1>
+<mat-dialog-content class="mat-typography">
+<form [formGroup]="sendForm">
+  <div class="name">
+    <mat-form-field class="example-full-width">
+      <mat-label>E-mail do usuario</mat-label>
+      <input formControlName="email" matInput placeholder="Ex. teste@teste.com" value="teste@teste.com">
+    </mat-form-field>
+  </div>
+</form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button matDialogClose>Voltar</button>
+  <button mat-button cdkFocusInitial (click)="send()">Adicionar</button>
+</mat-dialog-actions>
