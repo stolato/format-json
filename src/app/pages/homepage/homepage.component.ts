@@ -140,8 +140,8 @@ export class HomepageComponent implements OnInit, OnDestroy {
     if (!d.isTrusted) {
       if (this.id) {
         this.socket.sendMessage('', this.id, 'write');
-        clearTimeout(this.timeOut);
-        this.timeOut = setTimeout(() => {
+        window.clearTimeout(this.timeOut);
+        this.timeOut = window.setTimeout(() => {
           this.socket.sendMessage(JSON.stringify(d), this.id, 'new-json');
         }, 1000);
       }
