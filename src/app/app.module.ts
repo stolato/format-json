@@ -4,7 +4,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {PrettyJsonPipe} from "./pipes/prettyjson.pipe";
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AngJsoneditorModule} from "@maaxgr/ang-jsoneditor";
 import { HomepageComponent } from './pages/homepage/homepage.component';
@@ -18,7 +17,6 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import { OpenFileComponent } from './components/open-file/open-file.component';
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 import {MatFormFieldModule} from "@angular/material/form-field";
-import { NotfoundComponent } from './pages/notfound/notfound.component';
 import {provideLottieOptions} from "ngx-lottie";
 import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
@@ -59,7 +57,7 @@ import { SocketIoModule} from "ngx-socket-io";
         DialogListJsonComponent,
         DialogOrganizationComponent,
         DialogAddUserOrgComponent,
-        DialogAddOrgComponent,
+        DialogAddOrgComponent
     ],
     bootstrap: [AppComponent], imports: [SocketIoModule.forRoot({
         url: 'wss://api.jsonedit.com.br:8002/items', options: {
@@ -69,7 +67,6 @@ import { SocketIoModule} from "ngx-socket-io";
     }),
         BrowserModule,
         AppRoutingModule,
-        BrowserAnimationsModule,
         NgxSpinnerModule,
         MatSidenavModule,
         MatMenuModule,

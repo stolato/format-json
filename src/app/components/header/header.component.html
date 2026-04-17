@@ -7,33 +7,53 @@
   <button mat-icon-button (click)="setDark()" matTooltip='Dark Mode'>
     <mat-icon>{{ DarkMode ? 'wb_sunny' : 'nights_stay' }}</mat-icon>
   </button>
-  <button *ngIf="id" mat-icon-button (click)="newJson()" class="example-icon favorite-icon" matTooltip='Novo JSON'>
-    <mat-icon>add_circle</mat-icon>
-  </button>
-  <button *ngIf="id" mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" matTooltip='Salvar JSON'>
-    <mat-icon>save</mat-icon>
-  </button>
-  <button *ngIf="!id" mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" matTooltip='Compartilhar'>
-    <mat-icon>share</mat-icon>
-  </button>
+  @if (id) {
+    <button mat-icon-button (click)="newJson()" class="example-icon favorite-icon" matTooltip='Novo JSON'>
+      <mat-icon>add_circle</mat-icon>
+    </button>
+  }
+  @if (id) {
+    <button mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" matTooltip='Salvar JSON'>
+      <mat-icon>save</mat-icon>
+    </button>
+  }
+  @if (!id) {
+    <button mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" matTooltip='Compartilhar'>
+      <mat-icon>share</mat-icon>
+    </button>
+  }
   <button (click)="openUpload()" matTooltip="Abrir Arquivo" [matTooltipPosition]="'above'" mat-icon-button
-          class="example-icon" aria-label="Example icon-button with share icon">
+    class="example-icon" aria-label="Example icon-button with share icon">
     <mat-icon>upload</mat-icon>
   </button>
-  <button *ngIf="nameUser !== ''" mat-icon-button matTooltip="Meus JSONs" (click)="openList()" [matTooltipPosition]="'above'" class="example-icon">
-    <mat-icon>data_object</mat-icon>
-  </button>
-  <button *ngIf="nameUser !== ''" mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
-    <mat-icon>group</mat-icon>
-  </button>
+  @if (nameUser !== '') {
+    <button mat-icon-button matTooltip="Meus JSONs" (click)="openList()" [matTooltipPosition]="'above'" class="example-icon">
+      <mat-icon>data_object</mat-icon>
+    </button>
+  }
+  @if (nameUser !== '') {
+    <button mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
+      <mat-icon>group</mat-icon>
+    </button>
+  }
   <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
     <mat-icon>person</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
-    <button *ngIf="nameUser === ''" mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
-    <button *ngIf="nameUser === ''" mat-menu-item (click)="openRegister()"><mat-icon>how_to_reg</mat-icon> Cadastro</button>
-    <button *ngIf="nameUser !== ''" mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
-    <mat-divider *ngIf="nameUser !== ''"></mat-divider>
-    <button *ngIf="nameUser !== ''" mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
+    @if (nameUser === '') {
+      <button mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
+    }
+    @if (nameUser === '') {
+      <button mat-menu-item (click)="openRegister()"><mat-icon>how_to_reg</mat-icon> Cadastro</button>
+    }
+    @if (nameUser !== '') {
+      <button mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
+    }
+    @if (nameUser !== '') {
+      <mat-divider></mat-divider>
+    }
+    @if (nameUser !== '') {
+      <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
+    }
   </mat-menu>
 </mat-toolbar>

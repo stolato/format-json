@@ -1,20 +1,24 @@
 <app-header (json)="newJson($event.toString())" (preview)="setPreview($event)"
-            [current_json]="this.visibleData" [id]="id"
-            (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)">
+  [current_json]="this.visibleData" [id]="id"
+  (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)">
 </app-header>
 
-  <div class="content" [class.dark]="darkMode">
-    <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
-    <json-editor *ngIf="preview" [options]="editorOptions_view" [data]="visibleData"
-                 (change)="showJson($event)"></json-editor>
-    <div *ngIf="!preview" class="formater">
+<div class="content" [class.dark]="darkMode">
+  <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+  @if (preview) {
+    <json-editor [options]="editorOptions_view" [data]="visibleData"
+    (change)="showJson($event)"></json-editor>
+  }
+  @if (!preview) {
+    <div class="formater">
       <pre [innerHTML]="visibleData | prettyjson"></pre>
     </div>
-    <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
-            mat-icon-button aria-label="Example icon-button with a heart icon">
-      <mat-icon>content_copy</mat-icon>
-    </button>
-  </div>
+  }
+  <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
+    mat-icon-button aria-label="Example icon-button with a heart icon">
+    <mat-icon>content_copy</mat-icon>
+  </button>
+</div>
 <footer>
   <div class="term">
     Todos os diretios reservados a Tilt Tecnologia - 2024
