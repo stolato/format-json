@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "formatjson:build:production"
+              "buildTarget": "formatjson:build:production"
             },
             "development": {
-              "browserTarget": "formatjson:build:development"
+              "buildTarget": "formatjson:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +82,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "formatjson:build"
+            "buildTarget": "formatjson:build"
           }
         },
         "test": {
