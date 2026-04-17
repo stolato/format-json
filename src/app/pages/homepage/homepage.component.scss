@@ -4,11 +4,34 @@
 :host ::ng-deep json-editor jsoneditor-outer {
   height: 100%;
   width: 100%;
+  background-color: transparent !important;
 }
 // DARK
   :host ::ng-deep .dark .jsoneditor {
-    border: var(--ds-surface) 1px solid;
+    border: none;
+    border-right: 1px solid #333333;
+    border-radius: 0;
+    background-color: #1e1e1e;
+    overflow: hidden;
+    box-shadow: none;
   }
+
+:host ::ng-deep .jsoneditor {
+  border-radius: 0 !important;
+  border: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+:host ::ng-deep .jsoneditor-menu {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+:host ::ng-deep .jsoneditor-text, :host ::ng-deep .ace_editor * {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
 
 :host ::ng-deep .dark .ace-jsoneditor .ace_marker-layer .ace_selection {
   background: rgba(255, 255, 255, 0.1);
@@ -36,6 +59,7 @@
   }
 
   :host ::ng-deep .dark .jsoneditor-outer {
+    background: #272727;
     .ace_gutter{
       background: #2b2d30;
       color: #5e5b4d;
@@ -104,10 +128,28 @@
   }
 
 :host ::ng-deep .dark .jsoneditor-frame {
-  border-radius: 20px;
+  border-radius: 0;
 }
 //DARK
-textarea.jsoneditor-text{min-height:350px;}
+textarea.jsoneditor-text,
+:host ::ng-deep .ace_editor {
+  min-height: 350px;
+  height: 100% !important;
+  border: none !important;
+  outline: none !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+:host ::ng-deep .jsoneditor-value,
+:host ::ng-deep .jsoneditor-field,
+:host ::ng-deep .jsoneditor-readonly {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+:host ::ng-deep .dark textarea.jsoneditor-text {
+  background-color: #1e1e1e;
+  color: #c9d1d9;
+}
 
 :host ::ng-deep .jsoneditor-poweredBy{
   visibility: hidden;
@@ -131,22 +173,56 @@ textarea.jsoneditor-text{min-height:350px;}
     }
   }
 
-footer{
-  color: #FFF;
-  height: 20px;
-  background-color: var(--ds-surface-raised);
+footer {
+  color: #fff;
+  height: 24px;
+  background-color: var(--primary-accent, #6c5ce7);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
-  font-size: 12px;
-  padding: 10px;
-  .right{
+  font-size: 11.5px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0 10px;
+
+  .left, .right {
     display: flex;
     align-items: center;
-    .social{
-      margin-right: 15px;
-      margin-top: 10px;
+    gap: 15px;
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: default;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
     }
   }
+
+  .social {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+:host ::ng-deep .dark footer {
+  background-color: var(--primary-accent, #6c5ce7);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
 }

@@ -1,12 +1,14 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, SecurityContext} from '@angular/core';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Pipe({
     name: 'prettyjson',
-    pure: true,
-    standalone: false
+    pure: true
 })
 export class PrettyJsonPipe implements PipeTransform {
-  transform(value: object): string {
+  constructor(private sanitizer: DomSanitizer) {}
+
+  transform(value: object): SafeHtml {
     if (!value) {
       return ''
     }
@@ -15,11 +17,11 @@ export class PrettyJsonPipe implements PipeTransform {
        * check and try to parse value if it's not an object
        * if it fails to parse which means it is an invalid JSON
        */
-      return this.applyColors(
+      return this.sanitizer.bypassSecurityTrustHtml(this.applyColors(
         typeof value === 'object' ? value : JSON.parse(value)
-      );
+      ));
     } catch (e) {
-      return this.applyColors({error: 'Invalid JSON'});
+      return this.sanitizer.bypassSecurityTrustHtml(this.applyColors({error: 'Invalid JSON'}));
     }
   }
 

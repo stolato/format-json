@@ -12,9 +12,8 @@ describe('HomepageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HomepageComponent ],
-      imports: [MatSnackBarModule, MatBottomSheetModule, HeaderComponent],
-    })
+    imports: [MatSnackBarModule, MatBottomSheetModule, HeaderComponent, HomepageComponent],
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(HomepageComponent);

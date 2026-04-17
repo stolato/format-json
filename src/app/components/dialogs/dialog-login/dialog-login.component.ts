@@ -1,14 +1,20 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {ApiService} from "../../../services/api.service";
+import {AuthService} from "../../../services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {MatDialogRef} from "@angular/material/dialog";
+import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-dialog-login',
     templateUrl: './dialog-login.component.html',
     styleUrls: ['./dialog-login.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatProgressSpinner, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose]
 })
 export class DialogLoginComponent {
   form: FormGroup | any;
@@ -18,6 +24,7 @@ export class DialogLoginComponent {
     private dialog: MatDialogRef<DialogLoginComponent>,
     private formBuilder: FormBuilder,
     private api: ApiService,
+    private auth: AuthService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -42,7 +49,7 @@ export class DialogLoginComponent {
       this.loading = true;
       this.api.auth(this.form.get("email").value, this.form.get("password").value).subscribe({
         next: (resp: any) => {
-          localStorage.setItem("key", resp.token);
+          this.auth.setToken(resp.token);
           localStorage.setItem("refresh", resp.refresh_token);
           this.getMe(resp.token);
           this.snackBar.open("Logado com sucesso!", "OK", {

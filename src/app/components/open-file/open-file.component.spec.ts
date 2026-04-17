@@ -8,8 +8,8 @@ describe('OpenFileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OpenFileComponent ],
-    })
+    imports: [OpenFileComponent],
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(OpenFileComponent);

@@ -8,8 +8,8 @@ describe('DialogAddOrgComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DialogAddOrgComponent]
-    });
+    imports: [DialogAddOrgComponent]
+});
     fixture = TestBed.createComponent(DialogAddOrgComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

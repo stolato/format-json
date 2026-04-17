@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {NgxSpinnerService} from "ngx-spinner";
 
@@ -8,7 +8,7 @@ import {NgxSpinnerService} from "ngx-spinner";
     selector: 'app-open-file',
     templateUrl: './open-file.component.html',
     styleUrls: ['./open-file.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule]
 })
 
 export class OpenFileComponent implements OnInit {
