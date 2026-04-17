@@ -8,8 +8,8 @@ describe('DialogListJsonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DialogListJsonComponent]
-    });
+    imports: [DialogListJsonComponent]
+});
     fixture = TestBed.createComponent(DialogListJsonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

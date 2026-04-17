@@ -1,14 +1,22 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Component, Inject, OnInit, ChangeDetectorRef} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
 import {ApiService} from "../../../services/api.service";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-shared',
-  templateUrl: './shared.component.html',
-  styleUrls: ['./shared.component.scss']
+    selector: 'app-shared',
+    templateUrl: './shared.component.html',
+    styleUrls: ['./shared.component.scss'],
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatProgressSpinner, MatIcon, MatSuffix, MatDialogActions, MatButton]
 })
 export class SharedComponent implements OnInit {
   constructor(
@@ -17,7 +25,8 @@ export class SharedComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.json = data.json;
     this.id = data.id;
@@ -30,7 +39,7 @@ export class SharedComponent implements OnInit {
   id: '';
   loading = false;
   public base_url = 'https://jsonedit.com.br';
-  public organization: [] | any;
+  public organization: any[] = [];
   token: string | any;
 
   shared() {
@@ -45,10 +54,18 @@ export class SharedComponent implements OnInit {
         this.sendForm.get("name").value,
         this.sendForm.get("organization_id").value,
         token
-      ).subscribe((resp: any) => {
-        this.id = resp.InsertedID;
-        this.link = resp.InsertedID;
-        this.loading = false;
+      ).subscribe({
+        next: (resp: any) => {
+          this.id = resp.InsertedID;
+          this.link = resp.InsertedID;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.loading = false;
+          this.cdr.detectChanges();
+          console.error(err);
+        }
       });
 
       //});
@@ -73,15 +90,18 @@ export class SharedComponent implements OnInit {
     })
     this.token = localStorage.getItem("key")
     if (this.token) {
-      this.apiService.getOrganization(this.token).subscribe({
-        next: (resp) => {
-          this.organization = resp;
-          console.log(resp);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      })
+      setTimeout(() => {
+        this.apiService.getOrganization(this.token).subscribe({
+          next: (resp: any) => {
+            this.organization = resp;
+            this.cdr.detectChanges();
+            console.log(resp);
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        })
+      }, 100);
     }
   }
 }

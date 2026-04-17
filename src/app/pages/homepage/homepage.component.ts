@@ -1,29 +1,35 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {JsonEditorOptions} from "@maaxgr/ang-jsoneditor";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {ActivatedRoute} from "@angular/router";
-import {ApiService} from "../../services/api.service";
-import {SocketService} from "../../services/socket.service";
-import {NgxSpinnerService} from "ngx-spinner";
-import {JsonDefault} from "../../services/json-default";
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, ChangeDetectorRef } from '@angular/core';
+import { JsonEditorOptions, AngJsoneditorModule } from "@maaxgr/ang-jsoneditor";
+import { Clipboard } from "@angular/cdk/clipboard";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { ActivatedRoute } from "@angular/router";
+import { ApiService } from "../../services/api.service";
+import { SocketService } from "../../services/socket.service";
+import { NgxSpinnerService, NgxSpinnerComponent } from "ngx-spinner";
+import { JsonDefault } from "../../services/json-default";
+import { AuthService } from "../../services/auth.service";
+import { Subscription } from "rxjs";
+import { HeaderComponent } from '../../components/header/header.component';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { PrettyJsonPipe } from '../../pipes/prettyjson.pipe';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+  styleUrls: ['./homepage.component.scss'],
+  imports: [HeaderComponent, AngJsoneditorModule, MatIconButton, MatTooltip, MatIcon, NgxSpinnerComponent, PrettyJsonPipe]
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent implements OnInit, OnDestroy {
   public dummyJsonObject = {};
-  private settings = {
-    dark_mode: false,
-    preview: false,
-  };
 
   @Output() idChange = new EventEmitter<string>;
   @Input() json = '';
-  @Input() preview = this.settings?.preview || false;
-  @Input() darkMode = this.settings?.dark_mode || false;
+  @Input() preview = false;
+  @Input() darkMode = false;
+
+  private subs = new Subscription();
 
   timeOut = 0;
   title = 'formatjson';
@@ -37,6 +43,10 @@ export class HomepageComponent implements OnInit {
   public id: any;
   public showFiller = false;
   public sidebar: boolean = false;
+  public hasData: boolean = false;
+  public isUnsaved: boolean = false;
+
+  public date = new Date().getFullYear()
 
   constructor(
     private clipboard: Clipboard,
@@ -45,6 +55,8 @@ export class HomepageComponent implements OnInit {
     private apiService: ApiService,
     private loading: NgxSpinnerService,
     private socket: SocketService,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.mode = 'code';
@@ -60,28 +72,43 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getSettings();
+    this.subs.add(
+      this.auth.settings$.subscribe(settings => {
+        this.preview = settings.preview;
+        this.darkMode = settings.dark_mode;
+        this.cdr.detectChanges();
+      })
+    );
+
     this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id){
+    if (this.id) {
       this.loading.show();
       this.joinChannel()
-      this.apiService.getJson(this.id).subscribe((resp: any) => {
-        this.initialData = JSON.parse(resp.json);
-        this.visibleData = JSON.parse(resp.json);
-        this.loading.hide();
-      }, () => {
-        this.loading.hide();
-        this.snackBar.open(
-          'Ops, não foi possivel recuperar o json solicitado',
-          'Ok',
-          {duration: 3000}
-        );
+      this.apiService.getJson(this.id).subscribe({
+        next: (resp: any) => {
+          this.initialData = JSON.parse(resp.json);
+          this.visibleData = JSON.parse(resp.json);
+          this.hasData = true;
+          this.isUnsaved = false;
+          this.loading.hide();
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.loading.hide();
+          this.snackBar.open(
+            'Ops, não foi possivel recuperar o json solicitado',
+            'Ok',
+            { duration: 3000 }
+          );
+        }
       });
-    }else{
+    } else {
 
       const init = JsonDefault.default();
       this.initialData = init;
       this.visibleData = init;
+      this.hasData = true;
+      this.cdr.detectChanges();
     }
   }
 
@@ -93,53 +120,79 @@ export class HomepageComponent implements OnInit {
   }
 
   newJson(data: string) {
-    this.visibleData = JSON.parse(data);
-    this.initialData = JSON.parse(data);
+    this.hasData = false;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.visibleData = JSON.parse(data);
+      this.initialData = JSON.parse(data);
+      this.hasData = true;
+      this.isUnsaved = false;
+      this.cdr.detectChanges();
+    });
   }
 
   setPreview(prev: boolean) {
     this.preview = prev;
+    this.cdr.detectChanges();
   }
 
   showJson(d: Event) {
     if (!d.isTrusted) {
-      if(this.id) {
+      if (this.id) {
         this.socket.sendMessage('', this.id, 'write');
-        clearTimeout(this.timeOut);
-        this.timeOut = setTimeout(()=> {
+        window.clearTimeout(this.timeOut);
+        this.timeOut = window.setTimeout(() => {
           this.socket.sendMessage(JSON.stringify(d), this.id, 'new-json');
         }, 1000);
       }
-      this.visibleData = d;
+      setTimeout(() => {
+        this.visibleData = d;
+        if (this.id) {
+          this.isUnsaved = true;
+        }
+      });
     }
   }
 
-  joinChannel(){
-    this.socket.joinChannel(this.id);
-    this.socket.getMessage('new-json').subscribe((resp: any) => {
-      if(!this.timeOut){
-        this.initialData = JSON.parse(resp);
-        this.snackBar.open('atulizado', 'OK', {
-          duration: 1000,
-        })
-      }
-      this.visibleData = JSON.parse(resp);
-      this.write = 0;
-      this.timeOut = 0;
-    })
-    this.socket.getMessage('write').subscribe(() => {
-      if(!this.timeOut && !this.write){
-        this.snackBar.open('alguem esta digitando...', '', {
-          verticalPosition: "top",
-          panelClass: ['blue']
-        });
-        this.write = 1;
-      }
-    })
+  onSaved() {
+    this.isUnsaved = false;
+    this.cdr.detectChanges();
   }
 
-  changeId($event: string){
-    if (this.id){
+  joinChannel() {
+    this.socket.joinChannel(this.id);
+    this.subs.add(
+      this.socket.getMessage('new-json').subscribe((resp: any) => {
+        setTimeout(() => {
+          if (!this.timeOut) {
+            this.initialData = JSON.parse(resp);
+            this.snackBar.open('atualizado', 'OK', {
+              duration: 1000,
+            });
+          }
+          this.visibleData = JSON.parse(resp);
+          this.isUnsaved = false;
+          this.write = 0;
+          this.timeOut = 0;
+          this.cdr.detectChanges();
+        });
+      })
+    );
+    this.subs.add(
+      this.socket.getMessage('write').subscribe(() => {
+        if (!this.timeOut && !this.write) {
+          this.snackBar.open('alguem esta digitando...', '', {
+            verticalPosition: "top",
+            panelClass: ['blue']
+          });
+          this.write = 1;
+        }
+      })
+    );
+  }
+
+  changeId($event: string) {
+    if (this.id) {
       this.socket.disconnectChannel(this.id)
     }
     this.id = $event
@@ -149,21 +202,13 @@ export class HomepageComponent implements OnInit {
 
   setDark($event: boolean) {
     this.darkMode = $event;
+    this.cdr.detectChanges();
   }
 
-  getSettings(){
-    const token = localStorage.getItem("key")
-    if (token) {
-      this.apiService.getSettings(token).subscribe((resp) => {
-        localStorage.setItem("settings", resp.settings);
-        const settings = JSON.parse(resp.settings);
-        if(settings.preview) {
-          this.preview = settings.preview;
-        }
-        if(settings.dark_mode) {
-          this.darkMode = settings.dark_mode;
-        }
-      });
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+    if (this.id) {
+      this.socket.disconnectChannel(this.id);
     }
   }
 

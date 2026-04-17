@@ -17,7 +17,7 @@ export class SocketService {
   }
 
   disconnectChannel(room: string) {
-    this.socket.emit('disconnect', room);
+    this.socket.emit('leave', room);
   }
 
   getMessage(event: string) {

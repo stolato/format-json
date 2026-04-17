@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef, HostListener } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { OpenFileComponent } from "../open-file/open-file.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -13,11 +13,19 @@ import { JsonDefault } from "../../services/json-default";
 import { DialogConfirmComponent } from "../dialogs/dialog-confirm/dialog-confirm.component";
 import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-json.component";
 import {DialogOrganizationComponent} from "../dialogs/dialog-organization/dialog-organization.component";
+import { AuthService } from "../../services/auth.service";
+import { MatToolbar } from "@angular/material/toolbar";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { MatMenuTrigger, MatMenu, MatMenuItem } from "@angular/material/menu";
+import { MatDivider } from "@angular/material/divider";
 
 @Component({
-  selector: "app-header",
-  templateUrl: "./header.component.html",
-  styleUrls: ["./header.component.scss"],
+    selector: "app-header",
+    templateUrl: "./header.component.html",
+    styleUrls: ["./header.component.scss"],
+    imports: [MatToolbar, MatIconButton, MatTooltip, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem, MatDivider]
 })
 export class HeaderComponent implements OnInit {
   constructor(
@@ -27,20 +35,27 @@ export class HeaderComponent implements OnInit {
     private snackBar: MatSnackBar,
     private router: Router,
     private loading: NgxSpinnerService,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  private settings = JSON.parse(<string>localStorage.getItem("settings")) || {
-    dark_mode: false,
-    preview: false,
-  };
   @Output() json = new EventEmitter<string>();
   @Output() preview = new EventEmitter<boolean>();
   @Output() openSideBar = new EventEmitter<boolean>();
   @Input() current_json = "";
   @Input() id = "";
-  @Input() isChecked = this.settings?.preview || false;
-  @Input() DarkMode = this.settings?.dark_mode || false;
+  @Input() isChecked = false;
+  @Input() DarkMode = false;
   @Output() setDarkMode = new EventEmitter<boolean>();
+  @Output() saved = new EventEmitter<void>();
+
+  @HostListener('window:keydown.control.s', ['$event'])
+  saveShortcut(event: Event) {
+    if (this.id) {
+      event.preventDefault();
+      this.saveJson();
+    }
+  }
 
   public nameUser = "";
   @Output() newId = new EventEmitter<string>();
@@ -49,7 +64,9 @@ export class HeaderComponent implements OnInit {
     const open = this.bottomSheet.open(OpenFileComponent);
     open.afterDismissed().subscribe((data) => {
       if (data) {
-        this.json.emit(data);
+        setTimeout(() => {
+          this.json.emit(data);
+        });
       }
     });
   }
@@ -73,24 +90,23 @@ export class HeaderComponent implements OnInit {
   test() {
     this.isChecked = !this.isChecked;
     this.preview.emit(this.isChecked);
-    this.settings.preview = this.isChecked;
-    this.updateSettings();
-    localStorage.setItem("settings", JSON.stringify(this.settings));
+    this.auth.updateSettings({ dark_mode: this.DarkMode, preview: this.isChecked });
   }
 
   saveJson() {
     this.loading.show();
-    this.apiService.updateJson(this.id, this.current_json).subscribe(
-      () => {
+    this.apiService.updateJson(this.id, this.current_json).subscribe({
+      next: () => {
         this.snackBar.open("json salvo!!", "Ok", {
           duration: 3000,
         });
+        this.saved.emit();
         this.loading.hide();
       },
-      () => {
+      error: () => {
         this.loading.hide();
-      },
-    );
+      }
+    });
   }
 
   openLogin() {
@@ -102,7 +118,8 @@ export class HeaderComponent implements OnInit {
       next: (resp) => {
         if (resp) {
           this.nameUser = resp.name;
-          this.getSettings();
+          this.cdr.detectChanges();
+          this.auth.loadSettings();
         }
       },
     });
@@ -116,12 +133,20 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.nameUser = localStorage.getItem("name") || "";
+    this.auth.user$.subscribe(user => {
+      this.nameUser = user?.name || localStorage.getItem("name") || "";
+      this.cdr.detectChanges();
+    });
+    this.auth.settings$.subscribe(settings => {
+      this.isChecked = settings.preview;
+      this.DarkMode = settings.dark_mode;
+      this.cdr.detectChanges();
+    });
   }
 
   logout() {
     this.nameUser = "";
-    localStorage.clear();
+    this.auth.logout();
   }
 
   newJson() {
@@ -150,36 +175,7 @@ export class HeaderComponent implements OnInit {
     this.DarkMode = !this.DarkMode;
     console.log(this.DarkMode);
     this.setDarkMode.emit(this.DarkMode);
-    this.settings.dark_mode = this.DarkMode;
-    localStorage.setItem("settings", JSON.stringify(this.settings));
-    this.updateSettings();
-  }
-
-  updateSettings() {
-    const token = localStorage.getItem("key");
-    if (token) {
-      this.apiService.setSettings(token, this.settings).subscribe((resp) => {
-        console.log(resp);
-      });
-    }
-  }
-
-  getSettings() {
-    const token = localStorage.getItem("key");
-    if (token) {
-      this.apiService.getSettings(token).subscribe((resp) => {
-        localStorage.setItem("settings", resp.settings);
-        const settings = JSON.parse(resp.settings);
-        if (settings.preview) {
-          this.isChecked = settings.preview;
-          this.preview.emit(this.isChecked);
-        }
-        if (settings.dark_mode) {
-          this.DarkMode = settings.dark_mode;
-          this.setDarkMode.emit(this.DarkMode);
-        }
-      });
-    }
+    this.auth.updateSettings({ dark_mode: this.DarkMode, preview: this.isChecked });
   }
 
   openList(){
@@ -190,11 +186,13 @@ export class HeaderComponent implements OnInit {
     list.afterClosed().subscribe({
       next: (resp) => {
         if (resp?.item) {
-          const item = JSON.parse(resp.item);
-          this.json.emit(item.json);
-          this.router.navigate([item.id]).then((r) => r);
-          this.id = item.id;
-          this.newId.emit(this.id);
+          setTimeout(() => {
+            const item = JSON.parse(resp.item);
+            this.json.emit(item.json);
+            this.router.navigate([item.id]).then((r) => r);
+            this.id = item.id;
+            this.newId.emit(this.id);
+          });
         }
       }
     })

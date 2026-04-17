@@ -1,21 +1,28 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {ApiService} from "../../../services/api.service";
-import {MatDialog} from "@angular/material/dialog";
+import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
 import {DialogAddUserOrgComponent} from "../dialog-add-user-org/dialog-add-user-org.component";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
 import {DialogAddOrgComponent} from "../dialog-add-org/dialog-add-org.component";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-dialog-organization',
-  templateUrl: './dialog-organization.component.html',
-  styleUrls: ['./dialog-organization.component.scss']
+    selector: 'app-dialog-organization',
+    templateUrl: './dialog-organization.component.html',
+    styleUrls: ['./dialog-organization.component.scss'],
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatButton, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatDialogActions, MatDialogClose]
 })
 export class DialogOrganizationComponent implements OnInit {
 
-  constructor(private api: ApiService, private dialog: MatDialog, private snackBar: MatSnackBar) { }
+  constructor(private api: ApiService, private dialog: MatDialog, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef) { }
 
-  public organization: [] | any;
+  public organization: any[] = [];
 
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   public token: string | any
@@ -23,14 +30,17 @@ export class DialogOrganizationComponent implements OnInit {
   ngOnInit() {
     this.token = localStorage.getItem("key")
     if (this.token) {
-      this.initOrgs()
+      setTimeout(() => {
+        this.initOrgs();
+      }, 100);
     }
   }
 
   initOrgs(){
     this.api.getOrganization(this.token).subscribe({
-      next: (resp) => {
+      next: (resp: any) => {
         this.organization = resp;
+        this.cdr.detectChanges();
         console.log(resp);
       },
       error: (err) => {

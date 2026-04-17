@@ -1,12 +1,17 @@
-import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {MatTableDataSource} from "@angular/material/table";
+import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import { MatDialog, MatDialogRef, MatDialogTitle, MatDialogContent } from "@angular/material/dialog";
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ApiService} from "../../../services/api.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
 import {JsonDefault} from "../../../services/json-default";
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatIconButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 
 export interface PeriodicElement {
   name: string;
@@ -16,16 +21,17 @@ export interface PeriodicElement {
 }
 
 @Component({
-  selector: 'app-dialog-list-json',
-  templateUrl: './dialog-list-json.component.html',
-  styleUrls: ['./dialog-list-json.component.scss']
+    selector: 'app-dialog-list-json',
+    templateUrl: './dialog-list-json.component.html',
+    styleUrls: ['./dialog-list-json.component.scss'],
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe]
 })
 
 export class DialogListJsonComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ["id", 'name', 'view', "org", "options"];
 
   public token: string | null = '';
-  public list: any = []
+  public list = new MatTableDataSource<any>();
 
   constructor(
     private dialog: MatDialogRef<DialogListJsonComponent>,
@@ -37,7 +43,9 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.getAll()
+    setTimeout(() => {
+      this.getAll();
+    }, 100);
   }
 
   edit(element: any){
@@ -52,11 +60,11 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
     if (this.token) {
       this.api.allItems(this.token).subscribe({
         next: (resp) => {
-          this.list = resp.data;
+          this.list.data = resp.data;
         }
       })
     } else {
-      this.list = [];
+      this.list.data = [];
     }
   }
 

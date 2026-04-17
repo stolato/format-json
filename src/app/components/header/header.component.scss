@@ -1,17 +1,67 @@
 @import url("https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap");
-.title {
-  font-family: "Indie Flower", cursive;
-  font-weight: 500;
-  font-style: normal;
-  text-transform: lowercase;
+
+.ide-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  height: 48px !important;
+  min-height: 48px !important;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+
+  button {
+    border-radius: 4px;
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    margin: 0 2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
 }
+
+.dark.ide-header {
+  background-color: #1e1e1e !important;
+  border-bottom: 1px solid #333333;
+  color: #cccccc !important;
+
+  button {
+    color: #cccccc;
+    mat-icon {
+      color: #cccccc;
+    }
+  }
+
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #333; /* Cor sólida para o modo claro */
+  letter-spacing: 1px;
+}
+
+.dark .title {
+  color: #f1f1f1; /* Cor sólida para o modo escuro */
+}
+
 .example-spacer {
   flex: 1 1 auto;
 }
-.dark{
-  background: var(--ds-surface);
-}
 
-.tree_active{
-  background: #7d7d7d;
+.tree_active {
+  background: rgba(108, 92, 231, 0.4) !important;
+  transform: scale(1.1);
 }

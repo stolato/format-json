@@ -8,8 +8,8 @@ describe('DialogOrganizationComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DialogOrganizationComponent]
-    });
+    imports: [DialogOrganizationComponent]
+});
     fixture = TestBed.createComponent(DialogOrganizationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
