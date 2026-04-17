@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, ChangeDetectorRef, HostListener } from '@angular/core';
 import { JsonEditorOptions, AngJsoneditorModule } from "@maaxgr/ang-jsoneditor";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -30,6 +30,13 @@ export class HomepageComponent implements OnInit, OnDestroy {
   @Input() darkMode = false;
 
   private subs = new Subscription();
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.isUnsaved && this.id) {
+      $event.returnValue = true;
+    }
+  }
 
   timeOut = 0;
   title = 'formatjson';

@@ -1,27 +1,80 @@
-# Formatjson
+<p align="center">
+  <img src="app_icon_fixed.png" width="128" height="128" alt="JSONEdit Logo">
+</p>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+<h1 align="center">JSONEdit</h1>
 
-## Development server
+<p align="center">
+  <strong>Uma IDE moderna, de alta densidade e colaborativa para edição de JSON.</strong>
+</p>
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.8.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Platforms">
+  <img src="https://img.shields.io/badge/Angular-21-red.svg" alt="Angular">
+  <img src="https://img.shields.io/badge/Tauri-v2-orange.svg" alt="Tauri">
+</p>
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🚀 O que é o JSONEdit?
 
-## Build
+O **JSONEdit** é uma ferramenta profissional projetada para desenvolvedores que precisam de uma interface austera, rápida e funcional para manipular dados JSON. Diferente de formatadores web comuns, o JSONEdit oferece uma experiência de **IDE nativa** completa, com suporte a colaboração em tempo real e atalhos de teclado.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## ✨ Funcionalidades Principais
 
-## Running unit tests
+- 💻 **Interface IDE High-Density**: Layout edge-to-edge inspirado no VS Code, otimizando 100% do espaço de tela.
+- 🤝 **Colaboração em Tempo Real**: Edite o mesmo arquivo com múltiplos usuários através de WebSockets.
+- 🖥️ **App Desktop Nativo**: Disponível para Windows, macOS e Linux (via Tauri v2).
+- 🌓 **Dark/Light Mode**: Tema escuro profundo e tema claro de alto contraste.
+- ⌨️ **Atalhos de Produtividade**: Suporte a `Ctrl + S` para salvar e navegação rápida.
+- 📊 **Status Bar Utility**: Indicadores de "Ready", "Unsaved Changes" e notificações de digitação em tempo real.
+- 📂 **Tree & Code View**: Alterne instantaneamente entre visualização em árvore hierárquica e editor de texto puro.
+- 🛡️ **Data Safety**: Validação de fechamento para evitar perda de dados não salvos.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 🛠️ Tech Stack
 
-## Running end-to-end tests
+- **Frontend**: Angular 21 + Material Design
+- **Desktop Runtime**: Tauri v2 (Rust)
+- **Editor Core**: JSONEditor (Ace Editor)
+- **Comunicação**: Socket.io para colaboração externa
+- **CI/CD**: GitHub Actions para builds automáticos multi-plataforma
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## 📦 Como Rodar o Projeto
 
-## Further help
+### Pré-requisitos
+- Node.js (v20+)
+- Rust & Cargo (Para a versão Desktop)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Desenvolvimento Web
+```bash
+# Instalar dependências
+npm install --legacy-peer-deps
+
+# Rodar servidor local
+npm run start
+```
+
+### Desenvolvimento Desktop (Tauri)
+```bash
+# Rodar o app nativo em modo dev
+npm run desktop
+```
+
+### Gerar Instaladores (Produção)
+```bash
+# Gerar o pacote .rpm (Linux), .exe (Windows) ou .dmg (Mac)
+npm run build:desktop
+```
+
+## 🏗️ Estrutura do Projeto
+
+- `/src`: Código fonte do frontend Angular.
+- `/src-tauri`: Código fonte nativo em Rust e configurações do Tauri.
+- `/.github/workflows`: Automação de CI/CD para gerar releases de macOS e Windows.
+
+---
+
+<p align="center">
+  Desenvolvido com ❤️ por <strong>Tilt Tecnologia</strong>
+</p>

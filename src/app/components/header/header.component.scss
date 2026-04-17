@@ -65,3 +65,50 @@
   background: rgba(108, 92, 231, 0.4) !important;
   transform: scale(1.1);
 }
+
+.window-controls {
+  display: flex;
+  height: 48px;
+  margin-right: -16px; // Compensa o padding da toolbar
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  width: 46px !important;
+  height: 48px !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: inherit;
+  transition: all 0.2s;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  &.close:hover {
+    background-color: #e81123 !important;
+    color: white !important;
+    mat-icon {
+      color: white !important;
+    }
+  }
+}
+
+.dark .win-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef, HostListener } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef, HostListener, Optional } from "@angular/core";
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { OpenFileComponent } from "../open-file/open-file.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -46,6 +47,7 @@ export class HeaderComponent implements OnInit {
   @Input() id = "";
   @Input() isChecked = false;
   @Input() DarkMode = false;
+  @Input() unsaved = false;
   @Output() setDarkMode = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
@@ -58,6 +60,8 @@ export class HeaderComponent implements OnInit {
   }
 
   public nameUser = "";
+  public isTauri = false;
+  private appWindow: any;
   @Output() newId = new EventEmitter<string>();
 
   openUpload() {
@@ -142,6 +146,43 @@ export class HeaderComponent implements OnInit {
       this.DarkMode = settings.dark_mode;
       this.cdr.detectChanges();
     });
+
+    this.isTauri = !!(window as any).__TAURI_INTERNALS__;
+    if (this.isTauri) {
+      try {
+        this.appWindow = getCurrentWindow();
+      } catch (e) {
+        console.warn('Tauri API fail:', e);
+      }
+    }
+  }
+
+  minimize() {
+    this.appWindow?.minimize();
+  }
+
+  toggleMaximize() {
+    this.appWindow?.toggleMaximize();
+  }
+
+  closeApp() {
+    if (this.unsaved && this.id) {
+      const dialog = this.dialog.open(DialogConfirmComponent, {
+        data: {
+          title: "Descartar alterações?",
+          text: "Você possui edições que ainda não foram salvas. Deseja realmente sair e perder os dados?",
+        },
+      });
+      dialog.afterClosed().subscribe({
+        next: (resp) => {
+          if (resp) {
+            this.appWindow?.close();
+          }
+        },
+      });
+    } else {
+      this.appWindow?.close();
+    }
   }
 
   logout() {
