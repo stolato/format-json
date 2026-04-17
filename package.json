@@ -1,6 +1,6 @@
 {
   "name": "formatjson",
-  "version": "1.7.0",
+  "version": "1.8.1",
   "description": "JSONEdit - Professional IDE style JSON Editor and Formatter",
   "author": "Tilt Tecnologia",
   "scripts": {
@@ -11,7 +11,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "desktop": ". \"$HOME/.cargo/env\" && WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11 tauri dev",
-    "build:desktop": ". \"$HOME/.cargo/env\" && WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11 tauri build"
+    "build:desktop": ". \"$HOME/.cargo/env\" && WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11 tauri build",
+    "tauri": "tauri"
   },
   "private": true,
   "dependencies": {
