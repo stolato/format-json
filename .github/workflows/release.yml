@@ -52,6 +52,6 @@ jobs:
           tagName: v__VERSION__ # tauri-action replaces this with the app version from tauri.conf.json
           releaseName: "JSONEdit v__VERSION__"
           releaseBody: "Release automática do JSONEdit para Windows, macOS e Linux."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
