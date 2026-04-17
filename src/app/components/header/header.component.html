@@ -1,4 +1,4 @@
-<mat-toolbar class="ide-header" [class.dark]="DarkMode">
+<mat-toolbar class="ide-header" [class.dark]="DarkMode" data-tauri-drag-region>
   <span class="title">JSONEDIT</span>
   <span class="example-spacer"></span>
   <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip='JSON Tree'>
@@ -56,4 +56,18 @@
       <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
     }
   </mat-menu>
+
+  @if (isTauri) {
+    <div class="window-controls">
+      <button class="win-btn minimize" (click)="minimize()">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button class="win-btn maximize" (click)="toggleMaximize()">
+        <mat-icon>check_box_outline_blank</mat-icon>
+      </button>
+      <button class="win-btn close" (click)="closeApp()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
 </mat-toolbar>
