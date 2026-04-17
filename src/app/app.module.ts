@@ -19,7 +19,7 @@ import { OpenFileComponent } from './components/open-file/open-file.component';
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { NotfoundComponent } from './pages/notfound/notfound.component';
-import {LottieModule} from "ngx-lottie";
+import {provideLottieOptions} from "ngx-lottie";
 import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
@@ -46,19 +46,12 @@ import {DialogAddUserOrgComponent} from "./components/dialogs/dialog-add-user-or
 import { DialogAddOrgComponent } from './components/dialogs/dialog-add-org/dialog-add-org.component';
 import { SocketIoModule} from "ngx-socket-io";
 
-
-export function playerFactory() {
-  return import(/* webpackChunkName: 'lottie-web' */ 'lottie-web');
-}
-
-
 @NgModule({ declarations: [
         AppComponent,
         PrettyJsonPipe,
         HomepageComponent,
         HeaderComponent,
         OpenFileComponent,
-        NotfoundComponent,
         SharedComponent,
         DialogLoginComponent,
         DialogRegisterComponent,
@@ -68,10 +61,12 @@ export function playerFactory() {
         DialogAddUserOrgComponent,
         DialogAddOrgComponent,
     ],
-    bootstrap: [AppComponent], imports: [SocketIoModule.forRoot({ url: 'wss://api.jsonedit.com.br:8002/items', options: {
-                transports: ['websocket'],
-                reconnection: true,
-            } }),
+    bootstrap: [AppComponent], imports: [SocketIoModule.forRoot({
+        url: 'wss://api.jsonedit.com.br:8002/items', options: {
+            transports: ['websocket'],
+            reconnection: true,
+        }
+    }),
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
@@ -96,7 +91,6 @@ export function playerFactory() {
         MatInputModule,
         MatChipsModule,
         MatSlideToggleModule,
-        LottieModule.forRoot({ player: playerFactory }),
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
@@ -104,6 +98,9 @@ export function playerFactory() {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true },
+        provideLottieOptions({
+          player: () => import('lottie-web')
+        }),
         provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule {
