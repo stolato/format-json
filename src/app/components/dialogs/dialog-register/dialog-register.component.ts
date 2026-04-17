@@ -5,9 +5,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-dialog-register',
-  templateUrl: './dialog-register.component.html',
-  styleUrls: ['./dialog-register.component.scss']
+    selector: 'app-dialog-register',
+    templateUrl: './dialog-register.component.html',
+    styleUrls: ['./dialog-register.component.scss'],
+    standalone: false
 })
 export class DialogRegisterComponent implements OnInit{
   form: FormGroup | any;

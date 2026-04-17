@@ -9,9 +9,10 @@ import {NgxSpinnerService} from "ngx-spinner";
 import {JsonDefault} from "../../services/json-default";
 
 @Component({
-  selector: 'app-homepage',
-  templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+    selector: 'app-homepage',
+    templateUrl: './homepage.component.html',
+    styleUrls: ['./homepage.component.scss'],
+    standalone: false
 })
 export class HomepageComponent implements OnInit {
   public dummyJsonObject = {};

@@ -6,9 +6,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
-  selector: 'app-shared',
-  templateUrl: './shared.component.html',
-  styleUrls: ['./shared.component.scss']
+    selector: 'app-shared',
+    templateUrl: './shared.component.html',
+    styleUrls: ['./shared.component.scss'],
+    standalone: false
 })
 export class SharedComponent implements OnInit {
   constructor(

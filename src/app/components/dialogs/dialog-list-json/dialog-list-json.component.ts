@@ -16,9 +16,10 @@ export interface PeriodicElement {
 }
 
 @Component({
-  selector: 'app-dialog-list-json',
-  templateUrl: './dialog-list-json.component.html',
-  styleUrls: ['./dialog-list-json.component.scss']
+    selector: 'app-dialog-list-json',
+    templateUrl: './dialog-list-json.component.html',
+    styleUrls: ['./dialog-list-json.component.scss'],
+    standalone: false
 })
 
 export class DialogListJsonComponent implements OnInit, AfterViewInit {

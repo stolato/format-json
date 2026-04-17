@@ -6,9 +6,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
-  selector: 'app-dialog-add-user-org',
-  templateUrl: './dialog-add-user-org.component.html',
-  styleUrls: ['./dialog-add-user-org.component.scss']
+    selector: 'app-dialog-add-user-org',
+    templateUrl: './dialog-add-user-org.component.html',
+    styleUrls: ['./dialog-add-user-org.component.scss'],
+    standalone: false
 })
 export class DialogAddUserOrgComponent implements OnInit {
   sendForm: FormGroup | any ;

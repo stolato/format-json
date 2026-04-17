@@ -3,11 +3,10 @@ import { AnimationItem } from 'lottie-web';
 import {AnimationOptions, LottieComponent} from "ngx-lottie";
 
 @Component({
-  selector: 'app-notfound',
-  templateUrl: './notfound.component.html',
-  styleUrls: ['./notfound.component.scss'],
-  standalone: true,
-  imports: [LottieComponent],
+    selector: 'app-notfound',
+    templateUrl: './notfound.component.html',
+    styleUrls: ['./notfound.component.scss'],
+    imports: [LottieComponent]
 })
 export class NotfoundComponent {
   options: AnimationOptions = {

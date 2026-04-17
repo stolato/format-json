@@ -7,9 +7,10 @@ import {DialogAddOrgComponent} from "../dialog-add-org/dialog-add-org.component"
 import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
-  selector: 'app-dialog-organization',
-  templateUrl: './dialog-organization.component.html',
-  styleUrls: ['./dialog-organization.component.scss']
+    selector: 'app-dialog-organization',
+    templateUrl: './dialog-organization.component.html',
+    styleUrls: ['./dialog-organization.component.scss'],
+    standalone: false
 })
 export class DialogOrganizationComponent implements OnInit {
 

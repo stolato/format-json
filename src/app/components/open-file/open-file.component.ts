@@ -5,9 +5,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
-  selector: 'app-open-file',
-  templateUrl: './open-file.component.html',
-  styleUrls: ['./open-file.component.scss']
+    selector: 'app-open-file',
+    templateUrl: './open-file.component.html',
+    styleUrls: ['./open-file.component.scss'],
+    standalone: false
 })
 
 export class OpenFileComponent implements OnInit {

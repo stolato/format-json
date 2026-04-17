@@ -5,9 +5,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-dialog-login',
-  templateUrl: './dialog-login.component.html',
-  styleUrls: ['./dialog-login.component.scss']
+    selector: 'app-dialog-login',
+    templateUrl: './dialog-login.component.html',
+    styleUrls: ['./dialog-login.component.scss'],
+    standalone: false
 })
 export class DialogLoginComponent {
   form: FormGroup | any;

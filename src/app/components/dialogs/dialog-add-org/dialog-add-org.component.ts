@@ -6,9 +6,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
-  selector: 'app-dialog-add-org',
-  templateUrl: './dialog-add-org.component.html',
-  styleUrls: ['./dialog-add-org.component.scss']
+    selector: 'app-dialog-add-org',
+    templateUrl: './dialog-add-org.component.html',
+    styleUrls: ['./dialog-add-org.component.scss'],
+    standalone: false
 })
 export class DialogAddOrgComponent implements OnInit {
   constructor(

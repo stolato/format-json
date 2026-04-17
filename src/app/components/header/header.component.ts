@@ -15,9 +15,10 @@ import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-j
 import {DialogOrganizationComponent} from "../dialogs/dialog-organization/dialog-organization.component";
 
 @Component({
-  selector: "app-header",
-  templateUrl: "./header.component.html",
-  styleUrls: ["./header.component.scss"],
+    selector: "app-header",
+    templateUrl: "./header.component.html",
+    styleUrls: ["./header.component.scss"],
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
   constructor(
