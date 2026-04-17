@@ -23,7 +23,7 @@ import {LottieModule} from "ngx-lottie";
 import {MatChipsModule} from "@angular/material/chips";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { SharedComponent } from './components/dialogs/shared/shared.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgxSpinnerModule} from "ngx-spinner";
@@ -52,65 +52,59 @@ export function playerFactory() {
 }
 
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    PrettyJsonPipe,
-    HomepageComponent,
-    HeaderComponent,
-    OpenFileComponent,
-    NotfoundComponent,
-    SharedComponent,
-    DialogLoginComponent,
-    DialogRegisterComponent,
-    DialogConfirmComponent,
-    DialogListJsonComponent,
-    DialogOrganizationComponent,
-    DialogAddUserOrgComponent,
-    DialogAddOrgComponent,
-  ],
-  imports: [
-    SocketIoModule.forRoot({ url: 'wss://api.jsonedit.com.br:8002/items', options: {
-      transports: ['websocket'],
-      reconnection: true,
-    } }),
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    NgxSpinnerModule,
-    MatSidenavModule,
-    MatMenuModule,
-    MatExpansionModule,
-    MatDividerModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    AngJsoneditorModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDialogModule,
-    ClipboardModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    MatBottomSheetModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatChipsModule,
-    MatSlideToggleModule,
-    LottieModule.forRoot({player: playerFactory}),
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatSelectModule
-  ],
-  providers: [
-    { provide: MAT_DIALOG_DATA, useValue: {} },
-    { provide: MatDialogRef, useValue: {} },
-    { provide: HTTP_INTERCEPTORS , useClass: HttpRequestInterceptor, multi: true}
+@NgModule({ declarations: [
+        AppComponent,
+        PrettyJsonPipe,
+        HomepageComponent,
+        HeaderComponent,
+        OpenFileComponent,
+        NotfoundComponent,
+        SharedComponent,
+        DialogLoginComponent,
+        DialogRegisterComponent,
+        DialogConfirmComponent,
+        DialogListJsonComponent,
+        DialogOrganizationComponent,
+        DialogAddUserOrgComponent,
+        DialogAddOrgComponent,
     ],
-  bootstrap: [AppComponent]
-})
+    bootstrap: [AppComponent], imports: [SocketIoModule.forRoot({ url: 'wss://api.jsonedit.com.br:8002/items', options: {
+                transports: ['websocket'],
+                reconnection: true,
+            } }),
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        NgxSpinnerModule,
+        MatSidenavModule,
+        MatMenuModule,
+        MatExpansionModule,
+        MatDividerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AngJsoneditorModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatDialogModule,
+        ClipboardModule,
+        MatSnackBarModule,
+        MatTooltipModule,
+        MatBottomSheetModule,
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatChipsModule,
+        MatSlideToggleModule,
+        LottieModule.forRoot({ player: playerFactory }),
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatSelectModule], providers: [
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: {} },
+        { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {
 }

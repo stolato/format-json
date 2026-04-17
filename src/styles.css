@@ -1,4 +1,4 @@
-@import '~jsoneditor/dist/jsoneditor.min.css';
+@import 'jsoneditor/dist/jsoneditor.min.css';
 pre {
   font-weight: 400;
   background: #3b3b3b;
