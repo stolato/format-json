@@ -112,3 +112,13 @@
 .dark .win-btn:hover {
   background-color: rgba(255, 255, 255, 0.15) !important;
 }
+
+.update-btn {
+  color: #6C5CE7 !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

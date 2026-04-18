@@ -15,6 +15,7 @@ import { DialogConfirmComponent } from "../dialogs/dialog-confirm/dialog-confirm
 import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-json.component";
 import {DialogOrganizationComponent} from "../dialogs/dialog-organization/dialog-organization.component";
 import { AuthService } from "../../services/auth.service";
+import { UpdaterService } from "../../services/updater.service";
 import { MatToolbar } from "@angular/material/toolbar";
 import { MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -37,7 +38,8 @@ export class HeaderComponent implements OnInit {
     private router: Router,
     private loading: NgxSpinnerService,
     private auth: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public updater: UpdaterService
   ) {}
 
   @Output() json = new EventEmitter<string>();
@@ -154,6 +156,7 @@ export class HeaderComponent implements OnInit {
       } catch (e) {
         console.warn('Tauri API fail:', e);
       }
+      this.updater.checkForUpdates();
     }
   }
 

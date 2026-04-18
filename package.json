@@ -28,6 +28,7 @@
     "@angular/router": "^21.2.9",
     "@maaxgr/ang-jsoneditor": "^14.0.0",
     "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-updater": "^2.10.1",
     "jsoneditor": "^10.4.3",
     "lottie-web": "^5.13.0",
     "ngx-lottie": "^21.2.0",

@@ -57,6 +57,13 @@
     }
   </mat-menu>
 
+  @if (updater.updateAvailable()) {
+    <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.installing()"
+      matTooltip="Nova versão disponível — clique para atualizar" class="update-btn">
+      <mat-icon>system_update</mat-icon>
+    </button>
+  }
+
   @if (isTauri) {
     <div class="window-controls">
       <button class="win-btn minimize" (click)="minimize()">
