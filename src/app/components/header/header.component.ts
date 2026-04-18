@@ -63,8 +63,33 @@ export class HeaderComponent implements OnInit {
 
   public nameUser = "";
   public isTauri = false;
+  public userPlatform: 'mac' | 'windows' | 'linux' | 'other' = 'other';
   private appWindow: any;
   @Output() newId = new EventEmitter<string>();
+
+  downloadLinks = {
+    mac:     '',
+    windows: '',
+    linux:   '',
+  };
+
+  private async loadDownloadLinks(): Promise<void> {
+    try {
+      const res = await fetch('https://api.github.com/repos/stolato/format-json/releases/latest');
+      const { tag_name } = await res.json();
+      const v = tag_name.replace('v', '');
+      const base = `https://github.com/stolato/format-json/releases/latest/download`;
+      this.downloadLinks = {
+        mac:     `${base}/JSONEdit_${v}_universal.dmg`,
+        windows: `${base}/JSONEdit_${v}_x64-setup.exe`,
+        linux:   `${base}/JSONEdit_${v}_amd64.deb`,
+      };
+    } catch {
+      // fallback: abre a página de releases
+      const page = 'https://github.com/stolato/format-json/releases/latest';
+      this.downloadLinks = { mac: page, windows: page, linux: page };
+    }
+  }
 
   openUpload() {
     const open = this.bottomSheet.open(OpenFileComponent);
@@ -150,6 +175,15 @@ export class HeaderComponent implements OnInit {
     });
 
     this.isTauri = !!(window as any).__TAURI_INTERNALS__;
+    const ua = navigator.userAgent.toLowerCase();
+    if (ua.includes('mac'))        this.userPlatform = 'mac';
+    else if (ua.includes('win'))   this.userPlatform = 'windows';
+    else if (ua.includes('linux')) this.userPlatform = 'linux';
+
+    if (!this.isTauri) {
+      this.loadDownloadLinks();
+    }
+
     if (this.isTauri) {
       try {
         this.appWindow = getCurrentWindow();

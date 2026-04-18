@@ -113,6 +113,12 @@
   background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
+.platform-highlight {
+  font-weight: 600;
+  color: #6C5CE7 !important;
+  mat-icon { color: #6C5CE7 !important; }
+}
+
 .update-btn {
   color: #6C5CE7 !important;
   animation: pulse 2s infinite;

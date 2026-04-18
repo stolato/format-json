@@ -36,6 +36,23 @@
       <mat-icon>group</mat-icon>
     </button>
   }
+  @if (!isTauri) {
+    <button [matMenuTriggerFor]="downloadMenu" mat-icon-button matTooltip="Baixar app desktop" [matTooltipPosition]="'above'" class="example-icon download-app-btn">
+      <mat-icon>download</mat-icon>
+    </button>
+    <mat-menu #downloadMenu="matMenu">
+      <a mat-menu-item [href]="downloadLinks.mac" target="_blank" [class.platform-highlight]="userPlatform === 'mac'">
+        <mat-icon>laptop_mac</mat-icon> macOS
+      </a>
+      <a mat-menu-item [href]="downloadLinks.windows" target="_blank" [class.platform-highlight]="userPlatform === 'windows'">
+        <mat-icon>desktop_windows</mat-icon> Windows
+      </a>
+      <a mat-menu-item [href]="downloadLinks.linux" target="_blank" [class.platform-highlight]="userPlatform === 'linux'">
+        <mat-icon>computer</mat-icon> Linux
+      </a>
+    </mat-menu>
+  }
+
   <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
     <mat-icon>person</mat-icon>
   </button>
