@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { check, Update } from '@tauri-apps/plugin-updater';
-import { relaunch } from '@tauri-apps/api/process';
+import { relaunch } from '@tauri-apps/plugin-process';
 
 @Injectable({ providedIn: 'root' })
 export class UpdaterService {
