@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "JSONEdit",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "identifier": "com.formatjson.app",
   "build": {
     "frontendDist": "../dist/formatjson/browser",
@@ -18,9 +18,11 @@
         "resizable": true,
         "fullscreen": false,
         "decorations": false,
-        "transparent": true
+        "transparent": true,
+        "shadow": true
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }
