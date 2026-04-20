@@ -50,10 +50,10 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tagName: v__VERSION__ # tauri-action replaces this with the app version from tauri.conf.json
           releaseName: "v__VERSION__"
           releaseBody: "Release automática do JSONEdit para Windows, macOS e Linux."

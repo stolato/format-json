@@ -990,7 +990,7 @@ dependencies = [
 
 [[package]]
 name = "formatjson"
-version = "1.8.9"
+version = "1.8.11"
 dependencies = [
  "log",
  "objc",
