@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   publish-tauri:
     permissions:
@@ -56,4 +59,5 @@ jobs:
           releaseBody: "Release automática do JSONEdit para Windows, macOS e Linux."
           releaseDraft: false
           prerelease: false
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
