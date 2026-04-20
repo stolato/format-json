@@ -1,6 +1,6 @@
 [package]
 name = "formatjson"
-version = "1.8.14"
+version = "1.8.15"
 description = "JSONEdit - Professional IDE style JSON Editor and Formatter"
 authors = ["Tilt Tecnologia"]
 license = ""
