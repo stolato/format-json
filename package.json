@@ -1,6 +1,6 @@
 {
   "name": "formatjson",
-  "version": "1.8.9",
+  "version": "1.8.10",
   "description": "JSONEdit - Professional IDE style JSON Editor and Formatter",
   "author": "Tilt Tecnologia",
   "scripts": {
