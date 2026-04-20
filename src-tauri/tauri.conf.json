@@ -38,6 +38,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "publisher": "Tilt Tecnologia",
     "shortDescription": "Modern JSON Editor IDE",
     "longDescription": "A professional and high-density IDE-style JSON editor and formatter with real-time socket collaboration support.",
