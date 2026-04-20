@@ -1,20 +1,31 @@
 <app-header (json)="newJson($event.toString())" (preview)="setPreview($event)" [current_json]="this.visibleData"
   [id]="id" (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)"
-  (saved)="onSaved()" [unsaved]="isUnsaved">
+  (saved)="onSaved()" [unsaved]="isUnsaved" (toggleChart)="setChart($event)">
 </app-header>
 
 <div class="content" [class.dark]="darkMode">
-  @if (hasData) {
-  <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
-  }
-  @if (preview && hasData) {
-  <json-editor [options]="editorOptions_view" [data]="visibleData" (change)="showJson($event)"></json-editor>
-  }
-  @if (!preview) {
-  <div class="formater">
-    <pre [innerHTML]="visibleData | prettyjson"></pre>
+  <div class="editor-panel">
+    @if (hasData) {
+      <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+    }
   </div>
-  }
+  <div class="right-panel">
+    @if (!showChart) {
+      @if (preview && hasData) {
+        <json-editor [options]="editorOptions_view" [data]="visibleData" (change)="showJson($event)"></json-editor>
+      }
+      @if (!preview) {
+        <div class="formater">
+          <pre [innerHTML]="visibleData | prettyjson"></pre>
+        </div>
+      }
+    }
+    @if (showChart && hasData) {
+      <div class="chart-panel" [class.dark]="darkMode">
+        <app-json-chart [data]="visibleData" [dark]="darkMode"></app-json-chart>
+      </div>
+    }
+  </div>
   <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
     mat-icon-button aria-label="Example icon-button with a heart icon">
     <mat-icon>content_copy</mat-icon>
@@ -35,7 +46,7 @@
   </div>
   <div class="right">
     <div class="version">
-      version: 1.8.6
+      version: 1.8.7
     </div>
     <div class="term">
       Tilt Tecnologia - {{date}}

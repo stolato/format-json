@@ -1,3 +1,33 @@
+.chart-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+
+  app-json-chart {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+  }
+
+  &.dark {
+    background: #272727;
+  }
+}
+
+.editor-panel,
+.right-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 :host ::ng-deep json-editor,
 :host ::ng-deep json-editor .jsoneditor,
 :host ::ng-deep json-editor > div,

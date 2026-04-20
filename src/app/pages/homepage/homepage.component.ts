@@ -10,6 +10,7 @@ import { JsonDefault } from "../../services/json-default";
 import { AuthService } from "../../services/auth.service";
 import { Subscription } from "rxjs";
 import { HeaderComponent } from '../../components/header/header.component';
+import { JsonChartComponent } from '../../components/json-chart/json-chart.component';
 import { MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
@@ -19,7 +20,7 @@ import { PrettyJsonPipe } from '../../pipes/prettyjson.pipe';
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss'],
-  imports: [HeaderComponent, AngJsoneditorModule, MatIconButton, MatTooltip, MatIcon, NgxSpinnerComponent, PrettyJsonPipe]
+  imports: [HeaderComponent, AngJsoneditorModule, MatIconButton, MatTooltip, MatIcon, NgxSpinnerComponent, PrettyJsonPipe, JsonChartComponent]
 })
 export class HomepageComponent implements OnInit, OnDestroy {
   public dummyJsonObject = {};
@@ -52,6 +53,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   public sidebar: boolean = false;
   public hasData: boolean = false;
   public isUnsaved: boolean = false;
+  public showChart: boolean = false;
 
   public date = new Date().getFullYear()
 
@@ -145,15 +147,18 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   showJson(d: Event) {
     if (!d.isTrusted) {
+      // Snapshot immediately — json-editor reuses the same mutable object,
+      // so deferring JSON.stringify causes it to capture the next keystroke's state.
+      const snapshot = JSON.parse(JSON.stringify(d));
       if (this.id) {
         this.socket.sendMessage('', this.id, 'write');
         window.clearTimeout(this.timeOut);
         this.timeOut = window.setTimeout(() => {
-          this.socket.sendMessage(JSON.stringify(d), this.id, 'new-json');
+          this.socket.sendMessage(JSON.stringify(snapshot), this.id, 'new-json');
         }, 1000);
       }
       setTimeout(() => {
-        this.visibleData = d;
+        this.visibleData = snapshot;
         if (this.id) {
           this.isUnsaved = true;
         }
@@ -209,6 +214,11 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   setDark($event: boolean) {
     this.darkMode = $event;
+    this.cdr.detectChanges();
+  }
+
+  setChart($event: boolean) {
+    this.showChart = $event;
     this.cdr.detectChanges();
   }
 

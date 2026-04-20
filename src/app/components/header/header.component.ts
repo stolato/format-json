@@ -52,6 +52,9 @@ export class HeaderComponent implements OnInit {
   @Input() unsaved = false;
   @Output() setDarkMode = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
+  @Output() toggleChart = new EventEmitter<boolean>();
+
+  public chartActive = false;
 
   @HostListener('window:keydown.control.s', ['$event'])
   saveShortcut(event: Event) {
@@ -120,8 +123,22 @@ export class HeaderComponent implements OnInit {
 
   test() {
     this.isChecked = !this.isChecked;
+    if (this.isChecked && this.chartActive) {
+      this.chartActive = false;
+      this.toggleChart.emit(false);
+    }
     this.preview.emit(this.isChecked);
     this.auth.updateSettings({ dark_mode: this.DarkMode, preview: this.isChecked });
+  }
+
+  openChart() {
+    this.chartActive = !this.chartActive;
+    if (this.chartActive && this.isChecked) {
+      this.isChecked = false;
+      this.preview.emit(false);
+      this.auth.updateSettings({ dark_mode: this.DarkMode, preview: false });
+    }
+    this.toggleChart.emit(this.chartActive);
   }
 
   saveJson() {

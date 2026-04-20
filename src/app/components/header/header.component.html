@@ -4,6 +4,9 @@
   <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip='JSON Tree'>
     <mat-icon>account_tree</mat-icon>
   </button>
+  <button mat-icon-button [class.tree_active]="chartActive" (click)="openChart()" matTooltip='Visualização em Gráfico'>
+    <mat-icon>hub</mat-icon>
+  </button>
   <button mat-icon-button (click)="setDark()" matTooltip='Dark Mode'>
     <mat-icon>{{ DarkMode ? 'wb_sunny' : 'nights_stay' }}</mat-icon>
   </button>
@@ -74,11 +77,18 @@
     }
   </mat-menu>
 
-  @if (updater.updateAvailable()) {
-    <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.installing()"
-      matTooltip="Nova versão disponível — clique para atualizar" class="update-btn">
-      <mat-icon>system_update</mat-icon>
-    </button>
+  @if (isTauri) {
+    @if (updater.updateAvailable()) {
+      <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.installing()"
+        matTooltip="Nova versão disponível — clique para atualizar" class="update-btn">
+        <mat-icon>system_update</mat-icon>
+      </button>
+    } @else {
+      <button mat-icon-button (click)="updater.checkForUpdates(true)" [disabled]="updater.checking()"
+        matTooltip="Verificar atualizações" [matTooltipPosition]="'above'" class="example-icon">
+        <mat-icon>{{ updater.checking() ? 'sync' : 'update' }}</mat-icon>
+      </button>
+    }
   }
 
   @if (isTauri) {

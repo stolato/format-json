@@ -38,7 +38,7 @@ export class OpenFileComponent implements OnInit {
       this.snackBar.open(`Arquivo ${file.name} aberto`, 'OK', {
         duration: 3000,
       });
-      this.bottomSheetRef.dismiss(JSON.parse(text))
+      this.bottomSheetRef.dismiss(text)
     } else {
       this.snackBar.open(`Opss!! O Arquivo ${file?.name} não é um json`, 'Fechar', {
         duration: 3000

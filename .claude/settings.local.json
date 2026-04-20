@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(gh release *)",
+      "Bash(gh auth *)",
+      "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/releases?per_page=5\")",
+      "Bash(python3 -c \"import sys,json; releases=json.load\\(sys.stdin\\); [print\\(r['tag_name'], r['draft'], [a['name'] for a in r['assets']]\\) for r in releases]\")"
     ]
   }
 }
