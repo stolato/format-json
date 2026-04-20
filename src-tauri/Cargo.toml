@@ -1,6 +1,6 @@
 [package]
 name = "formatjson"
-version = "1.8.18"
+version = "1.8.19"
 description = "JSONEdit - Professional IDE style JSON Editor and Formatter"
 authors = ["Tilt Tecnologia"]
 license = ""
@@ -26,6 +26,7 @@ tauri-plugin-log = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 tauri-plugin-shell = "2"
+tauri-plugin-deep-link = "2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc = "0.2"

@@ -293,6 +293,12 @@ export class HeaderComponent implements OnInit {
     })
   }
 
+  openInApp() {
+    const a = document.createElement('a');
+    a.href = 'jsonedit://' + this.id;
+    a.click();
+  }
+
   openOrg() {
     this.dialog.open(DialogOrganizationComponent, {
       width: "80%",

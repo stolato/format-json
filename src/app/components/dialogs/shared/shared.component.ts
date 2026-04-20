@@ -41,6 +41,7 @@ export class SharedComponent implements OnInit {
   public base_url = 'https://jsonedit.com.br';
   public organization: any[] = [];
   token: string | any;
+  readonly isTauri = !!(window as any).__TAURI_INTERNALS__;
 
   shared() {
     if (!this.id) {
@@ -78,9 +79,18 @@ export class SharedComponent implements OnInit {
 
   copy() {
     this.clipboard.copy(this.base_url + "/" + this.link);
-    this.snackBar.open('Link Copiado!!', 'OK', {
-      duration: 3000
-    })
+    this.snackBar.open('Link Copiado!!', 'OK', { duration: 3000 });
+  }
+
+  copyDeepLink() {
+    this.clipboard.copy('jsonedit://' + this.link);
+    this.snackBar.open('Link do app copiado!!', 'OK', { duration: 3000 });
+  }
+
+  openInApp() {
+    const a = document.createElement('a');
+    a.href = 'jsonedit://' + this.link;
+    a.click();
   }
 
   ngOnInit() {

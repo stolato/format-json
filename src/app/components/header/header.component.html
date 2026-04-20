@@ -39,6 +39,11 @@
       <mat-icon>group</mat-icon>
     </button>
   }
+  @if (!isTauri && id) {
+    <button mat-icon-button (click)="openInApp()" matTooltip="Abrir no app desktop" [matTooltipPosition]="'above'" class="example-icon">
+      <mat-icon>open_in_new</mat-icon>
+    </button>
+  }
   @if (!isTauri) {
     <button [matMenuTriggerFor]="downloadMenu" mat-icon-button matTooltip="Baixar app desktop" [matTooltipPosition]="'above'" class="example-icon download-app-btn">
       <mat-icon>download</mat-icon>

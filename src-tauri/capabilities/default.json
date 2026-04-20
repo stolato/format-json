@@ -12,6 +12,7 @@
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "updater:default",
+    "deep-link:default",
     "process:allow-restart",
     "shell:allow-open"
   ]

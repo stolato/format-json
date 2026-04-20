@@ -33,16 +33,31 @@
   }
   @if (link) {
     <div>
-      <h3>
-        Link gerado:
-      </h3>
+      <h3>Link gerado:</h3>
       <p>
         <mat-form-field class="example-full-width">
-          <mat-label>Link</mat-label>
-          <input type="tel" value="{{base_url}}/{{link}}" readonly matInput>
+          <mat-label>Link web</mat-label>
+          <input type="text" value="{{base_url}}/{{link}}" readonly matInput>
           <mat-icon matSuffix (click)="copy()">content_copy</mat-icon>
         </mat-form-field>
       </p>
+      @if (isTauri) {
+        <p>
+          <mat-form-field class="example-full-width">
+            <mat-label>Abrir no app</mat-label>
+            <input type="text" value="jsonedit://{{link}}" readonly matInput>
+            <mat-icon matSuffix (click)="copyDeepLink()">content_copy</mat-icon>
+          </mat-form-field>
+        </p>
+      }
+      @if (!isTauri) {
+        <p>
+          <button mat-stroked-button (click)="openInApp()">
+            <mat-icon>open_in_new</mat-icon>
+            Abrir no app desktop
+          </button>
+        </p>
+      }
     </div>
   }
 </mat-dialog-content>
