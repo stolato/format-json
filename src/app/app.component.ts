@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -24,14 +25,21 @@ export class AppComponent implements OnInit {
     try {
       const { onOpenUrl, getCurrent } = await import('@tauri-apps/plugin-deep-link');
 
-      // App já está rodando e recebe um deep link
+      // Warm start: app already running, receives a new URL
       await onOpenUrl((urls) => this.handleDeepLink(urls));
 
-      // App foi iniciado diretamente via deep link
-      const initial = await getCurrent();
-      if (initial?.length) this.handleDeepLink(initial);
+      // Cold start: wait for Angular's initial navigation to finish before
+      // overriding with the deep-link URL, otherwise the initial nav to '/'
+      // races and overwrites the deep-link navigate call.
+      this.router.events.pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        take(1)
+      ).subscribe(async () => {
+        const initial = await getCurrent();
+        if (initial?.length) this.handleDeepLink(initial);
+      });
     } catch {
-      // plugin não disponível em dev ou web
+      // plugin not available in dev or web
     }
   }
 
