@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.8.12-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.8.18-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Platforms">
   <img src="https://img.shields.io/badge/Angular-21-red.svg" alt="Angular">
   <img src="https://img.shields.io/badge/Tauri-v2-orange.svg" alt="Tauri">
