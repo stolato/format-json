@@ -1,6 +1,6 @@
 {
   "name": "formatjson",
-  "version": "1.8.6",
+  "version": "1.8.8",
   "description": "JSONEdit - Professional IDE style JSON Editor and Formatter",
   "author": "Tilt Tecnologia",
   "scripts": {
@@ -29,6 +29,7 @@
     "@maaxgr/ang-jsoneditor": "^14.0.0",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-shell": "^2.3.5",
     "@tauri-apps/plugin-updater": "^2.10.1",
     "echarts": "^6.0.0",
     "jsoneditor": "^10.4.3",

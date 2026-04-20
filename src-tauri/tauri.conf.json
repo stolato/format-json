@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "JSONEdit",
-  "version": "1.8.7",
+  "version": "1.8.8",
   "identifier": "com.formatjson.app",
   "build": {
     "frontendDist": "../dist/formatjson/browser",
@@ -33,7 +33,7 @@
         "https://github.com/stolato/format-json/releases/latest/download/latest.json"
       ],
       "dialog": false,
-      "pubkey": "RWQ99pQpovQEShq5ok93K/tBVQmMzYhyFjl+H75W9EU5SgJkEe4O0d4M"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyQTg3NEJFMTlFQ0NBQjIKUldTeXl1d1p2blNvY2l5Z3pBK1ozbTFPSVp4bTB3dlhRQUR1aTI4cUYzc2Mzc291UGRTcUlQaTgK"
     }
   },
   "bundle": {

@@ -5,7 +5,7 @@
     <mat-icon>account_tree</mat-icon>
   </button>
   <button mat-icon-button [class.tree_active]="chartActive" (click)="openChart()" matTooltip='Visualização em Gráfico'>
-    <mat-icon>hub</mat-icon>
+    <mat-icon>schema</mat-icon>
   </button>
   <button mat-icon-button (click)="setDark()" matTooltip='Dark Mode'>
     <mat-icon>{{ DarkMode ? 'wb_sunny' : 'nights_stay' }}</mat-icon>
@@ -79,9 +79,9 @@
 
   @if (isTauri) {
     @if (updater.updateAvailable()) {
-      <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.installing()"
-        matTooltip="Nova versão disponível — clique para atualizar" class="update-btn">
-        <mat-icon>system_update</mat-icon>
+      <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.isUpdating()"
+        matTooltip="Nova versão disponível — clique para instalar" class="update-btn">
+        <mat-icon>{{ updater.isUpdating() ? 'sync' : 'system_update' }}</mat-icon>
       </button>
     } @else {
       <button mat-icon-button (click)="updater.checkForUpdates(true)" [disabled]="updater.checking()"

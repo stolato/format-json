@@ -7,9 +7,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class UpdaterService {
   private snackBar = inject(MatSnackBar);
 
-  readonly updateAvailable = signal<Update | null>(null);
-  readonly installing = signal(false);
+  readonly updateAvailable = signal<string | null>(null);
   readonly checking = signal(false);
+  readonly isUpdating = signal(false);
+  
+  private pendingUpdate: Update | null = null;
 
   readonly isTauri = !!(window as any).__TAURI_INTERNALS__;
 
@@ -18,17 +20,21 @@ export class UpdaterService {
     this.checking.set(true);
     try {
       const update = await check();
+      
       if (update?.available) {
-        this.updateAvailable.set(update);
+        this.pendingUpdate = update;
+        this.updateAvailable.set(update.version);
+        
         this.snackBar.open(
           `Nova versão ${update.version} disponível!`,
-          'Atualizar',
-          { duration: 8000, panelClass: 'blue' }
+          'Instalar',
+          { duration: 15000, panelClass: 'blue' }
         ).onAction().subscribe(() => this.installUpdate());
       } else if (showFeedback) {
         this.snackBar.open('O app já está na versão mais recente.', 'Ok', { duration: 3000 });
       }
-    } catch {
+    } catch (error) {
+      console.error('Update error:', error);
       if (showFeedback) {
         this.snackBar.open('Não foi possível verificar atualizações.', 'Ok', { duration: 3000 });
       }
@@ -38,32 +44,24 @@ export class UpdaterService {
   }
 
   async installUpdate(): Promise<void> {
-    const update = this.updateAvailable();
-    if (!update) return;
-    this.installing.set(true);
-
-    let downloaded = 0;
-    let total = 0;
-
+    if (!this.pendingUpdate || this.isUpdating()) return;
+    
+    this.isUpdating.set(true);
+    const snack = this.snackBar.open('Baixando e instalando atualização...', '', { duration: 0 }); // indefinite
+    
     try {
-      await update.downloadAndInstall((progress) => {
-        if (progress.event === 'Started') {
-          total = progress.data.contentLength ?? 0;
-          this.snackBar.open('Baixando atualização...', undefined, { duration: undefined });
-        } else if (progress.event === 'Progress') {
-          downloaded += progress.data.chunkLength;
-          if (total > 0) {
-            const pct = Math.round((downloaded / total) * 100);
-            this.snackBar.open(`Baixando atualização... ${pct}%`, undefined, { duration: undefined });
-          }
-        } else if (progress.event === 'Finished') {
-          this.snackBar.open('Instalando... o app vai reiniciar.', undefined, { duration: undefined });
-        }
-      });
-      await relaunch();
-    } catch {
-      this.installing.set(false);
-      this.snackBar.open('Erro ao instalar a atualização.', 'Ok', { duration: 4000 });
+      await this.pendingUpdate.downloadAndInstall();
+      
+      snack.dismiss();
+      this.snackBar.open('Atualização concluída! Reiniciando...', '', { duration: 2000 });
+      setTimeout(() => relaunch(), 1500);
+      
+    } catch (error) {
+      console.error('Install error:', error);
+      snack.dismiss();
+      this.snackBar.open('Erro ao instalar atualização.', 'Ok', { duration: 5000 });
+    } finally {
+      this.isUpdating.set(false);
     }
   }
 }

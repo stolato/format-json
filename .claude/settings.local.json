@@ -5,7 +5,11 @@
       "Bash(gh release *)",
       "Bash(gh auth *)",
       "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/releases?per_page=5\")",
-      "Bash(python3 -c \"import sys,json; releases=json.load\\(sys.stdin\\); [print\\(r['tag_name'], r['draft'], [a['name'] for a in r['assets']]\\) for r in releases]\")"
+      "Bash(python3 -c \"import sys,json; releases=json.load\\(sys.stdin\\); [print\\(r['tag_name'], r['draft'], [a['name'] for a in r['assets']]\\) for r in releases]\")",
+      "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/actions/runs?per_page=5\")",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/actions/runs/24642862237/jobs\")",
+      "Bash(npm list *)"
     ]
   }
 }
