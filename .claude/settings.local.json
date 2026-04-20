@@ -9,7 +9,9 @@
       "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/actions/runs?per_page=5\")",
       "Bash(python3 -c ' *)",
       "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/actions/runs/24642862237/jobs\")",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(curl -s \"https://api.github.com/repos/stolato/format-json/releases/latest\")",
+      "Read(//Users/luiz/.tauri/**)"
     ]
   }
 }
