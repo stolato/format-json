@@ -107,35 +107,42 @@ export class HomepageComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.id = this.route.snapshot.paramMap.get("id");
-    if (this.id) {
-      this.loading.show();
-      this.joinChannel();
-      this.apiService.getJson(this.id).subscribe({
-        next: (resp: any) => {
-          this.initialData = JSON.parse(resp.json);
-          this.visibleData = JSON.parse(resp.json);
+    this.subs.add(
+      this.route.paramMap.subscribe((params) => {
+        const newId = params.get('id');
+        if (newId === this.id) return;
+        if (this.id) this.socket.disconnectChannel(this.id);
+        this.id = newId;
+        if (this.id) {
+          this.loading.show();
+          this.joinChannel();
+          this.apiService.getJson(this.id).subscribe({
+            next: (resp: any) => {
+              this.initialData = JSON.parse(resp.json);
+              this.visibleData = JSON.parse(resp.json);
+              this.hasData = true;
+              this.isUnsaved = false;
+              this.loading.hide();
+              this.cdr.detectChanges();
+            },
+            error: () => {
+              this.loading.hide();
+              this.snackBar.open(
+                "Ops, não foi possivel recuperar o json solicitado",
+                "Ok",
+                { duration: 3000 },
+              );
+            },
+          });
+        } else {
+          const init = JsonDefault.default();
+          this.initialData = init;
+          this.visibleData = init;
           this.hasData = true;
-          this.isUnsaved = false;
-          this.loading.hide();
           this.cdr.detectChanges();
-        },
-        error: () => {
-          this.loading.hide();
-          this.snackBar.open(
-            "Ops, não foi possivel recuperar o json solicitado",
-            "Ok",
-            { duration: 3000 },
-          );
-        },
-      });
-    } else {
-      const init = JsonDefault.default();
-      this.initialData = init;
-      this.visibleData = init;
-      this.hasData = true;
-      this.cdr.detectChanges();
-    }
+        }
+      })
+    );
   }
 
   copy() {

@@ -28,19 +28,32 @@ export class AppComponent implements OnInit {
       // Warm start: app already running, receives a new URL
       await onOpenUrl((urls) => this.handleDeepLink(urls));
 
-      // Cold start: wait for Angular's initial navigation to finish before
-      // overriding with the deep-link URL, otherwise the initial nav to '/'
-      // races and overwrites the deep-link navigate call.
-      this.router.events.pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        take(1)
-      ).subscribe(async () => {
-        const initial = await getCurrent();
-        if (initial?.length) this.handleDeepLink(initial);
-      });
+      // Cold start: if navigation already finished before the import resolved,
+      // handle the URL immediately; otherwise wait for the first NavigationEnd.
+      if (this.router.navigated) {
+        await this.handleColdStart(getCurrent);
+      } else {
+        this.router.events.pipe(
+          filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+          take(1)
+        ).subscribe(() => this.handleColdStart(getCurrent));
+      }
     } catch {
       // plugin not available in dev or web
     }
+  }
+
+  private async handleColdStart(getCurrent: () => Promise<string[] | null>): Promise<void> {
+    let urls = await getCurrent();
+    if (!urls?.length) {
+      // Fallback: read args directly from Rust (getCurrent() may return null in dev mode on Linux)
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        const url = await invoke<string | null>('get_startup_url');
+        if (url) urls = [url];
+      } catch {}
+    }
+    if (urls?.length) this.handleDeepLink(urls);
   }
 
   private handleDeepLink(urls: string[]): void {

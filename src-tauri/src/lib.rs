@@ -1,5 +1,12 @@
 #![cfg_attr(target_os = "macos", allow(unexpected_cfgs))]
 
+#[tauri::command]
+fn get_startup_url() -> Option<String> {
+  std::env::args()
+    .skip(1)
+    .find(|a| a.starts_with("jsonedit://"))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -36,6 +43,7 @@ pub fn run() {
       }
       Ok(())
     })
+    .invoke_handler(tauri::generate_handler![get_startup_url])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
