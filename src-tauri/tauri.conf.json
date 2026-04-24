@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "JSONEdit",
-  "version": "1.8.20",
+  "version": "1.8.21",
   "identifier": "com.formatjson.app",
   "build": {
     "frontendDist": "../dist/formatjson/browser",
@@ -30,7 +30,9 @@
   "plugins": {
     "deep-link": {
       "desktop": {
-        "schemes": ["jsonedit"]
+        "schemes": [
+          "jsonedit"
+        ]
       }
     },
     "updater": {

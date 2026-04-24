@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {Observable} from "rxjs";
 import { environment } from '../../environments/environment';
-import {IUser, IOrganization, IJsonItem, ISettingsResponse, IAuthResponse} from '../models/api-types';
+import {IUser, IOrganization, IJsonItem, ISettingsResponse, IAuthResponse, IPaginatedResponse} from '../models/api-types';
 
 @Injectable({
   providedIn: 'root'
@@ -60,12 +60,13 @@ export class ApiService {
     return this.http.get<IUser>(`${this.baseUrl}/user/me`, { headers: headers });
   }
 
-  allItems(token: string): Observable<{data: IJsonItem[]}>{
+  allItems(token: string, page: number = 0, limit: number = 20): Observable<IPaginatedResponse<IJsonItem>>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
     });
-    return this.http.get<{data: IJsonItem[]}>(`${this.baseUrl}/items`, { headers: headers });
+    return this.http.get<IPaginatedResponse<IJsonItem>>(`${this.baseUrl}/items?page=${page}&limit=${limit}`, { headers: headers });
   }
+
 
   deleteItem(id: string, token: string) : Observable<any> {
     const headers = new HttpHeaders({

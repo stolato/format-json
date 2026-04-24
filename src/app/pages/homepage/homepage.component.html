@@ -6,24 +6,24 @@
 <div class="content" [class.dark]="darkMode">
   <div class="editor-panel">
     @if (hasData) {
-      <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+    <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
     }
   </div>
   <div class="right-panel">
     @if (!showChart) {
-      @if (preview && hasData) {
-        <json-editor [options]="editorOptions_view" [data]="visibleData" (change)="showJson($event)"></json-editor>
-      }
-      @if (!preview) {
-        <div class="formater">
-          <pre [innerHTML]="visibleData | prettyjson"></pre>
-        </div>
-      }
+    @if (preview && hasData) {
+    <json-editor [options]="editorOptions_view" [data]="visibleData" (change)="showJson($event)"></json-editor>
+    }
+    @if (!preview) {
+    <div class="formater">
+      <pre [innerHTML]="visibleData | prettyjson"></pre>
+    </div>
+    }
     }
     @if (showChart && hasData) {
-      <div class="chart-panel" [class.dark]="darkMode">
-        <app-json-chart [data]="visibleData" [dark]="darkMode"></app-json-chart>
-      </div>
+    <div class="chart-panel" [class.dark]="darkMode">
+      <app-json-chart [data]="visibleData" [dark]="darkMode"></app-json-chart>
+    </div>
     }
   </div>
   <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
@@ -46,7 +46,7 @@
   </div>
   <div class="right">
     <div class="version">
-      version: 1.8.20
+      version: 1.8.21
     </div>
     <div class="term">
       Tilt Tecnologia - {{date}}

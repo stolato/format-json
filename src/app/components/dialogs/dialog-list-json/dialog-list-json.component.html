@@ -1,53 +1,105 @@
-<h1 mat-dialog-title>Listagem de Jsons</h1>
-<div mat-dialog-content>
-  <table mat-table [dataSource]="list" class="mat-elevation-z8">
-
-    <!-- Name Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef> #id </th>
-      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Nome </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="view">
-      <th mat-header-cell *matHeaderCellDef> Visualizações </th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.views }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="org">
-      <th mat-header-cell *matHeaderCellDef> Criado em </th>
-      <td mat-cell *matCellDef="let element">
-       {{ element.createdAt | date: 'dd/MM/yyyy'}}
-      </td>
-    </ng-container>
-
-
-    <ng-container matColumnDef="options">
-      <th mat-header-cell *matHeaderCellDef> Options </th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="deleteItem(element)">
-            <mat-icon>remove</mat-icon>
-            <span>Remover</span>
-          </button>
-          <button mat-menu-item (click)="edit(element)">
-            <mat-icon>edit</mat-icon>
-            <span>Editar</span>
-          </button>
-        </mat-menu>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+<div class="header-container">
+  <h1 mat-dialog-title class="title-panel">Meus JSONs Salvos</h1>
+  
+  <div class="header-actions">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar nesta página...">
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
 </div>
+
+<div mat-dialog-content class="dialog-content">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-icon class="rotating">sync</mat-icon>
+    <span>Buscando seus JSONs...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && list.data.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+    <h3>Nenhum JSON encontrado</h3>
+    <p>{{ searchTerm ? 'Tente um termo diferente.' : 'Você ainda não salvou nenhum JSON.' }}</p>
+  </div>
+
+  <!-- JSON Table -->
+  <div class="table-container mat-elevation-z2" *ngIf="!isLoading && list.data.length > 0">
+    <table mat-table [dataSource]="list">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> #ID </th>
+        <td mat-cell *matCellDef="let element" class="id-cell"> {{element.id.substring(0, 8)}}... </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Nome </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="name-wrapper">
+            <mat-icon class="file-icon">insert_drive_file</mat-icon>
+            <span class="file-name">{{element.name || 'Sem nome'}}</span>
+            <span *ngIf="element.organization_id" class="org-badge">Equipe</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="view">
+        <th mat-header-cell *matHeaderCellDef> Visualizações </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="view-wrapper">
+            <mat-icon>visibility</mat-icon>
+            {{ element.views || 0 }}
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="org">
+        <th mat-header-cell *matHeaderCellDef> Criado em </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="date-cell">{{ element.createdAt | date: 'dd/MM/yyyy'}}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="options">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="deleteItem(element)">
+              <mat-icon>remove</mat-icon>
+              <span>Remover</span>
+            </button>
+            <button mat-menu-item (click)="edit(element)">
+              <mat-icon>edit</mat-icon>
+              <span>Editar</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+    </table>
+  </div>
+
+  <mat-paginator *ngIf="!isLoading && list.data.length > 0"
+                 [length]="totalItems"
+                 [pageSize]="pageSize"
+                 [pageIndex]="pageIndex"
+                 [pageSizeOptions]="[5, 10, 20, 50]"
+                 (page)="handlePageEvent($event)"
+                 aria-label="Selecionar página">
+  </mat-paginator>
+</div>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button matDialogClose>Fechar</button>
+</mat-dialog-actions>

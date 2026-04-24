@@ -33,4 +33,14 @@ export interface IJsonItem {
   ip?: string;
   name?: string;
   organization_id?: string;
+  views?: number;
+  createdAt?: string;
+  updateAt?: string;
+}
+
+export interface IPaginatedResponse<T> {
+  total_items: number;
+  page: number;
+  limit: number;
+  data: T[];
 }

@@ -1,26 +1,227 @@
-.content-panel{
-  display: flex;
-  flex-wrap: wrap;
-  .add {
-    margin-bottom: 10px;
-    margin-top: 10px;
+.header-container {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--ds-surface-raised);
+  color: white;
+
+  .title-panel {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .search-field {
+      flex: 1;
+      color: white;
+      
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        .mat-mdc-form-field-focus-indicator {
+          color: white;
+        }
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+        input.mat-mdc-input-element {
+          color: white !important;
+        }
+        .mat-mdc-form-field-icon-prefix, .mat-mdc-form-field-icon-suffix {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+
+    .add-btn {
+      height: 48px;
+      border-radius: 8px;
+      padding: 0 20px;
+      background: var(--primary-accent);
+      color: white;
+
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
   }
 }
 
-.add-org{
-  margin-bottom: 10px;
-  margin-top: 10px;
+.dialog-content {
+  padding: 24px !important;
+  min-height: 400px;
+  max-height: 70vh;
+  background: var(--ds-surface);
+  color: white;
 }
 
-.title-panel{
-  border-bottom: #CCC 1px solid;
-  box-shadow: 0 0 25px -14px #000;
+.loading-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    color: white;
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    max-width: 300px;
+  }
 }
 
+.rotating {
+  animation: rotate 2s linear infinite;
+}
 
-.close{
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.org-accordion {
+  background: transparent;
+  
+  ::ng-deep .mat-expansion-panel {
+    background: var(--ds-surface-overlay) !important;
+    color: white !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
+    &::before { display: none; }
+
+    .mat-expansion-panel-header-title {
+      color: white !important;
+      display: flex;
+      align-items: center;
+    }
+
+    .mat-expansion-panel-header-description {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .org-icon {
+      margin-right: 12px;
+      color: var(--primary-accent);
+    }
+
+    .user-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+.panel-content {
+  padding: 16px 0;
+  color: white;
+
+  .panel-actions {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    .spacer { flex: 1; }
+    
+    button {
+      color: white;
+      mat-icon { margin-right: 4px; }
+      &.mat-warn { color: #f44336; }
+    }
+  }
+}
+
+.table-container {
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ds-surface-sunken);
+
+  table {
+    width: 100%;
+    background: transparent;
+
+    tr { height: 56px; }
+
+    td.mat-mdc-cell {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.87) !important;
+    }
+
+    th.mat-mdc-header-cell {
+      background: rgba(255, 255, 255, 0.02);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+  }
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.owner-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: rgba(108, 92, 231, 0.15);
+  color: var(--primary-accent);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--ds-surface-raised);
+  
+  button {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }

@@ -1,67 +1,126 @@
-<h1 mat-dialog-title class="title-panel">Organizacoes</h1>
-<div mat-dialog-content>
-  <div class="add-org">
-    <button mat-raised-button color="primary" (click)="addOrg()">Add Organizacao</button>
+<div class="header-container">
+  <h1 mat-dialog-title class="title-panel">Minhas Organizações</h1>
+  
+  <div class="header-actions">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar organizações...">
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    
+    <button mat-flat-button color="primary" class="add-btn" (click)="addOrg()">
+      <mat-icon>add_business</mat-icon>
+      Nova Organização
+    </button>
   </div>
-  <mat-accordion class="example-headers-align" multi>
-    @for (orgs of organization; track orgs) {
-      <mat-expansion-panel>
+</div>
+
+<div mat-dialog-content class="dialog-content">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-icon class="rotating">sync</mat-icon>
+    <span>Carregando organizações...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredOrganizations.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <mat-icon>groups</mat-icon>
+    </div>
+    <h3>Nenhuma organização encontrada</h3>
+    <p>{{ searchTerm ? 'Tente um termo diferente.' : 'Comece criando sua primeira organização para compartilhar JSONs.' }}</p>
+    <button *ngIf="!searchTerm" mat-stroked-button color="primary" (click)="addOrg()">
+      Criar Organização
+    </button>
+  </div>
+
+  <!-- Organization List -->
+  <mat-accordion class="org-accordion" multi *ngIf="!isLoading && filteredOrganizations.length > 0">
+    @for (orgs of filteredOrganizations; track orgs.id) {
+      <mat-expansion-panel class="org-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>
+            <mat-icon class="org-icon">business</mat-icon>
             {{ orgs.name }}
           </mat-panel-title>
           <mat-panel-description>
-            total de usuarios: {{ orgs.users.length }}
+            <span class="user-count">
+              <mat-icon>person</mat-icon>
+              {{ orgs.users.length }} {{ orgs.users.length === 1 ? 'membro' : 'membros' }}
+            </span>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="content-panel">
-          <div class="add">
-            <button mat-raised-button color="primary" (click)="addUser(orgs.id)">Add user</button> |
-            <button mat-raised-button color="accent" (click)="deleteOrg(orgs.id)">Deletar Org</button>
+
+        <div class="panel-content">
+          <div class="panel-actions">
+            <button mat-button color="primary" (click)="addUser(orgs.id)">
+              <mat-icon>person_add</mat-icon>
+              Convidar Usuário
+            </button>
+            <span class="spacer"></span>
+            <button mat-button color="warn" (click)="deleteOrg(orgs.id)">
+              <mat-icon>delete_outline</mat-icon>
+              Excluir Organização
+            </button>
           </div>
-          <table mat-table [dataSource]="orgs.users" class="mat-elevation-z8">
-            <!-- Position Column -->
-            <ng-container matColumnDef="position">
-              <th mat-header-cell *matHeaderCellDef> ID.</th>
-              <td mat-cell *matCellDef="let element"> {{ element.id }}</td>
-            </ng-container>
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef> Name</th>
-              <td mat-cell *matCellDef="let element"> {{ element.name }}</td>
-            </ng-container>
-            <!-- Weight Column -->
-            <ng-container matColumnDef="weight">
-              <th mat-header-cell *matHeaderCellDef> E-mail</th>
-              <td mat-cell *matCellDef="let element"> {{ element.email }}</td>
-            </ng-container>
-            <!-- Symbol Column -->
-            <ng-container matColumnDef="symbol">
-              <th mat-header-cell *matHeaderCellDef> Options</th>
-              <td mat-cell *matCellDef="let element">
-                @if (orgs.owner_id !== element.id) {
-                  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
-                    >
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
-                }
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="removeUser(orgs.id, element)">
-                    <mat-icon>remove</mat-icon>
-                    <span>Remover</span>
-                  </button>
-                </mat-menu>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
+
+          <div class="table-container mat-elevation-z2">
+            <table mat-table [dataSource]="orgs.users">
+              <!-- Avatar Column -->
+              <ng-container matColumnDef="avatar">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="user-avatar">
+                    {{ getInitials(element.name) }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Nome </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <span class="user-name">{{ element.name }}</span>
+                  <span *ngIf="orgs.owner_id === element.id" class="owner-badge">Dono</span>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> E-mail </th>
+                <td mat-cell *matCellDef="let element"> {{ element.email }} </td>
+              </ng-container>
+
+              <!-- Options Column -->
+              <ng-container matColumnDef="symbol">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let element">
+                  @if (orgs.owner_id !== element.id) {
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                  }
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="removeUser(orgs.id, element)">
+                      <mat-icon color="warn">person_remove</mat-icon>
+                      <span>Remover da equipe</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
         </div>
       </mat-expansion-panel>
     }
   </mat-accordion>
 </div>
 
-<mat-dialog-actions class="close" align="end">
+<mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button matDialogClose>Fechar</button>
 </mat-dialog-actions>
