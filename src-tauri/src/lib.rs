@@ -15,6 +15,16 @@ pub fn run() {
       app.handle().plugin(tauri_plugin_process::init())?;
       app.handle().plugin(tauri_plugin_shell::init())?;
       app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+
+      #[cfg(desktop)]
+      app.handle().plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+        use tauri::Manager;
+        if let Some(window) = app.get_webview_window("main") {
+          let _ = window.unminimize();
+          let _ = window.set_focus();
+        }
+      }))?;
+
       app.handle().plugin(tauri_plugin_deep_link::init())?;
 
       if cfg!(debug_assertions) {
