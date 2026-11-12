@@ -1,5 +1,8 @@
 import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import { MatDialog, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
+import { MatDialogRef } from "@angular/material/dialog";
+import { ModalComponent } from "../../modal/modal.component";
+import { ModalService } from "../../../services/modal.service";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
 import {MatPaginator, MatPaginatorModule, PageEvent} from "@angular/material/paginator";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -7,12 +10,15 @@ import {ApiService} from "../../../services/api.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
 import {JsonDefault} from "../../../services/json-default";
-import { CdkScrollable } from '@angular/cdk/scrolling';
-import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIconButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatDivider } from '@angular/material/divider';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatIcon } from '@angular/material/icon';
 import { DatePipe, CommonModule } from '@angular/common';
-import { IJsonItem, IPaginatedResponse } from '../../../models/api-types';
+import { IJsonItem, IPaginatedResponse, itemKey } from '../../../models/api-types';
+import { apiErrorMessage } from '../../../services/api-errors';
+import { SessionService } from '../../../services/session.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
@@ -23,13 +29,10 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './dialog-list-json.component.html',
     styleUrls: ['./dialog-list-json.component.scss'],
     imports: [
+      ModalComponent,
+      MatProgressSpinner,
       CommonModule,
       FormsModule,
-      MatDialogTitle,
-      MatDialogContent,
-      MatDialogActions,
-      MatDialogClose,
-      CdkScrollable,
       MatTable,
       MatColumnDef,
       MatHeaderCellDef,
@@ -37,11 +40,11 @@ import { FormsModule } from '@angular/forms';
       MatCellDef,
       MatCell,
       MatIconButton,
-      MatButton,
       MatMenuTrigger,
       MatIcon,
       MatMenu,
       MatMenuItem,
+      MatDivider,
       MatHeaderRowDef,
       MatHeaderRow,
       MatRowDef,
@@ -54,7 +57,7 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class DialogListJsonComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ["id", 'name', 'view', "org", "options"];
+  displayedColumns: string[] = ['name', 'view', "org", "options"];
 
   public token: string | null = '';
   public list = new MatTableDataSource<any>();
@@ -71,8 +74,10 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
     private api: ApiService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
-    private dialogService: MatDialog,
-    private cdr: ChangeDetectorRef
+    private clipboard: Clipboard,
+    private modal: ModalService,
+    private cdr: ChangeDetectorRef,
+    private session: SessionService,
   ) {
   }
 
@@ -84,14 +89,19 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
     this.dialog.close({ item: JSON.stringify(element)})
   }
 
+  copyLink(element: IJsonItem) {
+    this.clipboard.copy(`https://jsonedit.com.br/${itemKey(element)}`);
+    this.snackBar.open('Link copiado!', 'OK', { duration: 2500 });
+  }
+
   ngAfterViewInit() {
   }
 
   getAll() {
     this.isLoading = true;
-    this.token = localStorage.getItem("key")
+    this.token = this.session.token;
     if (this.token) {
-      this.api.allItems(this.token, this.pageIndex, this.pageSize).subscribe({
+      this.api.allItems(this.pageIndex, this.pageSize).subscribe({
         next: (resp: IPaginatedResponse<IJsonItem>) => {
           this.list.data = resp.data;
           this.totalItems = resp.total_items;
@@ -100,9 +110,10 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
           this.isLoading = false;
           this.cdr.detectChanges();
         },
-        error: () => {
+        error: (err) => {
           this.isLoading = false;
-          this.snackBar.open("Erro ao carregar lista de JSONs", "ok", { duration: 2000 });
+          this.cdr.detectChanges();
+          this.snackBar.open(apiErrorMessage(err, "Erro ao carregar lista de JSONs"), "ok", { duration: 3000 });
         }
       })
     } else {
@@ -125,28 +136,35 @@ export class DialogListJsonComponent implements OnInit, AfterViewInit {
   }
 
   deleteItem(items: any) {
-    const dialog = this.dialogService.open(DialogConfirmComponent, {
+    const dialog = this.modal.open(DialogConfirmComponent, 'sm', {
       data: {
-        title: 'Excluir',
-        text: 'Tem certeza que deseja excluir este json?'
+        title: 'Excluir JSON',
+        text: `Tem certeza que deseja excluir "${items?.name || 'JSON sem nome'}"? Esta ação não pode ser desfeita.`,
+        confirmLabel: 'Excluir',
+        danger: true,
       }
     })
     dialog.afterClosed().subscribe({
       next: (resp: any) => {
         if (resp) {
-          const token = localStorage.getItem("key")
-          if (token) {
-            this.api.deleteItem(items.id, token).subscribe({
-              next: () => {
-                this.snackBar.open("JSON Removido com sucesso.")
-                this.getAll();
-                this.clear(items.id)
-              }
-            })
-          }
+          const key = itemKey(items);
+          this.api.deleteItem(key).subscribe({
+            next: () => {
+              this.snackBar.open("JSON Removido com sucesso.", "Ok", { duration: 3000 })
+              this.getAll();
+              this.clear(key)
+            },
+            error: (err) => {
+              this.snackBar.open(apiErrorMessage(err, "Não foi possível remover o JSON."), "Ok", { duration: 3000 });
+            }
+          })
         }
       }
     })
+  }
+
+  key(item: IJsonItem): string {
+    return itemKey(item);
   }
 
   clear(id: string){

@@ -1,11 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogClose } from "@angular/material/dialog";
+import { ModalComponent } from '../../modal/modal.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {ApiService} from "../../../services/api.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {NgxSpinnerService} from "ngx-spinner";
-import { CdkScrollable } from '@angular/cdk/scrolling';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import {apiErrorMessage} from "../../../services/api-errors";
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 
@@ -13,7 +14,7 @@ import { MatButton } from '@angular/material/button';
     selector: 'app-dialog-add-user-org',
     templateUrl: './dialog-add-user-org.component.html',
     styleUrls: ['./dialog-add-user-org.component.scss'],
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose]
+    imports: [ModalComponent, MatProgressSpinner, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatError, MatInput, MatButton, MatDialogClose]
 })
 export class DialogAddUserOrgComponent implements OnInit {
   sendForm: FormGroup | any ;
@@ -24,7 +25,6 @@ export class DialogAddUserOrgComponent implements OnInit {
     private apiService: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
-    private loading: NgxSpinnerService,
   ) {
     this.id = data.id;
   }
@@ -36,36 +36,38 @@ export class DialogAddUserOrgComponent implements OnInit {
 
   ngOnInit(): void {
     this.sendForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
     })
   }
 
+  sending = false;
+
   send(){
-    if(this.sendForm.valid){
-      this.loading.show();
-      const token = localStorage.getItem("key") || null;
-      this.apiService.addUserToOrganization(token, this.id, this.sendForm.controls['email'].value).subscribe({
-        next: (resp) => {
-          console.log(resp);
-          this.dialog.close(true);
-          this.snackBar.open(
-            'usuario add com sucesso!',
-            'Ok',
-            {duration: 3000}
-          );
-          this.loading.hide();
-        },
-        error: (err) => {
-          console.log(err);
-          this.snackBar.open(
-            'Ops, erro: ' + err.error.message,
-            'Ok',
-            {duration: 3000}
-          );
-          this.loading.hide();
-        }
-      });
+    if (this.sending) return;
+    if (!this.sendForm.valid) {
+      this.sendForm.markAllAsTouched();
+      return;
     }
+    this.sending = true;
+    this.apiService.addUserToOrganization(this.id, this.sendForm.controls['email'].value).subscribe({
+      next: () => {
+        this.dialog.close(true);
+        this.snackBar.open(
+          'Membro adicionado à organização!',
+          'Ok',
+          {duration: 3000}
+        );
+        this.sending = false;
+      },
+      error: (err) => {
+        this.snackBar.open(
+          apiErrorMessage(err, 'Não foi possível adicionar o usuário.'),
+          'Ok',
+          {duration: 5000}
+        );
+        this.sending = false;
+      }
+    });
   }
 }
 

@@ -1,134 +1,134 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import {Observable} from "rxjs";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Observable } from "rxjs";
 import { environment } from '../../environments/environment';
-import {IUser, IOrganization, IJsonItem, ISettingsResponse, IAuthResponse, IPaginatedResponse} from '../models/api-types';
+import {
+  IUser,
+  IOrganization,
+  IJsonItem,
+  ISettingsResponse,
+  IAuthResponse,
+  IPaginatedResponse,
+  ICreateItemPayload,
+  ICreateItemResponse,
+} from '../models/api-types';
 
+/** A API aceita `limit` entre 1 e 100. */
+export const MAX_PAGE_LIMIT = 100;
+
+/**
+ * O header `Authorization` é adicionado pelo interceptor sempre que houver
+ * sessão (inclusive em GET/PUT/POST /items e no reveal).
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-
-  //private baseUrl = 'https://green-gharial-belt.cyclic.app/api/v1';
-  //private baseUrl = 'http://localhost:8000';
-  // private baseUrl = 'https://ms-format-json.onrender.com';
   private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
-  shareJson(json: string, ip: string, name: string, org_id: string, token: any = null): Observable<IJsonItem> {
-    let config = {};
-    if(token) {
-      config = { headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-      })};
-    }
-    return this.http.post<IJsonItem>(`${this.baseUrl}/items`, {
-      json: JSON.stringify(json),
-      ip: ip,
-      name: name,
-      organization_id: org_id
-    }, config);
+  // ---- Itens -------------------------------------------------------------
+
+  shareJson(json: any, payload: Omit<ICreateItemPayload, 'json'> = {}): Observable<ICreateItemResponse> {
+    const body: ICreateItemPayload = { json: JSON.stringify(json), ...payload };
+    if (!body.name) delete body.name;
+    if (!body.organization_id) delete body.organization_id;
+    if (!body.view_once) delete body.view_once;
+    if (!body.private) delete body.private;
+    return this.http.post<ICreateItemResponse>(`${this.baseUrl}/items`, body);
   }
 
-  updateJson(id: string, json: string): Observable<IJsonItem> {
-    return this.http.put<IJsonItem>(`${this.baseUrl}/items/${id}`, {json: JSON.stringify(json)});
+  updateJson(slug: string, json: any): Observable<IJsonItem> {
+    return this.http.put<IJsonItem>(`${this.baseUrl}/items/${encodeURIComponent(slug)}`, { json: JSON.stringify(json) });
   }
 
-  getJson(id: string): Observable<IJsonItem> {
-    return this.http.get<IJsonItem>(`${this.baseUrl}/items/${id}`);
+  getJson(slug: string): Observable<IJsonItem> {
+    return this.http.get<IJsonItem>(`${this.baseUrl}/items/${encodeURIComponent(slug)}`);
   }
 
-  getIPAddress(): Observable<{ip: string}>
-  {
-    return this.http.get<{ip: string}>("https://api.ipify.org/?format=json");
+  revealJson(slug: string): Observable<IJsonItem> {
+    return this.http.post<IJsonItem>(`${this.baseUrl}/items/${encodeURIComponent(slug)}/reveal`, {});
   }
 
-
-  auth(email: string, pass: string): Observable<IAuthResponse>{
-    return this.http.post<IAuthResponse>(`${this.baseUrl}/auth`, { email: email, password: pass});
+  allItems(page: number = 0, limit: number = 20): Observable<IPaginatedResponse<IJsonItem>> {
+    const params = new HttpParams()
+      .set('page', Math.max(0, page))
+      .set('limit', clampLimit(limit));
+    return this.http.get<IPaginatedResponse<IJsonItem>>(`${this.baseUrl}/items`, { params });
   }
 
-  register(payload: any): Observable<IUser | any> {
+  deleteItem(slug: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/items/${encodeURIComponent(slug)}`);
+  }
+
+  // ---- Autenticação ------------------------------------------------------
+
+  auth(email: string, pass: string): Observable<IAuthResponse> {
+    return this.http.post<IAuthResponse>(`${this.baseUrl}/auth`, { email: email, password: pass });
+  }
+
+  register(payload: { name: string; email: string; password: string }): Observable<IUser | any> {
     return this.http.post<IUser | any>(`${this.baseUrl}/register`, payload);
   }
 
-  me(token: string): Observable<IUser>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.get<IUser>(`${this.baseUrl}/user/me`, { headers: headers });
+  logout(refreshToken: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/logout`, { refresh_token: refreshToken });
   }
 
-  allItems(token: string, page: number = 0, limit: number = 20): Observable<IPaginatedResponse<IJsonItem>>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.get<IPaginatedResponse<IJsonItem>>(`${this.baseUrl}/items?page=${page}&limit=${limit}`, { headers: headers });
+  logoutAll(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/logout-all`, {});
   }
 
-
-  deleteItem(id: string, token: string) : Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.delete(`${this.baseUrl}/items/${id}`, { headers: headers });
+  verifyEmail(token: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verify-email`, { token });
   }
 
-  refreshToken(token: string | null, refresh: string | null) : Observable<IAuthResponse> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.post<IAuthResponse>(`${this.baseUrl}/refresh`,{ refresh_token: refresh}, { headers: headers });
+  resendVerifyEmail(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verify-email/resend`, {});
   }
 
+  // ---- Usuário -----------------------------------------------------------
 
-  getSettings(token: string): Observable<ISettingsResponse>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.get<ISettingsResponse>(`${this.baseUrl}/user/settings`, { headers: headers });
+  me(): Observable<IUser> {
+    return this.http.get<IUser>(`${this.baseUrl}/user/me`);
   }
 
-  getOrganization(token: string | null) : Observable<IOrganization[]>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    })
-    return this.http.get<IOrganization[]>(`${this.baseUrl}/organization`, { headers: headers });
+  getSettings(): Observable<ISettingsResponse> {
+    return this.http.get<ISettingsResponse>(`${this.baseUrl}/user/settings`);
   }
 
-  addOrganization(token: string | null, name: string) : Observable<IOrganization>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    })
-    return this.http.post<IOrganization>(`${this.baseUrl}/organization`, { name: name},  { headers: headers });
+  setSettings(data: object): Observable<ISettingsResponse> {
+    return this.http.put<ISettingsResponse>(`${this.baseUrl}/user/settings`, { settings: JSON.stringify(data) });
   }
 
-  deleteOrganization(token: string | null, id: string) : Observable<any>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    })
-    return this.http.delete(`${this.baseUrl}/organization/${id}`, { headers: headers });
+  // ---- Organizações ------------------------------------------------------
+
+  getOrganization(page: number = 0, limit: number = MAX_PAGE_LIMIT): Observable<IOrganization[]> {
+    const params = new HttpParams()
+      .set('page', Math.max(0, page))
+      .set('limit', clampLimit(limit));
+    return this.http.get<IOrganization[]>(`${this.baseUrl}/organization`, { params });
   }
 
-  addUserToOrganization(token: string | null, org_id: string, email: string) : Observable<any>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    })
-    return this.http.post(`${this.baseUrl}/organization/${org_id}/users`, { email: email},  { headers: headers });
+  addOrganization(name: string): Observable<IOrganization> {
+    return this.http.post<IOrganization>(`${this.baseUrl}/organization`, { name: name });
   }
 
-  removeUserToOrganization(token: string | null, org_id: string, userid: string) : Observable<any>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    })
-    return this.http.delete(`${this.baseUrl}/organization/${org_id}/users/${userid}`,  { headers: headers });
+  deleteOrganization(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/organization/${id}`);
   }
 
-  setSettings(token: string, data: object): Observable<ISettingsResponse>{
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-    return this.http.put<ISettingsResponse>(`${this.baseUrl}/user/settings`, {settings: JSON.stringify(data)},{ headers: headers });
+  addUserToOrganization(org_id: string, email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/organization/${org_id}/users`, { email: email });
   }
+
+  removeUserToOrganization(org_id: string, userid: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/organization/${org_id}/users/${userid}`);
+  }
+}
+
+function clampLimit(limit: number): number {
+  if (!Number.isFinite(limit) || limit < 1) return 20;
+  return Math.min(MAX_PAGE_LIMIT, Math.floor(limit));
 }

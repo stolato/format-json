@@ -33,15 +33,19 @@ interface VisualEdge {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="chart-wrapper" [class.dark]="dark" #wrapper (wheel)="onWheel($event)" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
+    <div class="chart-wrapper" [class.dark]="dark" [class.dragging]="isDragging" #wrapper tabindex="0" role="application"
+      aria-label="Gráfico do JSON. Use as setas para mover, + e - para zoom e 0 para enquadrar."
+      (wheel)="onWheel($event)" (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)" (keydown)="onKeyDown($event)">
+      <div class="hint" aria-hidden="true">Arraste ou role para mover · {{ mod }} + rolagem para zoom</div>
       <div class="controls-overlay">
-        <button class="control-btn" (click)="zoomIn()" title="Zoom In">
+        <button type="button" class="control-btn" (click)="zoomIn()" title="Aumentar zoom (+)" aria-label="Aumentar zoom">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M12 5v14M5 12h14"/></svg>
         </button>
-        <button class="control-btn" (click)="zoomOut()" title="Zoom Out">
+        <button type="button" class="control-btn" (click)="zoomOut()" title="Diminuir zoom (-)" aria-label="Diminuir zoom">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M5 12h14"/></svg>
         </button>
-        <button class="control-btn" (click)="centerGraph()" title="Fit to screen">
+        <button type="button" class="control-btn" (click)="centerGraph()" title="Enquadrar na tela (0)" aria-label="Enquadrar na tela">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M12 7a5 5 0 1 0 0 10 5 5 0 1 0 0-10z"/></svg>
         </button>
       </div>
@@ -75,9 +79,18 @@ interface VisualEdge {
         linear-gradient(90deg, rgba(108,92,231,0.07) 1px, transparent 1px);
       background-size: 28px 28px;
     }
-    .chart-wrapper:active { cursor: grabbing; }
+    .chart-wrapper.dragging { cursor: grabbing; }
+    .chart-wrapper { touch-action: none; outline: none; user-select: none; -webkit-user-select: none; }
+    .chart-wrapper:focus-visible { box-shadow: inset 0 0 0 2px var(--primary-accent, #6c5ce7); }
+    .hint {
+      position: absolute; left: 16px; bottom: 16px; z-index: 100;
+      font-size: 12px; padding: 4px 8px; border-radius: 4px;
+      background: rgba(255,255,255,0.85); color: #555; pointer-events: none;
+    }
+    .chart-wrapper.dark .hint { background: rgba(0,0,0,0.5); color: #bbb; }
+    .control-btn:focus-visible { outline: 2px solid var(--primary-accent, #6c5ce7); outline-offset: 1px; }
     .controls-overlay {
-      position: absolute; bottom: 24px; right: 24px;
+      position: absolute; top: 16px; right: 16px;
       display: flex; flex-direction: column; gap: 8px; z-index: 100;
     }
     .control-btn {
@@ -193,7 +206,8 @@ export class JsonChartComponent implements OnChanges {
   panX = 50;
   panY = 50;
 
-  private isDragging = false;
+  public isDragging = false;
+  public mod = /mac/i.test(navigator.userAgent) ? '⌘' : 'Ctrl';
   private startX = 0;
   private startY = 0;
   private nodeIdCounter = 0;
@@ -217,55 +231,62 @@ export class JsonChartComponent implements OnChanges {
     // Keep standard resizing behavior
   }
 
+  /** Rolagem move o gráfico; Ctrl/⌘ + rolagem (ou pinça no trackpad) aplica zoom no ponto do cursor. */
   onWheel(e: WheelEvent) {
+    e.preventDefault();
     if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const zoomSensitivity = 0.002;
-      const delta = -e.deltaY * zoomSensitivity;
-      let newZoom = this.zoom * (1 + delta);
-      newZoom = Math.max(0.2, Math.min(newZoom, 4));
-      
+      const factor = 1 - e.deltaY * 0.002;
       const rect = this.wrapper.nativeElement.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      this.panX = mouseX - (mouseX - this.panX) * (newZoom / this.zoom);
-      this.panY = mouseY - (mouseY - this.panY) * (newZoom / this.zoom);
-      this.zoom = newZoom;
+      this.zoomAt(this.zoom * factor, e.clientX - rect.left, e.clientY - rect.top);
     } else {
-      // Allow natural scroll to be mapped to pan if desired, or let users scroll normally.
-      // Echarts default behavior is wheel to zoom. We'll map all wheel to zoom here for simplicity,
-      // just like node editors.
-      e.preventDefault();
-      const zoomSensitivity = 0.001;
-      const delta = -e.deltaY * zoomSensitivity;
-      let newZoom = this.zoom * (1 + delta);
-      newZoom = Math.max(0.2, Math.min(newZoom, 4));
-      
-      const rect = this.wrapper.nativeElement.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      this.panX = mouseX - (mouseX - this.panX) * (newZoom / this.zoom);
-      this.panY = mouseY - (mouseY - this.panY) * (newZoom / this.zoom);
-      this.zoom = newZoom;
+      this.panX -= e.deltaX;
+      this.panY -= e.deltaY;
     }
   }
 
-  onMouseDown(e: MouseEvent) {
+  onPointerDown(e: PointerEvent) {
+    if ((e.target as HTMLElement).closest('.controls-overlay')) return;
+    if (e.button !== 0) return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).focus({ preventScroll: true });
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     this.isDragging = true;
     this.startX = e.clientX - this.panX;
     this.startY = e.clientY - this.panY;
   }
 
-  onMouseMove(e: MouseEvent) {
+  onPointerMove(e: PointerEvent) {
     if (!this.isDragging) return;
     this.panX = e.clientX - this.startX;
     this.panY = e.clientY - this.startY;
   }
 
-  onMouseUp() {
+  onPointerUp(e: PointerEvent) {
+    const el = e.currentTarget as HTMLElement;
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
     this.isDragging = false;
+  }
+
+  onKeyDown(e: KeyboardEvent) {
+    const step = e.shiftKey ? 200 : 60;
+    switch (e.key) {
+      case 'ArrowLeft': this.panX += step; break;
+      case 'ArrowRight': this.panX -= step; break;
+      case 'ArrowUp': this.panY += step; break;
+      case 'ArrowDown': this.panY -= step; break;
+      case '+': case '=': this.zoomIn(); break;
+      case '-': case '_': this.zoomOut(); break;
+      case '0': this.centerGraph(); break;
+      default: return;
+    }
+    e.preventDefault();
+  }
+
+  private zoomAt(target: number, x: number, y: number) {
+    const newZoom = Math.max(0.1, Math.min(target, 4));
+    this.panX = x - (x - this.panX) * (newZoom / this.zoom);
+    this.panY = y - (y - this.panY) * (newZoom / this.zoom);
+    this.zoom = newZoom;
   }
 
   zoomIn() {
@@ -375,15 +396,15 @@ export class JsonChartComponent implements OnChanges {
     };
 
     if (value === null || value === undefined) {
-      node.rows.push({ key: 'value:', value: 'null', type: 'nil', isNode: false });
+      node.rows.push({ key: 'valor:', value: 'null', type: 'nil', isNode: false });
     } else if (typeof value !== 'object') {
       const { valStr, style, color } = this.formatPrimitive(value);
-      node.rows.push({ key: 'value:', value: valStr, type: style as any, isNode: false, colorSquare: color });
+      node.rows.push({ key: 'valor:', value: valStr, type: style as any, isNode: false, colorSquare: color });
     } else if (Array.isArray(value)) {
       if (!isRoot) {
-        node.rows.push({ key: 'items:', value: `[ ${value.length} items ]`, type: 'summary', isNode: false });
+        node.rows.push({ key: 'itens:', value: `[ ${value.length} ${value.length === 1 ? 'item' : 'itens'} ]`, type: 'summary', isNode: false });
       } else if (value.length === 0) {
-        node.rows.push({ key: 'items:', value: `[ 0 items ]`, type: 'summary', isNode: false });
+        node.rows.push({ key: 'itens:', value: `[ 0 itens ]`, type: 'summary', isNode: false });
       }
       value.forEach((v, i) => {
         node.children.push(this.createVisualTree(v, `[${i}]`, false));
@@ -391,7 +412,7 @@ export class JsonChartComponent implements OnChanges {
     } else {
       const entries = Object.entries(value);
       if (entries.length === 0) {
-        node.rows.push({ key: 'value:', value: '{}', type: 'summary', isNode: false });
+        node.rows.push({ key: 'valor:', value: '{}', type: 'summary', isNode: false });
       } else {
         for (const [k, v] of entries) {
           if (v === null || typeof v !== 'object') {
@@ -400,7 +421,7 @@ export class JsonChartComponent implements OnChanges {
           } else {
             const isArr = Array.isArray(v);
             const count = isArr ? v.length : Object.keys(v).length;
-            const summaryText = isArr ? `[ ${count} items ]` : `{ ${count} keys }`;
+            const summaryText = isArr ? `[ ${count} ${count === 1 ? "item" : "itens"} ]` : `{ ${count} ${count === 1 ? "chave" : "chaves"} }`;
             
             const childNode = this.createVisualTree(v, k, false);
             node.children.push(childNode);

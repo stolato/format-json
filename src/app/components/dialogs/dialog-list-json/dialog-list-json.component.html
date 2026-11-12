@@ -1,50 +1,42 @@
-<div class="header-container">
-  <h1 mat-dialog-title class="title-panel">Meus JSONs Salvos</h1>
-  
-  <div class="header-actions">
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+<app-modal title="Meus JSONs" subtitle="JSONs que você salvou ou que pertencem às suas organizações." icon="data_object">
+  <div modal-toolbar>
+    <mat-form-field appearance="outline" class="full-width search-field" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar nesta página...">
-      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter()">
-        <mat-icon>close</mat-icon>
-      </button>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar nesta página…"
+        aria-label="Filtrar JSONs desta página" cdkFocusInitial>
+      @if (searchTerm) {
+        <button matSuffix mat-icon-button type="button" aria-label="Limpar filtro" (click)="searchTerm=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
   </div>
-</div>
 
-<div mat-dialog-content class="dialog-content">
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-state">
-    <mat-icon class="rotating">sync</mat-icon>
-    <span>Buscando seus JSONs...</span>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading && list.data.length === 0" class="empty-state">
-    <div class="empty-icon">
-      <mat-icon>description</mat-icon>
+  @if (isLoading) {
+    <div class="modal-state" role="status">
+      <mat-spinner diameter="32"></mat-spinner>
+      <p>Buscando seus JSONs…</p>
     </div>
-    <h3>Nenhum JSON encontrado</h3>
-    <p>{{ searchTerm ? 'Tente um termo diferente.' : 'Você ainda não salvou nenhum JSON.' }}</p>
-  </div>
+  } @else if (list.data.length === 0) {
+    <div class="modal-state">
+      <span class="modal-state-icon"><mat-icon>{{ searchTerm ? 'search_off' : 'description' }}</mat-icon></span>
+      <h3>{{ searchTerm ? 'Nada encontrado' : 'Nenhum JSON salvo ainda' }}</h3>
+      <p>{{ searchTerm ? 'Tente outro termo. O filtro busca apenas nesta página.' : 'Use "Compartilhar" no editor para salvar um JSON e ele aparecerá aqui.' }}</p>
+    </div>
+  }
 
   <!-- JSON Table -->
-  <div class="table-container mat-elevation-z2" *ngIf="!isLoading && list.data.length > 0">
+  <div class="data-table" *ngIf="!isLoading && list.data.length > 0">
     <table mat-table [dataSource]="list">
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> #ID </th>
-        <td mat-cell *matCellDef="let element" class="id-cell"> {{element.id.substring(0, 8)}}... </td>
-      </ng-container>
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Nome </th>
         <td mat-cell *matCellDef="let element">
           <div class="name-wrapper">
-            <mat-icon class="file-icon">insert_drive_file</mat-icon>
-            <span class="file-name">{{element.name || 'Sem nome'}}</span>
-            <span *ngIf="element.organization_id" class="org-badge">Equipe</span>
+            <mat-icon class="file-icon cell-icon" aria-hidden="true">description</mat-icon>
+            <span class="file-name cell-primary">{{element.name || 'Sem nome'}}</span>
+            <span *ngIf="element.organization_id" class="badge">Equipe</span>
+            <span *ngIf="element.view_once" class="badge badge-warning">Visualização única</span>
           </div>
         </td>
       </ng-container>
@@ -52,7 +44,7 @@
       <ng-container matColumnDef="view">
         <th mat-header-cell *matHeaderCellDef> Visualizações </th>
         <td mat-cell *matCellDef="let element">
-          <div class="view-wrapper">
+          <div class="view-wrapper cell-muted">
             <mat-icon>visibility</mat-icon>
             {{ element.views || 0 }}
           </div>
@@ -62,31 +54,40 @@
       <ng-container matColumnDef="org">
         <th mat-header-cell *matHeaderCellDef> Criado em </th>
         <td mat-cell *matCellDef="let element">
-          <span class="date-cell">{{ element.createdAt | date: 'dd/MM/yyyy'}}</span>
+          <span class="date-cell cell-muted">{{ element.createdAt | date: 'dd/MM/yyyy'}}</span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="options">
         <th mat-header-cell *matHeaderCellDef> </th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()" [attr.aria-label]="'Ações para ' + (element.name || 'JSON sem nome')">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="deleteItem(element)">
-              <mat-icon>remove</mat-icon>
-              <span>Remover</span>
-            </button>
             <button mat-menu-item (click)="edit(element)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
+              <mat-icon>{{ element.view_once ? 'visibility' : 'edit' }}</mat-icon>
+              <span>{{ element.view_once ? 'Abrir' : 'Editar' }}</span>
+            </button>
+            @if (!element.view_once) {
+              <button mat-menu-item (click)="copyLink(element)">
+                <mat-icon>link</mat-icon>
+                <span>Copiar link</span>
+              </button>
+            }
+            <mat-divider></mat-divider>
+            <button mat-menu-item class="danger-item" (click)="deleteItem(element)">
+              <mat-icon>delete_outline</mat-icon>
+              <span>Excluir</span>
             </button>
           </mat-menu>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable" tabindex="0"
+        (click)="edit(row)" (keydown.enter)="edit(row)"
+        [attr.aria-label]="(row.view_once ? 'Abrir ' : 'Editar ') + (row.name || 'JSON sem nome')"></tr>
     </table>
   </div>
 
@@ -98,8 +99,4 @@
                  (page)="handlePageEvent($event)"
                  aria-label="Selecionar página">
   </mat-paginator>
-</div>
-
-<mat-dialog-actions align="end" class="dialog-actions">
-  <button mat-button matDialogClose>Fechar</button>
-</mat-dialog-actions>
+</app-modal>

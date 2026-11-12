@@ -3,22 +3,29 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import {ApiService} from "../../../services/api.service";
 import {AuthService} from "../../../services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
-import { CdkScrollable } from '@angular/cdk/scrolling';
+import {apiErrorMessage, retryAfter} from "../../../services/api-errors";
+import { MatDialogRef, MatDialogClose } from "@angular/material/dialog";
+import { ModalComponent } from '../../modal/modal.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-dialog-login',
     templateUrl: './dialog-login.component.html',
     styleUrls: ['./dialog-login.component.scss'],
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatProgressSpinner, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose]
+    imports: [ModalComponent, MatProgressSpinner, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatError, MatSuffix, MatInput, MatButton, MatIconButton, MatIcon, MatDialogClose]
 })
 export class DialogLoginComponent {
   form: FormGroup | any;
   loading: boolean = false;
+  showPassword = false;
+
+  switchToRegister() {
+    this.dialog.close({ switchTo: 'register' });
+  }
 
   constructor(
     private dialog: MatDialogRef<DialogLoginComponent>,
@@ -30,40 +37,50 @@ export class DialogLoginComponent {
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      email: ['', [Validators.email, Validators.required]],
-      password: ['', [Validators.required, Validators.min(6)]],
+      email: ['', [Validators.email, Validators.required, Validators.maxLength(254)]],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
     })
   }
 
-  getMe(token: string){
-    this.api.me(token).subscribe({
+  getMe(){
+    this.api.me().subscribe({
       next: (resp) => {
         localStorage.setItem("name", resp.name);
+        this.auth.user$.next(resp);
         this.dialog.close({ name: resp.name });
-      }
+      },
+      error: () => this.dialog.close({}),
     })
   }
 
   login(){
     if(this.form.valid){
       this.loading = true;
-      this.api.auth(this.form.get("email").value, this.form.get("password").value).subscribe({
-        next: (resp: any) => {
-          this.auth.setToken(resp.token);
-          localStorage.setItem("refresh", resp.refresh_token);
-          this.getMe(resp.token);
+      this.auth.login(this.form.get("email").value, this.form.get("password").value).subscribe({
+        next: () => {
+          this.getMe();
           this.snackBar.open("Logado com sucesso!", "OK", {
             duration: 3000,
           })
         },
-        error: () => {
-          this.snackBar.open("ops, nao foi possivel efetuar seu login, valide os dados", "Ok");
+        error: (err) => {
+          let msg: string;
+          if (err?.status === 401) {
+            msg = "E-mail ou senha inválidos.";
+          } else if (err?.status === 429) {
+            const wait = retryAfter(err);
+            const min = wait ? Math.ceil(wait / 60) : null;
+            msg = "Muitas tentativas de login. " + (min ? `Tente novamente em ${min} minuto${min > 1 ? 's' : ''}.` : "Tente novamente em alguns minutos.");
+          } else {
+            msg = apiErrorMessage(err, "Ops, não foi possível efetuar seu login.");
+          }
+          this.snackBar.open(msg, "Ok", { duration: 5000 });
           this.form.get("password").setValue(null);
           this.loading = false;
         }
       })
     }else{
-      this.snackBar.open("Preencha todos os dados corretamente", "Ok");
+      this.form.markAllAsTouched();
     }
   }
 }

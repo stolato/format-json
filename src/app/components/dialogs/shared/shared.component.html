@@ -1,67 +1,79 @@
-<h2 mat-dialog-title>Compartilhar JSON</h2>
-<mat-dialog-content class="mat-typography">
+<app-modal [title]="link ? 'Link gerado' : 'Compartilhar JSON'"
+  [subtitle]="link ? (viewOnce ? 'Este link só pode ser aberto uma vez e não pode ser editado.' : 'Qualquer pessoa com o link pode ver e editar.') : 'Gere um link para enviar este JSON.'"
+  [icon]="link ? 'check_circle' : 'share'" (close)="close()">
+
   @if (!link) {
-    <h3>Deseja compartilhar esse json??</h3>
-  }
-  @if (!link && token) {
-    <form [formGroup]="sendForm">
-      <div class="name">
-        <mat-form-field class="example-full-width">
-          <mat-label>Nome do Json</mat-label>
-          <input formControlName="name" matInput placeholder="Ex. integracao google" value="Sushi">
+    <form id="shareForm" class="modal-form" [formGroup]="sendForm" (ngSubmit)="shared()" novalidate>
+      @if (token) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome (opcional)</mat-label>
+          <input formControlName="name" matInput maxlength="200" placeholder="Ex.: Integração Google" autocomplete="off" cdkFocusInitial>
+          <mat-hint>Ajuda a encontrar depois em "Meus JSONs".</mat-hint>
         </mat-form-field>
-      </div>
-      <div class="organization">
-        <mat-form-field>
-          <mat-label>Organizacao</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Organização</mat-label>
           <mat-select formControlName="organization_id">
-            <mat-option>None</mat-option>
-            @for (org of organization; track org) {
-              <mat-option [value]="org.id">
-                {{ org.name }}
-              </mat-option>
+            <mat-option [value]="null">Nenhuma (pessoal)</mat-option>
+            @for (org of organization; track org.id) {
+              <mat-option [value]="org.id">{{ org.name }}</mat-option>
             }
           </mat-select>
+          <mat-hint>Membros da organização também terão acesso.</mat-hint>
         </mat-form-field>
+      } @else {
+        <div class="info-callout">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <span>
+            <button type="button" class="link-btn" (click)="askLogin()">Entre na sua conta</button>
+            para dar um nome ao JSON e compartilhar com sua organização.
+          </span>
+        </div>
+      }
+
+      <div class="toggle-row">
+        <div class="toggle-text">
+          <span class="toggle-label" id="viewOnceLabel">Visualização única</span>
+          <span class="toggle-hint">O conteúdo é apagado depois da primeira visualização (ou em 7 dias, se não for aberto).</span>
+        </div>
+        <mat-slide-toggle formControlName="view_once" aria-labelledby="viewOnceLabel"></mat-slide-toggle>
       </div>
     </form>
-  }
-  @if (loading) {
-    <div class="loading">
-      <mat-spinner diameter="50"></mat-spinner>
+  } @else {
+    <div class="link-box">
+      <span class="link-label">Link web</span>
+      <div class="link-row">
+        <code class="link-value">{{ base_url }}/{{ link }}</code>
+        <button mat-flat-button class="primary-action" type="button" (click)="copy()" cdkFocusInitial>
+          <mat-icon>content_copy</mat-icon> Copiar
+        </button>
+      </div>
     </div>
-  }
-  @if (link) {
-    <div>
-      <h3>Link gerado:</h3>
-      <p>
-        <mat-form-field class="example-full-width">
-          <mat-label>Link web</mat-label>
-          <input type="text" value="{{base_url}}/{{link}}" readonly matInput>
-          <mat-icon matSuffix (click)="copy()">content_copy</mat-icon>
-        </mat-form-field>
-      </p>
-      @if (isTauri) {
-        <p>
-          <mat-form-field class="example-full-width">
-            <mat-label>Abrir no app</mat-label>
-            <input type="text" value="jsonedit://{{link}}" readonly matInput>
-            <mat-icon matSuffix (click)="copyDeepLink()">content_copy</mat-icon>
-          </mat-form-field>
-        </p>
-      }
-      @if (!isTauri) {
-        <p>
-          <button mat-stroked-button (click)="openInApp()">
-            <mat-icon>open_in_new</mat-icon>
-            Abrir no app desktop
+    @if (isTauri) {
+      <div class="link-box">
+        <span class="link-label">Abrir no app</span>
+        <div class="link-row">
+          <code class="link-value">jsonedit://{{ link }}</code>
+          <button mat-stroked-button type="button" (click)="copyDeepLink()">
+            <mat-icon>content_copy</mat-icon> Copiar
           </button>
-        </p>
-      }
-    </div>
+        </div>
+      </div>
+    } @else {
+      <button mat-stroked-button type="button" class="open-app" (click)="openInApp()">
+        <mat-icon>open_in_new</mat-icon> Abrir no app desktop
+      </button>
+    }
   }
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Fechar</button>
-  <button mat-button (click)="shared()" cdkFocusInitial>Compartilhar</button>
-</mat-dialog-actions>
+
+  <ng-container modal-actions>
+    @if (!link) {
+      <button mat-button type="button" (click)="close()">Cancelar</button>
+      <button mat-flat-button class="primary-action" type="submit" form="shareForm" [disabled]="loading">
+        @if (loading) { <mat-spinner class="btn-spinner" diameter="16"></mat-spinner> }
+        {{ loading ? 'Gerando link…' : 'Gerar link' }}
+      </button>
+    } @else {
+      <button mat-button type="button" (click)="close()">Concluir</button>
+    }
+  </ng-container>
+</app-modal>

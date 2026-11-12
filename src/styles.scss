@@ -1,4 +1,47 @@
-@import 'jsoneditor/dist/jsoneditor.min.css';
+@use '@angular/material' as mat;
+// A ordem importa: CSS do jsoneditor primeiro, depois os nossos overrides.
+@use 'jsoneditor/dist/jsoneditor.min' as jsoneditor-lib;
+@use 'styles/jsoneditor' as jsoneditor-overrides;
+
+/*
+ * Tema Material 3 da marca. `theme-type: color-scheme` gera as cores com light-dark(),
+ * então basta trocar `color-scheme` no <html> para alternar entre claro e escuro
+ * (inclusive dialogs, menus e snackbars, que ficam fora dos componentes).
+ */
+html {
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$azure-palette,
+      theme-type: color-scheme,
+    ),
+    typography: (
+      plain-family: ('Outfit', 'Helvetica Neue', sans-serif),
+      brand-family: ('Outfit', 'Helvetica Neue', sans-serif),
+    ),
+    density: 0,
+  ));
+
+  // Ajusta o primário para o roxo exato da marca (#6C5CE7).
+  @include mat.theme-overrides((
+    primary: light-dark(#5B4BD6, #C9C2FF), // claro: #5B4BD6 dá >= 5.5:1 como texto (o #6C5CE7 ficava em 4.4:1)
+    on-primary: light-dark(#FFFFFF, #2B1E80),
+    primary-container: light-dark(#E6E1FF, #4B3DB8),
+    on-primary-container: light-dark(#1E1366, #E6E1FF),
+    // Texto: no escuro o M3 usa um cinza rosado (#E6E1E6) e o secundário fica quase igual ao
+    // principal. Aqui o principal é mais claro e neutro, e o secundário é claramente distinto.
+    on-surface: light-dark(#1C1B1F, #F2F0F5),
+    on-surface-variant: light-dark(#4A4553, #C8C3D1),
+    outline-variant: light-dark(#CAC4D0, #3F3B45),
+  ));
+}
+
+html.dark-theme {
+  color-scheme: dark;
+}
+
 :root{
   --ds-surface: #1D2125;
   --ds-surface-hovered: #22272B;
@@ -12,6 +55,47 @@
   --ds-surface-sunken: #161A1D;
   --primary-accent: #6C5CE7;
   --primary-accent-hover: #8e82ef;
+
+  /* Tokens semânticos (tema claro). O tema escuro sobrescreve em .dark */
+  --bg-app: #ffffff;
+  --bg-editor: #ffffff;
+  --bg-gutter: #ebebeb;
+  --fg-gutter: #5f5f5f;
+  --fg-default: #1a1a1a;
+  --fg-muted: #5f6368;
+  --border-subtle: rgba(0, 0, 0, 0.12);
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --danger: #d93025;
+
+  /* Sintaxe do formatador (fundo escuro fixo) — todas >= 4.5:1 sobre --bg-code */
+  --bg-code: #272727;
+  --syntax-text: #a0a6b8;
+  --syntax-key: #c39ad6;
+  --syntax-string: #8fbf7f;
+  --syntax-number: #f2b619;
+  --syntax-boolean: #4fb6f5;
+  --syntax-null: #9ea3b0;
+}
+
+.dark,
+html.dark-theme {
+  --bg-app: #1e1e1e;
+  --bg-editor: #272727;
+  --bg-gutter: #2b2d30;
+  --fg-gutter: #9a9789;
+  --fg-default: #ECEAF0;
+  --fg-muted: #C8C3D1;
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --hover-overlay: rgba(255, 255, 255, 0.1);
+  --danger: #f28b82;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -39,9 +123,12 @@
 
 
 pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 20px;
   font-weight: 400;
-  background: #272727;
-  color: #727990;
+  background: var(--bg-code);
+  color: var(--syntax-text);
   width: 100%;
   height: 100%;
   margin: 0;
@@ -51,19 +138,19 @@ pre {
     color: #adadaf;
   }
   .string {
-    color: #618554;
+    color: var(--syntax-string);
   }
   .number {
-    color: #f2b619;
+    color: var(--syntax-number);
   }
   .boolean {
-    color: #0097f1;
+    color: var(--syntax-boolean);
   }
   .null {
-    color: #727990;
+    color: var(--syntax-null);
   }
   .key {
-    color: #9976ae;
+    color: var(--syntax-key);
   }
 }
 html {
@@ -109,6 +196,8 @@ html.tauri-app body:has(.dark) {
   position: absolute !important;
   bottom: 50px;
   right: 25px;
+  color: var(--syntax-text) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 .formater {
   width: 100%;
@@ -128,8 +217,8 @@ html.tauri-app body:has(.dark) {
     .list-numbers {
       padding-bottom: 5px;
       padding-top: 5px;
-      background-color: #ebebeb;
-      color: #1a1a1a;
+      background-color: var(--bg-gutter);
+      color: var(--fg-gutter);
     }
 
     .numbers {
@@ -137,13 +226,9 @@ html.tauri-app body:has(.dark) {
       display: grid;
       justify-items: end;
       padding: 0 5px 0px 5px;
-      background-color: #ebebeb;
+      background-color: var(--bg-gutter);
     }
   }
-}
-.mdc-label{
-  color: #FFF;
-  font-weight: bold !important;
 }
 
 
@@ -174,15 +259,10 @@ html.tauri-app body:has(.dark) {
   box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
-.dark .mat-mdc-dialog-surface {
+html.dark-theme .mat-mdc-dialog-surface {
   box-shadow: 0px 12px 48px rgba(108, 92, 231, 0.1) !important;
 }
 
-@media (max-width: 667px) {
-  .content{
-    flex-wrap: wrap;
-  }
-}
 
 /* CARREGAMENTO DA IDE */
 .ide-linear-loader {
@@ -212,4 +292,327 @@ html.tauri-app body:has(.dark) {
   0% { left: -30%; width: 30%; }
   50% { left: 30%; width: 70%; }
   100% { left: 100%; width: 30%; }
+}
+
+/* Itens que só aparecem em telas pequenas (ex.: ações recolhidas no menu do usuário) */
+.show-sm { display: none !important; }
+
+@media (max-width: 768px) {
+  .show-sm { display: flex !important; }
+  .hide-sm { display: none !important; }
+}
+
+/* Botão de ação principal em dialogs: usa o accent da marca */
+.mat-mdc-unelevated-button.primary-action:not(:disabled) {
+  --mat-button-filled-container-color: var(--primary-accent);
+  --mdc-filled-button-container-color: var(--primary-accent);
+  --mat-button-filled-label-text-color: #ffffff;
+  --mdc-filled-button-label-text-color: #ffffff;
+  background-color: var(--primary-accent);
+  color: #ffffff;
+
+  &:hover { background-color: var(--primary-accent-hover); }
+}
+
+/* Botão de ação destrutiva (excluir, remover) */
+.mat-mdc-unelevated-button.danger-action:not(:disabled) {
+  --mat-button-filled-container-color: #c62828;
+  --mdc-filled-button-container-color: #c62828;
+  --mat-button-filled-label-text-color: #ffffff;
+  --mdc-filled-button-label-text-color: #ffffff;
+  background-color: #c62828;
+  color: #ffffff;
+
+  &:hover { background-color: #b71c1c; }
+}
+
+/* =====================================================================
+ * Padrão de modais (<app-modal> + ModalService)
+ * ===================================================================== */
+.app-modal-panel {
+  .mat-mdc-dialog-surface {
+    border-radius: 16px !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  app-modal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 90vh;
+  }
+}
+
+.app-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 60px 12px 24px; /* espaço para o X */
+  flex-shrink: 0;
+}
+
+.app-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+
+  &.danger {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+}
+
+.app-modal-heading {
+  flex: 1;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.app-modal-panel .mat-mdc-dialog-container .mat-mdc-dialog-title.app-modal-title {
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--mat-sys-on-surface);
+
+  &::before { display: none; }
+}
+
+.app-modal-subtitle {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* O X fica no fim do DOM (o foco inicial vai para o conteúdo), mas aparece no topo */
+.app-modal-close.mat-mdc-icon-button {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.app-modal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 24px 12px;
+  flex-shrink: 0;
+
+  &:empty { display: none; }
+
+  > [modal-toolbar] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+}
+
+.app-modal-panel .mat-mdc-dialog-container .mat-mdc-dialog-content.app-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  padding: 8px 24px 16px;
+  color: var(--mat-sys-on-surface);
+
+  /* Sem rodapé: respiro igual ao do topo */
+  &:has(+ .app-modal-actions:empty) { padding-bottom: 24px; }
+}
+
+.mat-mdc-dialog-actions.app-modal-actions {
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 12px 24px 20px;
+  min-height: 0;
+
+  &:empty { display: none; }
+}
+
+/* Campos ocupam a largura toda dentro dos modais */
+.app-modal-body .mat-mdc-form-field.full-width,
+.app-modal-toolbar .mat-mdc-form-field.full-width {
+  width: 100%;
+}
+
+/* Spinner dentro de botões de ação (estado de carregamento) */
+.btn-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+
+  circle { stroke: currentColor !important; }
+}
+
+/* Estados padrão (carregando / vazio / erro) dentro de modais */
+.modal-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  .modal-state-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    margin-bottom: 4px;
+    background: var(--mat-sys-surface-container-highest);
+
+    mat-icon { font-size: 28px; width: 28px; height: 28px; }
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  p { margin: 0; max-width: 340px; font-size: 14px; }
+  button { margin-top: 8px; }
+}
+
+/* Mobile: modais ocupam a tela inteira */
+@media (max-width: 600px) {
+  .app-modal-toolbar > [modal-toolbar] {
+    flex-wrap: wrap;
+
+    > .mat-mdc-form-field { flex: 1 1 100%; }
+    > button { flex: 1 1 100%; }
+  }
+
+  .cdk-overlay-pane.app-modal-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    max-height: 100% !important;
+
+    .mat-mdc-dialog-surface { border-radius: 0 !important; }
+    app-modal { max-height: 100vh; height: 100%; }
+  }
+}
+
+/* Botão com aparência de link (ex.: "Cadastre-se") */
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover { opacity: 0.85; }
+  &:focus-visible { outline: 2px solid var(--mat-sys-primary); outline-offset: 2px; border-radius: 2px; }
+}
+
+
+/* =====================================================================
+ * Tabelas de dados (Meus JSONs, membros da organização)
+ * ===================================================================== */
+.data-table {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: auto;
+  background: var(--mat-sys-surface-container-low);
+
+  /* Sem fundo próprio: usado dentro de painéis que já têm fundo */
+  &.flat { background: transparent; }
+
+  table.mat-mdc-table {
+    width: 100%;
+    background: transparent;
+  }
+
+  tr.mat-mdc-header-row { height: 44px; }
+  tr.mat-mdc-row { height: 56px; transition: background-color 0.15s ease; }
+
+  th.mat-mdc-header-cell {
+    background: var(--mat-sys-surface-container-high);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  td.mat-mdc-cell {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+  }
+
+  tr.mat-mdc-row:last-child td.mat-mdc-cell { border-bottom: none; }
+
+  tr.clickable {
+    cursor: pointer;
+
+    &:hover { background: var(--mat-sys-surface-container-highest); }
+    &:focus-visible { outline: 2px solid var(--mat-sys-primary); outline-offset: -2px; }
+  }
+
+  /* Texto principal da linha (nome) */
+  .cell-primary { font-weight: 500; color: var(--mat-sys-on-surface); }
+  /* Colunas secundárias (datas, contagens, e-mail) */
+  .cell-muted { color: var(--mat-sys-on-surface-variant); }
+  /* Ícones decorativos da linha */
+  .cell-icon { color: var(--mat-sys-primary); }
+}
+
+/* Badges (Equipe, Dono, Visualização única) — contraste >= 6:1 nos dois temas */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  line-height: 18px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: light-dark(#E6E1FF, #3B2F8F);
+  color: light-dark(#3A2E9E, #E6E1FF);
+
+  &.badge-warning {
+    background: light-dark(#FFF0D6, #4A3500);
+    color: light-dark(#7A4F00, #FFD27A);
+  }
+}
+
+/* Avatar com iniciais */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
 }

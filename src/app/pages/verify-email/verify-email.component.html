@@ -1,0 +1,33 @@
+<div class="verify-page" [class.dark]="darkMode">
+  <div class="card">
+    @switch (state) {
+      @case ('loading') {
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Confirmando seu e-mail...</p>
+      }
+      @case ('success') {
+        <mat-icon class="icon success">mark_email_read</mat-icon>
+        <h2>E-mail confirmado!</h2>
+        <p>Sua conta está confirmada. Agora você pode ser adicionado a organizações.</p>
+        <button mat-flat-button (click)="goHome()">Ir para o editor</button>
+      }
+      @case ('invalid') {
+        <mat-icon class="icon warn">link_off</mat-icon>
+        <h2>Link inválido ou expirado</h2>
+        <p>O link de confirmação vale por 24 horas e só pode ser usado uma vez.</p>
+        @if (loggedIn) {
+          <button mat-flat-button (click)="resend()" [disabled]="resending">Reenviar e-mail de confirmação</button>
+        } @else {
+          <p class="hint">Faça login no editor e use a opção "Confirme seu e-mail — reenviar" no menu do usuário.</p>
+        }
+        <button mat-button (click)="goHome()">Ir para o editor</button>
+      }
+      @default {
+        <mat-icon class="icon warn">error_outline</mat-icon>
+        <h2>Não foi possível confirmar</h2>
+        <p>{{ errorMessage }}</p>
+        <button mat-button (click)="goHome()">Ir para o editor</button>
+      }
+    }
+  </div>
+</div>

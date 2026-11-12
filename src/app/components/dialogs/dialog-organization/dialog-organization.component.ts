@@ -1,11 +1,12 @@
 import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {ApiService} from "../../../services/api.service";
-import { MatDialog, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
+import { ModalComponent } from "../../modal/modal.component";
+import { ModalService } from "../../../services/modal.service";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {DialogAddUserOrgComponent} from "../dialog-add-user-org/dialog-add-user-org.component";
 import {DialogConfirmComponent} from "../dialog-confirm/dialog-confirm.component";
 import {DialogAddOrgComponent} from "../dialog-add-org/dialog-add-org.component";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
@@ -16,17 +17,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatBadgeModule } from '@angular/material/badge';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { apiErrorMessage } from '../../../services/api-errors';
+import { AuthService } from '../../../services/auth.service';
+import { SessionService } from '../../../services/session.service';
 
 @Component({
     selector: 'app-dialog-organization',
     templateUrl: './dialog-organization.component.html',
     styleUrls: ['./dialog-organization.component.scss'],
     imports: [
+      ModalComponent,
+      MatProgressSpinner,
       CommonModule,
       FormsModule,
-      MatDialogTitle,
-      CdkScrollable,
-      MatDialogContent,
       MatButton,
       MatAccordion,
       MatExpansionPanel,
@@ -48,8 +51,6 @@ import { CommonModule } from '@angular/common';
       MatHeaderRow,
       MatRowDef,
       MatRow,
-      MatDialogActions,
-      MatDialogClose,
       MatFormFieldModule,
       MatInputModule,
       MatBadgeModule
@@ -57,7 +58,14 @@ import { CommonModule } from '@angular/common';
 })
 export class DialogOrganizationComponent implements OnInit {
 
-  constructor(private api: ApiService, private dialog: MatDialog, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef) { }
+  constructor(private api: ApiService, private modal: ModalService, private snackBar: MatSnackBar, private cdr: ChangeDetectorRef, private session: SessionService, private auth: AuthService) { }
+
+  /** Só o dono pode convidar, remover membros e excluir a organização. */
+  isOwner(org: any): boolean {
+    const me = this.auth.user$.value?.id;
+    // Usuário ainda não carregado: mantém as ações visíveis (o backend valida).
+    return !me || org?.owner_id === me;
+  }
 
   public organization: any[] = [];
   public filteredOrganizations: any[] = [];
@@ -68,7 +76,7 @@ export class DialogOrganizationComponent implements OnInit {
   public token: string | any
 
   ngOnInit() {
-    this.token = localStorage.getItem("key")
+    this.token = this.session.token
     if (this.token) {
       this.initOrgs();
     }
@@ -76,7 +84,7 @@ export class DialogOrganizationComponent implements OnInit {
 
   initOrgs(){
     this.isLoading = true;
-    this.api.getOrganization(this.token).subscribe({
+    this.api.getOrganization().subscribe({
       next: (resp: any) => {
         this.organization = resp;
         this.applyFilter();
@@ -85,7 +93,8 @@ export class DialogOrganizationComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.snackBar.open(`Erro ao carregar organizações`, 'ok', { duration: 2000 });
+        this.cdr.detectChanges();
+        this.snackBar.open(apiErrorMessage(err, `Erro ao carregar organizações`), 'ok', { duration: 3000 });
         console.log(err);
       }
     })
@@ -112,8 +121,7 @@ export class DialogOrganizationComponent implements OnInit {
   }
 
   addUser(org_id: any){
-    const adduser = this.dialog.open(DialogAddUserOrgComponent, {
-      disableClose: true,
+    const adduser = this.modal.open(DialogAddUserOrgComponent, 'sm', {
       data: {
         id: org_id
       }
@@ -128,9 +136,7 @@ export class DialogOrganizationComponent implements OnInit {
   }
 
   addOrg(){
-    const addorg = this.dialog.open(DialogAddOrgComponent, {
-      disableClose: false,
-    })
+    const addorg = this.modal.open(DialogAddOrgComponent, 'sm')
     addorg.afterClosed().subscribe({
       next: (resp) => {
         if (resp) {
@@ -141,18 +147,18 @@ export class DialogOrganizationComponent implements OnInit {
   }
 
   deleteOrg(org_id: string){
-    const confirm = this.dialog.open(DialogConfirmComponent, {
-      data: { title: "Remover organização", text: `Deseja remover a organização? Esta ação não pode ser desfeita.` },
+    const confirm = this.modal.open(DialogConfirmComponent, 'sm', {
+      data: { title: "Excluir organização", text: `Os JSONs dela passarão a ser privados de quem os criou e os demais membros perderão o acesso. Esta ação não pode ser desfeita.`, confirmLabel: "Excluir", danger: true },
     })
     confirm.afterClosed().subscribe({ next: (resp) => {
         if(resp){
-          this.api.deleteOrganization(this.token, org_id).subscribe({
+          this.api.deleteOrganization(org_id).subscribe({
             next: () => {
               this.snackBar.open('Organização removida', 'ok', { duration: 2000 });
               this.initOrgs()
             },
             error: (err) => {
-              this.snackBar.open(`Erro ${err.error.message}`, 'ok', { duration: 2000 });
+              this.snackBar.open(apiErrorMessage(err, 'Erro ao remover organização'), 'ok', { duration: 3000 });
             }
           });
         }
@@ -160,18 +166,18 @@ export class DialogOrganizationComponent implements OnInit {
   }
 
   removeUser(org_id: string, user: any){
-    const confirm = this.dialog.open(DialogConfirmComponent, {
-      data: { title: "Remover usuário", text: `Deseja remover o usuário ${user.name} de sua organização?` },
+    const confirm = this.modal.open(DialogConfirmComponent, 'sm', {
+      data: { title: "Remover membro", text: `Deseja remover ${user.name} da organização? Essa pessoa perderá o acesso aos JSONs da equipe.`, confirmLabel: "Remover", danger: true },
     })
     confirm.afterClosed().subscribe({ next: (resp) => {
       if(resp){
-        this.api.removeUserToOrganization(this.token, org_id, user.id).subscribe({
+        this.api.removeUserToOrganization(org_id, user.id).subscribe({
           next: () => {
             this.snackBar.open('Usuário removido', 'ok', { duration: 2000 });
             this.initOrgs()
           },
           error: (err) => {
-            this.snackBar.open(`Erro ${err.error.message}`, 'ok', { duration: 2000 });
+            this.snackBar.open(apiErrorMessage(err, 'Erro ao remover usuário'), 'ok', { duration: 3000 });
           }
         });
       }

@@ -1,40 +1,97 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { ISettings, IUser } from '../models/api-types';
+import { BehaviorSubject, firstValueFrom, Observable, tap } from 'rxjs';
+import { IAuthResponse, ISettings, IUser } from '../models/api-types';
 import { ApiService } from './api.service';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private tokenKey = 'key';
   private settingsKey = 'settings';
 
-  public token$ = new BehaviorSubject<string | null>(localStorage.getItem(this.tokenKey));
-  public settings$ = new BehaviorSubject<ISettings>({ dark_mode: false, preview: false });
+  public token$: BehaviorSubject<string | null>;
+  /** Sem preferência salva, o tema inicial segue o sistema operacional. */
+  private static systemDark(): boolean {
+    return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  }
+
+  public settings$ = new BehaviorSubject<ISettings>({ dark_mode: AuthService.systemDark(), preview: false });
   public user$ = new BehaviorSubject<IUser | null>(null);
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private session: SessionService) {
+    this.token$ = new BehaviorSubject<string | null>(session.token);
+
+    // Mantém o estado em sincronia (renovação, logout em outra aba, sessão expirada).
+    this.session.tokenChanged$.subscribe((token) => {
+      const hadToken = !!this.token$.value;
+      this.token$.next(token);
+      if (!token) {
+        this.resetUser();
+      } else if (!hadToken) {
+        this.loadSettings();
+      }
+    });
+
     this.loadSettings();
   }
 
-  setToken(token: string) {
-    localStorage.setItem(this.tokenKey, token);
-    this.token$.next(token);
-    this.loadSettings();
+  get sessionExpired$(): Observable<void> {
+    return this.session.sessionExpired$;
   }
 
-  logout() {
-    localStorage.clear();
-    this.token$.next(null);
+  login(email: string, password: string): Observable<IAuthResponse> {
+    return this.apiService.auth(email, password).pipe(
+      tap((resp) => this.setTokens(resp.token, resp.refresh_token)),
+    );
+  }
+
+  setTokens(token: string, refreshToken: string) {
+    // tokenChanged$ dispara o loadSettings() quando é um login novo.
+    this.session.setTokens(token, refreshToken);
+  }
+
+  /** Encerra a sessão no servidor (ou todas, com `all`) e limpa o estado local. */
+  async logout(all = false) {
+    const refresh = this.session.refreshToken;
+    try {
+      if (all) {
+        await firstValueFrom(this.apiService.logoutAll());
+      } else if (refresh) {
+        await firstValueFrom(this.apiService.logout(refresh));
+      }
+    } catch (e) {
+      // Mesmo se o servidor falhar, a sessão local é encerrada.
+      console.error(e);
+    } finally {
+      localStorage.removeItem('name');
+      localStorage.removeItem(this.settingsKey);
+      this.session.clear();
+      this.resetUser();
+    }
+  }
+
+  private resetUser() {
+    localStorage.removeItem('name');
     this.user$.next(null);
-    this.settings$.next({ dark_mode: false, preview: false });
+    this.settings$.next({ dark_mode: AuthService.systemDark(), preview: false });
+  }
+
+  refreshUser() {
+    if (!this.session.token) return;
+    this.apiService.me().subscribe({
+      next: (user) => {
+        localStorage.setItem('name', user.name);
+        this.user$.next(user);
+      },
+      error: (err) => console.error(err),
+    });
   }
 
   public loadSettings() {
-    const token = this.token$.value;
+    const token = this.session.token;
     const localSet = localStorage.getItem(this.settingsKey);
-    
+
     if (localSet) {
       try {
         this.settings$.next(JSON.parse(localSet));
@@ -42,7 +99,7 @@ export class AuthService {
     }
 
     if (token) {
-      this.apiService.getSettings(token).subscribe({
+      this.apiService.getSettings().subscribe({
         next: (resp) => {
           if (resp && resp.settings) {
             try {
@@ -56,21 +113,15 @@ export class AuthService {
         },
         error: (err) => console.error(err)
       });
-      // Try to load user data here too:
-      this.apiService.me(token).subscribe({
-        next: (user) => {
-           this.user$.next(user);
-        }
-      });
+      this.refreshUser();
     }
   }
 
   updateSettings(settings: ISettings) {
     this.settings$.next(settings);
     localStorage.setItem(this.settingsKey, JSON.stringify(settings));
-    const token = this.token$.value;
-    if (token) {
-      this.apiService.setSettings(token, settings).subscribe({
+    if (this.session.token) {
+      this.apiService.setSettings(settings).subscribe({
         error: (err) => console.error(err)
       });
     }

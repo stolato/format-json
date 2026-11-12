@@ -6,6 +6,8 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from "@angular/materia
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { HttpRequestInterceptor } from "./app/services/interceptor";
 import { provideLottieOptions } from "ngx-lottie";
+import { MatPaginatorIntl } from "@angular/material/paginator";
+import { PtBrPaginatorIntl } from "./app/i18n/paginator-intl";
 import { SocketIoModule } from "ngx-socket-io";
 import { environment } from "./environments/environment";
 import { BrowserModule, bootstrapApplication } from "@angular/platform-browser";
@@ -42,11 +44,17 @@ bootstrapApplication(AppComponent, {
             url: environment.socketUrl, options: {
                 transports: ['websocket'],
                 reconnection: true,
-            }
+                // token no handshake; lido a cada (re)conexão
+                auth: (cb: (data: object) => void) => {
+                    const token = localStorage.getItem('key');
+                    cb(token ? { token } : {});
+                },
+            } as any
         }), BrowserModule, AppRoutingModule, NgxSpinnerModule, MatSidenavModule, MatMenuModule, MatExpansionModule, MatDividerModule, FormsModule, ReactiveFormsModule, AngJsoneditorModule, MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, ClipboardModule, MatSnackBarModule, MatTooltipModule, MatBottomSheetModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatChipsModule, MatSlideToggleModule, MatTableModule, MatPaginatorModule, MatSortModule, MatSelectModule),
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true },
+        { provide: MatPaginatorIntl, useClass: PtBrPaginatorIntl },
         provideLottieOptions({
             player: () => import('lottie-web')
         }),

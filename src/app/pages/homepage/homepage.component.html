@@ -1,14 +1,65 @@
 <app-header (json)="newJson($event.toString())" (preview)="setPreview($event)" [current_json]="this.visibleData"
   [id]="id" (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)"
-  (saved)="onSaved()" [unsaved]="isUnsaved" (toggleChart)="setChart($event)">
+  (saved)="onSaved()" [unsaved]="isUnsaved" (toggleChart)="setChart($event)" [readOnly]="viewOnce !== 'none'">
 </app-header>
 
-<div class="content" [class.dark]="darkMode">
-  <div class="editor-panel">
-    @if (hasData) {
-    <json-editor [options]="editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+@if (viewOnce === 'locked' || viewOnce === 'gone') {
+<div class="content view-once-content" [class.dark]="darkMode">
+  <div class="view-once-card">
+    @if (viewOnce === 'locked') {
+    <mat-icon class="view-once-icon">visibility_off</mat-icon>
+    <h2>Visualização única</h2>
+    <p>Este conteúdo só pode ser visto <strong>uma vez</strong>. Depois de revelado ele é apagado do servidor e
+      este link deixa de funcionar.</p>
+    <p class="hint">Copie o conteúdo após revelar: recarregar a página não o trará de volta.</p>
+    <button mat-flat-button (click)="reveal()" [disabled]="revealing">
+      <mat-icon>visibility</mat-icon> Revelar
+    </button>
+    } @else {
+    <mat-icon class="view-once-icon">block</mat-icon>
+    <h2>Conteúdo indisponível</h2>
+    <p>Este conteúdo já foi visualizado ou não existe.</p>
     }
   </div>
+</div>
+} @else {
+@if (viewOnce === 'revealed') {
+<div class="view-once-banner" [class.dark]="darkMode">
+  <mat-icon>warning</mat-icon>
+  Conteúdo de visualização única: ele já foi apagado do servidor. Copie-o antes de sair desta página.
+</div>
+}
+@if (showWelcome && !id) {
+<div class="welcome-banner" role="region" aria-label="Dicas de uso">
+  <mat-icon aria-hidden="true">tips_and_updates</mat-icon>
+  <span>
+    Cole seu JSON no editor, <strong>arraste um arquivo</strong> para cá ou use <kbd>{{ mod }}O</kbd> para abrir.
+    O JSON abaixo é só um exemplo.
+  </span>
+  <button mat-button type="button" (click)="openShortcuts()">Ver atalhos</button>
+  <button mat-icon-button type="button" (click)="dismissWelcome()" aria-label="Fechar dica" matTooltip="Fechar dica">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+}
+<div class="content" #content [class.with-banner]="showWelcome && !id" [class.dark]="darkMode" (dragenter)="onDragEnter($event)" (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()" (drop)="onDrop($event)">
+  @if (dragOver) {
+  <div class="drop-overlay" aria-hidden="true">
+    <mat-icon>upload_file</mat-icon>
+    <span>Solte o arquivo JSON para abrir</span>
+  </div>
+  }
+  <div class="editor-panel" [style.flex]="'0 0 ' + split + '%'">
+    @if (hasData) {
+    <json-editor [options]="viewOnce === 'revealed' ? editorOptions_view : editorOptions" [data]="initialData" (change)="showJson($event)"></json-editor>
+    }
+  </div>
+  <div class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Redimensionar painéis"
+    aria-valuemin="20" aria-valuemax="80" [attr.aria-valuenow]="split | number: '1.0-0'"
+    matTooltip="Arraste para redimensionar (duplo clique para centralizar)" matTooltipShowDelay="600"
+    (pointerdown)="startResize($event)" (pointermove)="onResize($event)" (pointerup)="endResize($event)"
+    (pointercancel)="endResize($event)" (keydown)="onSplitterKey($event)" (dblclick)="resetSplit()"></div>
   <div class="right-panel">
     @if (!showChart) {
     @if (preview && hasData) {
@@ -26,41 +77,53 @@
     </div>
     }
   </div>
-  <button (click)="copy()" class="copy" matTooltip="Clique para copiar todo o JSON" [matTooltipPosition]="'before'"
-    mat-icon-button aria-label="Example icon-button with a heart icon">
+  <button (click)="copy()" class="copy" matTooltip="Copiar JSON formatado" [matTooltipPosition]="'before'"
+    mat-icon-button aria-label="Copiar JSON formatado">
     <mat-icon>content_copy</mat-icon>
   </button>
 </div>
+}
 <footer>
   <div class="left">
-    <div class="status-item" [matTooltip]="isUnsaved ? 'Você possui edições pendentes' : 'Servidor Operacional'">
-      <mat-icon>{{ isUnsaved && id ? 'circle' : 'check_circle' }}</mat-icon>
-      {{ isUnsaved && id ? 'Unsaved Changes' : 'Ready' }}
+    <div class="status-item" role="status" [matTooltip]="isUnsaved && id ? 'Você possui edições não salvas' : 'Nenhuma alteração pendente'">
+      <mat-icon aria-hidden="true">{{ isUnsaved && id ? 'circle' : 'check_circle' }}</mat-icon>
+      {{ isUnsaved && id ? 'Alterações não salvas' : 'Pronto' }}
     </div>
-    <div class="status-item">
-      <mat-icon>code</mat-icon> JSON Format
+    @if (jsonError) {
+    <div class="status-item status-error" role="alert" [matTooltip]="jsonError.message">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      JSON inválido{{ jsonError.line ? ' (linha ' + jsonError.line + ')' : '' }}
     </div>
-    <div class="status-item">
-      UTF-8
+    } @else {
+    <div class="status-item" matTooltip="O JSON está sintaticamente válido">
+      <mat-icon aria-hidden="true">code</mat-icon> JSON válido
     </div>
+    }
+    @if (remoteEditing) {
+    <div class="status-item status-remote" role="status" matTooltip="Alterações de outra pessoa aparecem automaticamente">
+      <span class="pulse" aria-hidden="true"></span> Outra pessoa está editando…
+    </div>
+    }
+    <div class="status-item hide-sm" matTooltip="Tamanho (minificado)">{{ stats.size }}</div>
+    <div class="status-item hide-sm" matTooltip="Total de chaves">{{ stats.keys }} {{ stats.keys === 1 ? 'chave' : 'chaves' }}</div>
   </div>
   <div class="right">
-    <div class="version">
-      version: 1.8.24
+    <div class="version hide-sm">
+      version: 1.9.0
     </div>
-    <div class="term">
+    <div class="term hide-sm">
       Tilt Tecnologia - {{date}}
     </div>
-    <div class="social" (click)="open()" matTooltip='Github'>
-      <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+    <button type="button" class="social" (click)="open()" matTooltip="GitHub" aria-label="Abrir repositório no GitHub">
+      <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
         <path
           d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
         </path>
       </svg>
-    </div>
+    </button>
   </div>
 </footer>
 
-<ngx-spinner bdColor="rgba(30, 30, 30, 0.4)" [fullScreen]="true">
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.08)" [fullScreen]="true">
   <div class="ide-linear-loader"></div>
 </ngx-spinner>

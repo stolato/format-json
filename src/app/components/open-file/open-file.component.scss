@@ -1,19 +1,44 @@
 input[type="file"] {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
-h2{
-  text-transform: uppercase;
-  font-size: 1.2rem;
-  border-bottom: 1px solid #CCC;
-}
-label {
-  padding: 20px 0px;
-  width: 100%;
-  background-color: #333;
-  color: #FFF;
-  text-transform: uppercase;
-  text-align: center;
-  display: block;
-  margin-top: 10px;
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 180px;
+  padding: 20px;
+  border: 2px dashed color-mix(in srgb, var(--mat-sys-primary) 55%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
   cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--mat-sys-primary);
+  }
+
+  .primary { font-weight: 500; }
+  .secondary { font-size: 13px; color: var(--mat-sys-on-surface-variant); }
+
+  &:hover,
+  &.dragging {
+    background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+    border-color: var(--mat-sys-primary);
+  }
+}
+
+.dropzone:has(+ input[type="file"]:focus-visible) {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
 }

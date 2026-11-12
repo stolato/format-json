@@ -1,40 +1,35 @@
-<div class="header-container">
-  <h1 mat-dialog-title class="title-panel">Minhas Organizações</h1>
-  
-  <div class="header-actions">
+<app-modal title="Minhas organizações" subtitle="Equipes com quem você compartilha JSONs." icon="groups">
+  <div modal-toolbar>
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar organizações...">
-      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilter()">
-        <mat-icon>close</mat-icon>
-      </button>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Filtrar organizações…"
+        aria-label="Filtrar organizações" cdkFocusInitial>
+      @if (searchTerm) {
+        <button matSuffix mat-icon-button type="button" aria-label="Limpar filtro" (click)="searchTerm=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
-    
-    <button mat-flat-button color="primary" class="add-btn" (click)="addOrg()">
-      <mat-icon>add_business</mat-icon>
-      Nova Organização
+    <button mat-flat-button class="primary-action" type="button" (click)="addOrg()">
+      <mat-icon>add</mat-icon> Nova organização
     </button>
   </div>
-</div>
 
-<div mat-dialog-content class="dialog-content">
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-state">
-    <mat-icon class="rotating">sync</mat-icon>
-    <span>Carregando organizações...</span>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading && filteredOrganizations.length === 0" class="empty-state">
-    <div class="empty-icon">
-      <mat-icon>groups</mat-icon>
+  @if (isLoading) {
+    <div class="modal-state" role="status">
+      <mat-spinner diameter="32"></mat-spinner>
+      <p>Carregando organizações…</p>
     </div>
-    <h3>Nenhuma organização encontrada</h3>
-    <p>{{ searchTerm ? 'Tente um termo diferente.' : 'Comece criando sua primeira organização para compartilhar JSONs.' }}</p>
-    <button *ngIf="!searchTerm" mat-stroked-button color="primary" (click)="addOrg()">
-      Criar Organização
-    </button>
-  </div>
+  } @else if (filteredOrganizations.length === 0) {
+    <div class="modal-state">
+      <span class="modal-state-icon"><mat-icon>{{ searchTerm ? 'search_off' : 'groups' }}</mat-icon></span>
+      <h3>{{ searchTerm ? 'Nada encontrado' : 'Nenhuma organização ainda' }}</h3>
+      <p>{{ searchTerm ? 'Tente outro termo.' : 'Crie uma organização para compartilhar JSONs com sua equipe.' }}</p>
+      @if (!searchTerm) {
+        <button mat-stroked-button type="button" (click)="addOrg()"><mat-icon>add</mat-icon> Criar organização</button>
+      }
+    </div>
+  }
 
   <!-- Organization List -->
   <mat-accordion class="org-accordion" multi *ngIf="!isLoading && filteredOrganizations.length > 0">
@@ -42,7 +37,7 @@
       <mat-expansion-panel class="org-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <mat-icon class="org-icon">business</mat-icon>
+            <mat-icon class="org-icon" aria-hidden="true">business</mat-icon>
             {{ orgs.name }}
           </mat-panel-title>
           <mat-panel-description>
@@ -54,25 +49,27 @@
         </mat-expansion-panel-header>
 
         <div class="panel-content">
+          @if (isOwner(orgs)) {
           <div class="panel-actions">
-            <button mat-button color="primary" (click)="addUser(orgs.id)">
+            <button mat-button (click)="addUser(orgs.id)">
               <mat-icon>person_add</mat-icon>
-              Convidar Usuário
+              Convidar membro
             </button>
             <span class="spacer"></span>
-            <button mat-button color="warn" (click)="deleteOrg(orgs.id)">
+            <button mat-button class="warn-btn" (click)="deleteOrg(orgs.id)">
               <mat-icon>delete_outline</mat-icon>
-              Excluir Organização
+              Excluir organização
             </button>
           </div>
+          }
 
-          <div class="table-container mat-elevation-z2">
+          <div class="data-table flat">
             <table mat-table [dataSource]="orgs.users">
               <!-- Avatar Column -->
               <ng-container matColumnDef="avatar">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let element">
-                  <div class="user-avatar">
+                  <div class="avatar" aria-hidden="true">
                     {{ getInitials(element.name) }}
                   </div>
                 </td>
@@ -82,30 +79,30 @@
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef> Nome </th>
                 <td mat-cell *matCellDef="let element"> 
-                  <span class="user-name">{{ element.name }}</span>
-                  <span *ngIf="orgs.owner_id === element.id" class="owner-badge">Dono</span>
+                  <span class="user-name cell-primary">{{ element.name }}</span>
+                  <span *ngIf="orgs.owner_id === element.id" class="badge">Dono</span>
                 </td>
               </ng-container>
 
               <!-- Email Column -->
               <ng-container matColumnDef="email">
                 <th mat-header-cell *matHeaderCellDef> E-mail </th>
-                <td mat-cell *matCellDef="let element"> {{ element.email }} </td>
+                <td mat-cell *matCellDef="let element" class="cell-muted"> {{ element.email }} </td>
               </ng-container>
 
               <!-- Options Column -->
               <ng-container matColumnDef="symbol">
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let element">
-                  @if (orgs.owner_id !== element.id) {
-                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                  @if (isOwner(orgs) && orgs.owner_id !== element.id) {
+                    <button mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'Ações para ' + element.name">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                   }
                   <mat-menu #menu="matMenu">
                     <button mat-menu-item (click)="removeUser(orgs.id, element)">
-                      <mat-icon color="warn">person_remove</mat-icon>
-                      <span>Remover da equipe</span>
+                      <mat-icon class="danger-icon">person_remove</mat-icon>
+                      <span>Remover da organização</span>
                     </button>
                   </mat-menu>
                 </td>
@@ -119,8 +116,4 @@
       </mat-expansion-panel>
     }
   </mat-accordion>
-</div>
-
-<mat-dialog-actions align="end" class="dialog-actions">
-  <button mat-button matDialogClose>Fechar</button>
-</mat-dialog-actions>
+</app-modal>

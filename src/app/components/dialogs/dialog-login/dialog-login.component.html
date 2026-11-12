@@ -1,24 +1,41 @@
-<h1 mat-dialog-title>Login</h1>
-<div mat-dialog-content>
-  @if (loading) {
-    <div class="loading">
-      <mat-spinner diameter="50"></mat-spinner>
-    </div>
-  }
-  <form class="example-form" (submit)="login()" [formGroup]="form">
-    <mat-form-field class="example-full-width">
+<app-modal title="Entrar" subtitle="Acesse seus JSONs salvos e organizações." icon="login">
+  <form id="loginForm" class="modal-form" (ngSubmit)="login()" [formGroup]="form" novalidate>
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>E-mail</mat-label>
-      <input matInput formControlName="email" placeholder="test@example.com" type="email">
+      <input matInput formControlName="email" maxlength="254" placeholder="voce@exemplo.com" type="email"
+        autocomplete="email" cdkFocusInitial>
+      @if (form.get('email').hasError('required')) {
+        <mat-error>Informe seu e-mail.</mat-error>
+      } @else if (form.get('email').hasError('email')) {
+        <mat-error>E-mail inválido.</mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field class="example-full-width">
-      <mat-label>Password</mat-label>
-      <input matInput formControlName="password" placeholder="123456" type="password">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Senha</mat-label>
+      <input matInput formControlName="password" maxlength="72" [type]="showPassword ? 'text' : 'password'"
+        autocomplete="current-password">
+      <button mat-icon-button matSuffix type="button" (click)="showPassword = !showPassword"
+        [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'" [attr.aria-pressed]="showPassword">
+        <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (form.get('password').hasError('required')) {
+        <mat-error>Informe sua senha.</mat-error>
+      } @else if (form.get('password').hasError('minlength')) {
+        <mat-error>A senha tem no mínimo 6 caracteres.</mat-error>
+      }
     </mat-form-field>
-    <div mat-dialog-actions>
-      <button mat-button mat-dialog-close="">Fechar</button>
-      <button mat-button cdkFocusInitial type="submit" (click)="login()">Logar</button>
-    </div>
   </form>
-</div>
 
+  <p class="switch-auth">
+    Não tem conta? <button type="button" class="link-btn" (click)="switchToRegister()">Cadastre-se</button>
+  </p>
+
+  <ng-container modal-actions>
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button class="primary-action" type="submit" form="loginForm" [disabled]="loading">
+      @if (loading) { <mat-spinner class="btn-spinner" diameter="16"></mat-spinner> }
+      {{ loading ? 'Entrando…' : 'Entrar' }}
+    </button>
+  </ng-container>
+</app-modal>

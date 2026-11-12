@@ -2,9 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {HomepageComponent} from "./pages/homepage/homepage.component";
 import {NotfoundComponent} from "./pages/notfound/notfound.component";
+import {VerifyEmailComponent} from "./pages/verify-email/verify-email.component";
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: HomepageComponent },
+  // precisa vir antes de ':id'
+  { path: 'verify-email', component: VerifyEmailComponent },
   { path: ':id', component: HomepageComponent },
   {
     path: '404',

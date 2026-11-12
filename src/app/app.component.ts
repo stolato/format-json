@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, take } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
     selector: 'app-root',
@@ -11,9 +12,14 @@ import { filter, take } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   title = 'Json Formatter';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
+    // Tema global (dialogs, menus e snackbars ficam fora dos componentes).
+    this.auth.settings$.subscribe((s) => {
+      document.documentElement.classList.toggle('dark-theme', !!s?.dark_mode);
+    });
+
     const isTauri = !!(window as any).__TAURI_INTERNALS__;
     if (isTauri) {
       document.documentElement.classList.add('tauri-app');
@@ -59,8 +65,9 @@ export class AppComponent implements OnInit {
   private handleDeepLink(urls: string[]): void {
     const url = urls[0];
     if (!url) return;
-    // jsonedit://abc123  →  navega para /abc123
-    const id = url.replace(/^jsonedit:\/\//i, '').replace(/\/$/, '');
-    if (id) this.router.navigate([id]);
+    // jsonedit://<slug>  →  navega para /<slug> (links antigos com _id também funcionam)
+    // jsonedit://verify-email?token=...  →  /verify-email?token=...
+    const path = url.replace(/^jsonedit:\/\//i, '').replace(/\/$/, '');
+    if (path) this.router.navigateByUrl('/' + path);
   }
 }

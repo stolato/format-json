@@ -1,110 +1,123 @@
 <mat-toolbar class="ide-header" [class.dark]="DarkMode">
   <span class="title" data-tauri-drag-region>JSONEDIT</span>
   <span class="example-spacer" data-tauri-drag-region></span>
-  <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip='JSON Tree'>
+  <!-- Visualização -->
+  <button mat-icon-button [class.tree_active]="isChecked" (click)="test()" matTooltip="Visualização em árvore"
+    aria-label="Visualização em árvore" [attr.aria-pressed]="isChecked">
     <mat-icon>account_tree</mat-icon>
   </button>
-  <button mat-icon-button [class.tree_active]="chartActive" (click)="openChart()" matTooltip='Visualização em Gráfico'>
+  <button mat-icon-button [class.tree_active]="chartActive" (click)="openChart()" matTooltip="Visualização em gráfico"
+    aria-label="Visualização em gráfico" [attr.aria-pressed]="chartActive">
     <mat-icon>schema</mat-icon>
   </button>
-  <button mat-icon-button (click)="setDark()" matTooltip='Dark Mode'>
+  <button mat-icon-button (click)="setDark()" [matTooltip]="DarkMode ? 'Tema claro' : 'Tema escuro'"
+    [attr.aria-label]="DarkMode ? 'Ativar tema claro' : 'Ativar tema escuro'">
     <mat-icon>{{ DarkMode ? 'wb_sunny' : 'nights_stay' }}</mat-icon>
   </button>
+
+  <span class="toolbar-divider" aria-hidden="true"></span>
+
+  <!-- Arquivo -->
   @if (id) {
-    <button mat-icon-button (click)="newJson()" class="example-icon favorite-icon" matTooltip='Novo JSON'>
+    <button mat-icon-button (click)="newJson()" class="example-icon favorite-icon" matTooltip="Novo JSON" aria-label="Novo JSON">
       <mat-icon>add_circle</mat-icon>
     </button>
   }
-  @if (id) {
-    <button mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" matTooltip='Salvar JSON'>
+  @if (id && !readOnly) {
+    <button mat-icon-button (click)="saveJson()" class="example-icon favorite-icon" [matTooltip]="'Salvar (' + mod + 'S)'" aria-label="Salvar JSON">
       <mat-icon>save</mat-icon>
     </button>
   }
   @if (!id) {
-    <button mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" matTooltip='Compartilhar'>
+    <button mat-icon-button (click)="shareJson()" class="example-icon favorite-icon" [matTooltip]="'Compartilhar (' + mod + 'S)'" aria-label="Compartilhar JSON">
       <mat-icon>share</mat-icon>
     </button>
   }
-  <button (click)="openUpload()" matTooltip="Abrir Arquivo" [matTooltipPosition]="'above'" mat-icon-button
-    class="example-icon" aria-label="Example icon-button with share icon">
+  <button (click)="openUpload()" [matTooltip]="'Abrir arquivo (' + mod + 'O)'" mat-icon-button
+    class="example-icon" aria-label="Abrir arquivo">
     <mat-icon>upload</mat-icon>
   </button>
   @if (nameUser !== '') {
-    <button mat-icon-button matTooltip="Meus JSONs" (click)="openList()" [matTooltipPosition]="'above'" class="example-icon">
+    <span class="toolbar-divider hide-sm" aria-hidden="true"></span>
+    <!-- Conta -->
+    <button mat-icon-button matTooltip="Meus JSONs" aria-label="Meus JSONs" (click)="openList()" class="example-icon hide-sm">
       <mat-icon>data_object</mat-icon>
     </button>
-  }
-  @if (nameUser !== '') {
-    <button mat-icon-button matTooltip="Organizacao" [matTooltipPosition]="'above'" (click)="openOrg()" class="example-icon">
+    <button mat-icon-button matTooltip="Organizações" aria-label="Organizações" (click)="openOrg()" class="example-icon hide-sm">
       <mat-icon>group</mat-icon>
     </button>
   }
   @if (!isTauri && id) {
-    <button mat-icon-button (click)="openInApp()" matTooltip="Abrir no app desktop" [matTooltipPosition]="'above'" class="example-icon">
+    <button mat-icon-button (click)="openInApp()" matTooltip="Abrir no app desktop" aria-label="Abrir no app desktop" class="example-icon hide-sm">
       <mat-icon>open_in_new</mat-icon>
     </button>
   }
-  @if (!isTauri) {
-    <button [matMenuTriggerFor]="downloadMenu" mat-icon-button matTooltip="Baixar app desktop" [matTooltipPosition]="'above'" class="example-icon download-app-btn">
-      <mat-icon>download</mat-icon>
+
+  @if (isTauri && updater.updateAvailable()) {
+    <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.isUpdating()"
+      matTooltip="Nova versão disponível — clique para instalar" aria-label="Instalar atualização" class="update-btn">
+      <mat-icon>{{ updater.isUpdating() ? 'sync' : 'system_update' }}</mat-icon>
     </button>
-    <mat-menu #downloadMenu="matMenu">
-      <a mat-menu-item [href]="downloadLinks.mac" target="_blank" [class.platform-highlight]="userPlatform === 'mac'">
-        <mat-icon>laptop_mac</mat-icon> macOS
-      </a>
-      <a mat-menu-item [href]="downloadLinks.windows" target="_blank" [class.platform-highlight]="userPlatform === 'windows'">
-        <mat-icon>desktop_windows</mat-icon> Windows
-      </a>
-      <a mat-menu-item [href]="downloadLinks.linux" target="_blank" [class.platform-highlight]="userPlatform === 'linux'">
-        <mat-icon>computer</mat-icon> Linux
-      </a>
-    </mat-menu>
   }
 
-  <button [matMenuTriggerFor]="menu" mat-icon-button matTooltip="{{nameUser || 'login'}}" [matTooltipPosition]="'above'" class="example-icon">
-    <mat-icon>person</mat-icon>
+  <button [matMenuTriggerFor]="menu" mat-icon-button [matTooltip]="nameUser ? (emailVerified ? nameUser : nameUser + ' — confirme seu e-mail') : 'Entrar e mais opções'"
+    [attr.aria-label]="nameUser ? 'Conta de ' + nameUser + ' e mais opções' : 'Entrar e mais opções'" class="example-icon" [class.unverified]="nameUser && !emailVerified">
+    <mat-icon>{{ nameUser && !emailVerified ? 'mark_email_unread' : 'person' }}</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
     @if (nameUser === '') {
-      <button mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Login</button>
-    }
-    @if (nameUser === '') {
+      <button mat-menu-item (click)="openLogin()"><mat-icon>login</mat-icon> Entrar</button>
       <button mat-menu-item (click)="openRegister()"><mat-icon>how_to_reg</mat-icon> Cadastro</button>
+    } @else {
+      <button mat-menu-item disabled><mat-icon>account_circle</mat-icon> {{nameUser}}</button>
+      @if (!emailVerified) {
+        <button mat-menu-item (click)="resendVerification()" class="unverified-item">
+          <mat-icon>mark_email_unread</mat-icon> Confirme seu e-mail — reenviar
+        </button>
+      }
+      <button mat-menu-item class="show-sm" (click)="openList()"><mat-icon>data_object</mat-icon> Meus JSONs</button>
+      <button mat-menu-item class="show-sm" (click)="openOrg()"><mat-icon>group</mat-icon> Organizações</button>
     }
-    @if (nameUser !== '') {
-      <button mat-menu-item disabled><mat-icon>how_to_reg</mat-icon> {{nameUser}}</button>
+    @if (!isTauri && id) {
+      <button mat-menu-item class="show-sm" (click)="openInApp()"><mat-icon>open_in_new</mat-icon> Abrir no app desktop</button>
     }
+    <mat-divider></mat-divider>
+    @if (!isTauri) {
+      <button mat-menu-item [matMenuTriggerFor]="downloadMenu"><mat-icon>download</mat-icon> Baixar app desktop</button>
+    }
+    @if (isTauri && !updater.updateAvailable()) {
+      <button mat-menu-item (click)="updater.checkForUpdates(true)" [disabled]="updater.checking()">
+        <mat-icon>{{ updater.checking() ? 'sync' : 'update' }}</mat-icon> Verificar atualizações
+      </button>
+    }
+    <button mat-menu-item (click)="openShortcuts()"><mat-icon>keyboard</mat-icon> Atalhos de teclado</button>
     @if (nameUser !== '') {
       <mat-divider></mat-divider>
-    }
-    @if (nameUser !== '') {
       <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
+      <button mat-menu-item (click)="logoutAll()"><mat-icon>devices</mat-icon> Sair de todos os dispositivos</button>
     }
+  </mat-menu>
+  <mat-menu #downloadMenu="matMenu">
+    <a mat-menu-item [href]="downloadLinks.mac" target="_blank" rel="noopener" [class.platform-highlight]="userPlatform === 'mac'">
+      <mat-icon>laptop_mac</mat-icon> macOS
+    </a>
+    <a mat-menu-item [href]="downloadLinks.windows" target="_blank" rel="noopener" [class.platform-highlight]="userPlatform === 'windows'">
+      <mat-icon>desktop_windows</mat-icon> Windows
+    </a>
+    <a mat-menu-item [href]="downloadLinks.linux" target="_blank" rel="noopener" [class.platform-highlight]="userPlatform === 'linux'">
+      <mat-icon>computer</mat-icon> Linux
+    </a>
   </mat-menu>
 
   @if (isTauri) {
-    @if (updater.updateAvailable()) {
-      <button mat-icon-button (click)="updater.installUpdate()" [disabled]="updater.isUpdating()"
-        matTooltip="Nova versão disponível — clique para instalar" class="update-btn">
-        <mat-icon>{{ updater.isUpdating() ? 'sync' : 'system_update' }}</mat-icon>
-      </button>
-    } @else {
-      <button mat-icon-button (click)="updater.checkForUpdates(true)" [disabled]="updater.checking()"
-        matTooltip="Verificar atualizações" [matTooltipPosition]="'above'" class="example-icon">
-        <mat-icon>{{ updater.checking() ? 'sync' : 'update' }}</mat-icon>
-      </button>
-    }
-  }
-
-  @if (isTauri) {
-    <div class="window-controls">
-      <button class="win-btn minimize" (click)="minimize()">
+    <div class="window-controls" role="group" aria-label="Controles da janela">
+      <button class="win-btn minimize" (click)="minimize()" aria-label="Minimizar" matTooltip="Minimizar">
         <mat-icon>remove</mat-icon>
       </button>
-      <button class="win-btn maximize" (click)="toggleMaximize()">
+      <button class="win-btn maximize" (click)="toggleMaximize()" aria-label="Maximizar" matTooltip="Maximizar">
         <mat-icon>check_box_outline_blank</mat-icon>
       </button>
-      <button class="win-btn close" (click)="closeApp()">
+      <button class="win-btn close" (click)="closeApp()" aria-label="Fechar" matTooltip="Fechar">
         <mat-icon>close</mat-icon>
       </button>
     </div>

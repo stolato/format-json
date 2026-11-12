@@ -1,15 +1,19 @@
-<h1 mat-dialog-title>Adicionar Organizacao</h1>
-<mat-dialog-content class="mat-typography">
-  <form [formGroup]="sendForm">
-    <div class="name">
-      <mat-form-field class="example-full-width">
-        <mat-label>Nome da Organizacao</mat-label>
-        <input formControlName="name" matInput placeholder="Ex. Backend" value="Backend">
-      </mat-form-field>
-    </div>
+<app-modal title="Nova organização" subtitle="Agrupe pessoas para compartilhar JSONs." icon="add_business">
+  <form id="addOrgForm" [formGroup]="sendForm" (ngSubmit)="send()" novalidate>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome da organização</mat-label>
+      <input formControlName="name" matInput maxlength="100" placeholder="Ex.: Time de Backend" autocomplete="off" cdkFocusInitial>
+      <mat-hint align="end">{{ sendForm.get('name').value?.length || 0 }}/100</mat-hint>
+      @if (sendForm.get('name').hasError('required')) {
+        <mat-error>Informe o nome da organização.</mat-error>
+      }
+    </mat-form-field>
   </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button matDialogClose>Voltar</button>
-  <button mat-button cdkFocusInitial (click)="send()">Adicionar</button>
-</mat-dialog-actions>
+  <ng-container modal-actions>
+    <button mat-button type="button" matDialogClose>Cancelar</button>
+    <button mat-flat-button class="primary-action" type="submit" form="addOrgForm" [disabled]="sending">
+      @if (sending) { <mat-spinner class="btn-spinner" diameter="16"></mat-spinner> }
+      {{ sending ? 'Criando…' : 'Criar' }}
+    </button>
+  </ng-container>
+</app-modal>

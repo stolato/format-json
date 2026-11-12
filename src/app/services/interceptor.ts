@@ -1,75 +1,60 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse } from '@angular/common/http';
-
-import {BehaviorSubject, Observable, switchMap, throwError} from 'rxjs';
+import { from, Observable, switchMap, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {ApiService} from "./api.service";
+import { environment } from '../../environments/environment';
+import { SessionService } from './session.service';
+
+/** Rotas em que um 401 não deve disparar renovação de token. */
+const NO_REFRESH = ['/auth', '/refresh', '/logout', '/register', '/verify-email'];
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
-    null
-  );
-
-  constructor(private api: ApiService) {
-  }
+  constructor(private session: SessionService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem("key");
-    req = req.clone({
-      withCredentials: false,
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    // Só envia o token para a nossa API (nunca para ipify, github etc.)
+    if (!req.url.startsWith(environment.apiUrl)) {
+      return next.handle(req);
+    }
 
-    return next.handle(req).pipe(
+    const sentToken = this.session.token;
+    const authReq = this.withToken(req, sentToken);
+
+    return next.handle(authReq).pipe(
       catchError((error) => {
-        if (
-          error instanceof HttpErrorResponse &&
-          !req.url.includes('auth') &&
-          error.status === 401
-        ) {
-          return this.handle401Error(req, next);
+        const path = req.url.slice(environment.apiUrl.length).split('?')[0];
+        const skip = NO_REFRESH.some((p) => path === p || path.startsWith(p + '/'));
+        if (error instanceof HttpErrorResponse && error.status === 401 && !skip && sentToken) {
+          return this.handle401(req, next, sentToken, error);
         }
-
         return throwError(() => error);
-      })
+      }),
     );
   }
 
-  private addToken(request: HttpRequest<any>, token: string) {
-    return request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  private withToken(req: HttpRequest<any>, token: string | null) {
+    return token
+      ? req.clone({ withCredentials: false, setHeaders: { Authorization: `Bearer ${token}` } })
+      : req.clone({ withCredentials: false });
   }
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
+  private handle401(req: HttpRequest<any>, next: HttpHandler, sentToken: string, original: HttpErrorResponse) {
+    // Outra requisição/aba já renovou: só repete com o token atual.
+    const current = this.session.token;
+    const tokenPromise = current && current !== sentToken ? Promise.resolve(current) : this.session.refresh();
 
-      const token = localStorage.getItem("key");
-      const refresh = localStorage.getItem("refresh");
-      return this.api.refreshToken(token, refresh).pipe(
-        switchMap((token: any) => {
-            this.isRefreshing = false;
-            this.refreshTokenSubject.next(token.token);
-            localStorage.setItem("key", token.token);
-            localStorage.setItem("refresh", token.refresh_token);
-            return next.handle(this.addToken(request, token.token));
-        }),
-        catchError(() => {
-          localStorage.clear();
-          return next.handle(request);
-        }),
-      );
-    } else {
-      return next.handle(request);
-    }
+    return from(tokenPromise.then(
+      (token): string | null => token,
+      // Sessão encerrada: segue como anônimo (itens públicos continuam abrindo).
+      () => {
+        if (this.session.token) throw original;
+        return null;
+      },
+    )).pipe(
+      // Repete uma única vez; se falhar de novo, o erro sobe normalmente.
+      switchMap((token) => next.handle(this.withToken(req, token))),
+    );
   }
 }
 

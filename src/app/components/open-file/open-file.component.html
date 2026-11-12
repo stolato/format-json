@@ -1,5 +1,9 @@
-<h2>Abrir arquivo JSON</h2>
-<form class="example-form" [formGroup]="form">
-  <label for="arquivo">Enviar arquivo</label>
-  <input type="file" name="arquivo" id="arquivo" (change)="readText($event)" formControlName="file" placeholder="Ex. pat@example.com">
-</form>
+<app-modal title="Abrir arquivo" subtitle="O conteúdo substitui o JSON atual do editor." icon="upload_file">
+  <label class="dropzone" for="arquivo" [class.dragging]="dragging"
+    (dragenter)="onDrag($event, true)" (dragover)="onDrag($event, true)" (dragleave)="dragging = false" (drop)="onDrop($event)">
+    <mat-icon aria-hidden="true">cloud_upload</mat-icon>
+    <span class="primary">Clique para escolher ou arraste o arquivo aqui</span>
+    <span class="secondary">Arquivos .json · também dá para soltar direto no editor</span>
+  </label>
+  <input type="file" id="arquivo" accept=".json,application/json,text/plain" (change)="readText($event)" cdkFocusInitial>
+</app-modal>

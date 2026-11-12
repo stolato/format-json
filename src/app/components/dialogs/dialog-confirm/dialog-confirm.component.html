@@ -1,8 +1,13 @@
-<h1 mat-dialog-title>{{title}}</h1>
-<div mat-dialog-content>
-  <p>{{text}}</p>
- </div>
-<div mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="">Fechar</button>
-  <button mat-button [mat-dialog-close]="" (click)="close()" cdkFocusInitial>Ok</button>
-</div>
+<app-modal [title]="title" [icon]="icon" [tone]="danger ? 'danger' : 'default'">
+  <p class="confirm-text">{{ text }}</p>
+  <ng-container modal-actions>
+    @if (danger) {
+      <!-- Ação destrutiva: o foco inicial fica em "Cancelar" -->
+      <button mat-button type="button" [mat-dialog-close]="false" cdkFocusInitial>{{ cancelLabel }}</button>
+      <button mat-flat-button type="button" class="danger-action" [mat-dialog-close]="true">{{ confirmLabel }}</button>
+    } @else {
+      <button mat-button type="button" [mat-dialog-close]="false">{{ cancelLabel }}</button>
+      <button mat-flat-button type="button" class="primary-action" [mat-dialog-close]="true" cdkFocusInitial>{{ confirmLabel }}</button>
+    }
+  </ng-container>
+</app-modal>

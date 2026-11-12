@@ -1,9 +1,12 @@
-.example-form {
-  min-width: 150px;
-  max-width: 500px;
-  width: 100%;
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
 }
 
-.example-full-width {
-  width: 100%;
+.switch-auth {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
 }

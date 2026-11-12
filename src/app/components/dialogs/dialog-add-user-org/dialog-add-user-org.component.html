@@ -1,15 +1,21 @@
-<h1 mat-dialog-title>Adicionar Usuario a Organizacao</h1>
-<mat-dialog-content class="mat-typography">
-<form [formGroup]="sendForm">
-  <div class="name">
-    <mat-form-field class="example-full-width">
-      <mat-label>E-mail do usuario</mat-label>
-      <input formControlName="email" matInput placeholder="Ex. teste@teste.com" value="teste@teste.com">
+<app-modal title="Convidar membro" subtitle="A pessoa precisa ter uma conta com o e-mail confirmado." icon="person_add">
+  <form id="addUserForm" [formGroup]="sendForm" (ngSubmit)="send()" novalidate>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>E-mail do membro</mat-label>
+      <input formControlName="email" matInput type="email" maxlength="254" placeholder="pessoa@exemplo.com"
+        autocomplete="email" cdkFocusInitial>
+      @if (sendForm.get('email').hasError('required')) {
+        <mat-error>Informe o e-mail.</mat-error>
+      } @else if (sendForm.get('email').hasError('email')) {
+        <mat-error>E-mail inválido.</mat-error>
+      }
     </mat-form-field>
-  </div>
-</form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button matDialogClose>Voltar</button>
-  <button mat-button cdkFocusInitial (click)="send()">Adicionar</button>
-</mat-dialog-actions>
+  </form>
+  <ng-container modal-actions>
+    <button mat-button type="button" matDialogClose>Cancelar</button>
+    <button mat-flat-button class="primary-action" type="submit" form="addUserForm" [disabled]="sending">
+      @if (sending) { <mat-spinner class="btn-spinner" diameter="16"></mat-spinner> }
+      {{ sending ? 'Convidando…' : 'Convidar' }}
+    </button>
+  </ng-container>
+</app-modal>

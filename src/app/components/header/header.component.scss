@@ -1,11 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap");
 
 .ide-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: var(--bg-app);
+  border-bottom: 1px solid var(--border-subtle);
   height: 48px !important;
   min-height: 48px !important;
   display: flex;
@@ -22,25 +21,24 @@
     justify-content: center;
     align-items: center;
     &:hover {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: var(--hover-overlay);
     }
   }
 }
 
 .dark.ide-header {
-  background-color: #1e1e1e !important;
-  border-bottom: 1px solid #333333;
-  color: #cccccc !important;
+  background-color: var(--bg-app) !important;
+  color: #E6E4EA !important;
 
   button {
-    color: #cccccc;
+    color: #E6E4EA;
     mat-icon {
-      color: #cccccc;
+      color: #E6E4EA;
     }
   }
 
   button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--hover-overlay);
   }
 }
 
@@ -131,4 +129,39 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+.unverified mat-icon,
+::ng-deep .unverified-item mat-icon {
+  color: #f0a020 !important;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 6px;
+  background-color: var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.ide-header button:focus-visible {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 1px;
+}
+
+@media (max-width: 768px) {
+  .ide-header {
+    padding: 0 8px;
+
+    button { margin: 0; }
+  }
+
+  .title {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .title { display: none; }
 }

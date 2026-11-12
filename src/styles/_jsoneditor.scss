@@ -1,0 +1,200 @@
+// Overrides do jsoneditor/ace usados pela homepage.
+// Ficam globais (antes eram `:host ::ng-deep` no componente). O prefixo `.homepage`
+// é a classe do host e mantém a mesma especificidade de antes.
+.homepage json-editor,
+.homepage json-editor .jsoneditor,
+.homepage json-editor > div,
+.homepage json-editor jsoneditor-outer {
+  height: 100%;
+  width: 100%;
+  background-color: transparent !important;
+}
+
+// DARK
+  .homepage .dark .jsoneditor {
+    border: none;
+    border-right: 1px solid var(--border-subtle);
+    border-radius: 0;
+    background-color: var(--bg-app);
+    overflow: hidden;
+    box-shadow: none;
+  }
+
+.homepage .jsoneditor {
+  border-radius: 0 !important;
+  border: none;
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.homepage .jsoneditor-menu {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.homepage .jsoneditor-text, .homepage .ace_editor * {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
+
+.homepage .dark .ace-jsoneditor .ace_marker-layer .ace_selection {
+  background: rgba(255, 255, 255, 0.1);
+  margin-left: 5px;
+}
+
+.homepage .dark .ace_cursor-layer {
+  margin-left: 5px;
+}
+
+.homepage .dark .ace-jsoneditor .ace_cursor { border-left-color: gray; }
+
+.homepage .dark .jsoneditor-menu {
+    background: var(--ds-surface-raised);
+    border: var(--ds-surface-raised);
+  }
+
+  .homepage .dark .jsoneditor-statusbar {
+    background: var(--ds-surface-raised);
+    border: var(--ds-surface-raised);
+  }
+
+  .homepage .dark .ace_scrollbar{
+    background: var(--bg-editor);
+  }
+
+  .homepage .dark .jsoneditor-outer {
+    background: var(--bg-editor);
+    .ace_gutter{
+      background: var(--bg-gutter);
+      color: var(--fg-gutter);
+    }
+    .ace_gutter-active-line{
+      background: none;
+      color: #99988c;
+    }
+  }
+
+  .homepage .dark .jsoneditor-tree{
+    background: var(--bg-editor);
+    .jsoneditor-field{
+      color: var(--syntax-key);
+    }
+
+    .jsoneditor-string{
+      color: var(--syntax-string);
+    }
+    .jsoneditor-object{
+      color: var(--syntax-null);
+    }
+    .jsoneditor-array{
+      color: var(--syntax-null);
+    }
+    .jsoneditor-number{
+      color: var(--syntax-number);
+    }
+    .jsoneditor-boolean{
+      color: var(--syntax-boolean);
+    }
+    .jsoneditor-null{
+      color: var(--syntax-null);
+    }
+  }
+
+  .homepage .dark .jsoneditor-navigation-bar{
+    background: var(--bg-gutter);
+    color: var(--fg-gutter);
+  }
+
+  .homepage .dark .ace_content {
+    background: var(--bg-editor);
+
+    .ace_variable {
+      color: var(--syntax-key);
+    }
+
+    .ace_paren ace_lparen {
+      color: #585e6f;
+    }
+
+    .ace_indent-guide {
+      border-right: 1px solid #4b4b4b;
+      background: none;
+    }
+
+    .ace_numeric{
+      color: var(--syntax-number);
+    }
+
+    .ace_string {
+      color: var(--syntax-string);
+    }
+    .ace_boolean, .ace_constant {
+      color: var(--syntax-boolean);
+    }
+    .jsoneditor-null{
+      color: var(--syntax-null);
+    }
+  }
+
+  .homepage .dark .ace-jsoneditor .ace_marker-layer .ace_active-line {
+    background: #2e2e2e;
+  }
+
+.homepage .dark .jsoneditor-frame {
+  border-radius: 0;
+}
+
+//DARK
+textarea.jsoneditor-text,
+.homepage .ace_editor {
+  min-height: 350px;
+  height: 100% !important;
+  border: none !important;
+  outline: none !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.homepage .jsoneditor-value,
+.homepage .jsoneditor-field,
+.homepage .jsoneditor-readonly {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.homepage .dark textarea.jsoneditor-text {
+  background-color: var(--bg-app);
+  color: var(--fg-default);
+}
+
+.homepage .jsoneditor-poweredBy{
+  visibility: hidden;
+}
+
+.homepage .mat-drawer-container{
+  height: calc(100% - 104px);
+}
+
+.homepage .dark .formater{
+    .list-numbers {
+      background: var(--bg-gutter) !important;
+      color: var(--fg-gutter) !important;
+    }
+
+    .numbers {
+      background-color: var(--bg-gutter) !important;
+    }
+  }
+
+.homepage .dark footer {
+  background-color: var(--primary-accent, #6c5ce7);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+// Tema claro: troca o azul padrão do jsoneditor pelo roxo da marca.
+.homepage .jsoneditor-menu {
+  background-color: var(--primary-accent);
+  border-bottom: 1px solid var(--primary-accent);
+}
+.homepage .jsoneditor-modes .jsoneditor-type-modes,
+.homepage div.jsoneditor-contextmenu ul li button.jsoneditor-selected {
+  background-color: var(--primary-accent);
+}
