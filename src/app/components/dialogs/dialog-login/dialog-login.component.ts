@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {ApiService} from "../../../services/api.service";
 import {AuthService} from "../../../services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {apiErrorMessage, retryAfter} from "../../../services/api-errors";
-import { MatDialogRef, MatDialogClose } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogClose } from "@angular/material/dialog";
 import { ModalComponent } from '../../modal/modal.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/form-field';
@@ -27,17 +27,22 @@ export class DialogLoginComponent {
     this.dialog.close({ switchTo: 'register' });
   }
 
+  forgotPassword() {
+    this.dialog.close({ switchTo: 'forgot', email: this.form.get('email').value });
+  }
+
   constructor(
     private dialog: MatDialogRef<DialogLoginComponent>,
     private formBuilder: FormBuilder,
     private api: ApiService,
     private auth: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    @Optional() @Inject(MAT_DIALOG_DATA) private data: { email?: string } | null,
   ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      email: ['', [Validators.email, Validators.required, Validators.maxLength(254)]],
+      email: [this.data?.email ?? '', [Validators.email, Validators.required, Validators.maxLength(254)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
     })
   }

@@ -67,6 +67,7 @@ export class AppComponent implements OnInit {
     if (!url) return;
     // jsonedit://<slug>  →  navega para /<slug> (links antigos com _id também funcionam)
     // jsonedit://verify-email?token=...  →  /verify-email?token=...
+    // jsonedit://reset-password?token=...  →  /reset-password?token=...
     const path = url.replace(/^jsonedit:\/\//i, '').replace(/\/$/, '');
     if (path) this.router.navigateByUrl('/' + path);
   }

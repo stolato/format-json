@@ -37,6 +37,10 @@
     class="example-icon" aria-label="Abrir arquivo">
     <mat-icon>upload</mat-icon>
   </button>
+  <button (click)="downloadJson()" [matTooltip]="'Baixar JSON (' + mod + '⇧S)'" mat-icon-button
+    class="example-icon" aria-label="Baixar JSON">
+    <mat-icon>download</mat-icon>
+  </button>
   @if (nameUser !== '') {
     <span class="toolbar-divider hide-sm" aria-hidden="true"></span>
     <!-- Conta -->

@@ -9,6 +9,7 @@ import { Router } from "@angular/router";
 import { NgxSpinnerService } from "ngx-spinner";
 import { DialogLoginComponent } from "../dialogs/dialog-login/dialog-login.component";
 import { DialogRegisterComponent } from "../dialogs/dialog-register/dialog-register.component";
+import { DialogForgotPasswordComponent } from "../dialogs/dialog-forgot-password/dialog-forgot-password.component";
 import { JsonDefault } from "../../services/json-default";
 import { DialogConfirmComponent } from "../dialogs/dialog-confirm/dialog-confirm.component";
 import {DialogListJsonComponent} from "../dialogs/dialog-list-json/dialog-list-json.component";
@@ -64,9 +65,16 @@ export class HeaderComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   shortcuts(event: KeyboardEvent) {
-    if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
+    if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
     if (this.modal.openCount) return;
     const key = event.key.toLowerCase();
+    if (event.shiftKey) {
+      if (key === 's') {
+        event.preventDefault();
+        this.downloadJson();
+      }
+      return;
+    }
     if (key === '/') {
       event.preventDefault();
       this.openShortcuts();
@@ -189,17 +197,25 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  openLogin() {
-    const loginDialog = this.modal.open(DialogLoginComponent, 'md');
+  openLogin(email?: string) {
+    const loginDialog = this.modal.open(DialogLoginComponent, 'md', { data: { email } });
     loginDialog.afterClosed().subscribe({
       next: (resp) => {
         if (resp?.switchTo === 'register') {
           this.openRegister();
+        } else if (resp?.switchTo === 'forgot') {
+          this.openForgotPassword(resp.email);
         } else if (resp?.name) {
           this.nameUser = resp.name;
           this.cdr.detectChanges();
         }
       },
+    });
+  }
+
+  openForgotPassword(email?: string) {
+    this.modal.open(DialogForgotPasswordComponent, 'md', { data: { email } }).afterClosed().subscribe((resp) => {
+      if (resp?.switchTo === 'login') this.openLogin(resp.email);
     });
   }
 
@@ -277,6 +293,38 @@ export class HeaderComponent implements OnInit {
     } else {
       this.appWindow?.close();
     }
+  }
+
+  /** Baixa o JSON exibido como arquivo .json formatado. */
+  async downloadJson() {
+    if (this.current_json === undefined || this.current_json === null) {
+      this.snackBar.open("Não há JSON para baixar.", "Ok", { duration: 3000 });
+      return;
+    }
+    const contents = JSON.stringify(this.current_json, null, 2) + "\n";
+    const fileName = `${(this.id || "jsonedit").replace(/[^\w.-]+/g, "_")}.json`;
+
+    if (this.isTauri) {
+      // O webview do app não trata <a download>: abre o "Salvar como" nativo.
+      try {
+        const { invoke } = await import("@tauri-apps/api/core");
+        const saved = await invoke<boolean>("save_json_file", { defaultName: fileName, contents });
+        if (saved) this.snackBar.open("JSON salvo.", "Ok", { duration: 3000 });
+      } catch (e) {
+        console.error(e);
+        this.snackBar.open("Não foi possível salvar o arquivo.", "Ok", { duration: 4000 });
+      }
+      return;
+    }
+
+    const url = URL.createObjectURL(new Blob([contents], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
   logout() {

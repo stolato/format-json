@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 import { SessionService } from './session.service';
 
 /** Rotas em que um 401 não deve disparar renovação de token. */
-const NO_REFRESH = ['/auth', '/refresh', '/logout', '/register', '/verify-email'];
+const NO_REFRESH = ['/auth', '/refresh', '/logout', '/register', '/verify-email', '/forgot-password', '/reset-password'];
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {

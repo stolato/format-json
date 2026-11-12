@@ -7,6 +7,26 @@ fn get_startup_url() -> Option<String> {
     .find(|a| a.starts_with("jsonedit://"))
 }
 
+/// Abre o "Salvar como" nativo e grava o JSON no caminho escolhido.
+/// O caminho é decidido pelo usuário no diálogo (o frontend não escolhe onde gravar).
+/// Retorna `false` se o usuário cancelar.
+#[tauri::command]
+async fn save_json_file(app: tauri::AppHandle, default_name: String, contents: String) -> Result<bool, String> {
+  use tauri_plugin_dialog::DialogExt;
+  let Some(path) = app
+    .dialog()
+    .file()
+    .set_file_name(&default_name)
+    .add_filter("JSON", &["json"])
+    .blocking_save_file()
+  else {
+    return Ok(false);
+  };
+  let path = path.into_path().map_err(|e| e.to_string())?;
+  std::fs::write(&path, contents).map_err(|e| e.to_string())?;
+  Ok(true)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -21,6 +41,7 @@ pub fn run() {
 
       app.handle().plugin(tauri_plugin_process::init())?;
       app.handle().plugin(tauri_plugin_shell::init())?;
+      app.handle().plugin(tauri_plugin_dialog::init())?;
       app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
 
       #[cfg(desktop)]
@@ -43,7 +64,7 @@ pub fn run() {
       }
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![get_startup_url])
+    .invoke_handler(tauri::generate_handler![get_startup_url, save_json_file])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

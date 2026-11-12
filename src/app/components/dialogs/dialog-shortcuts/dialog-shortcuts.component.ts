@@ -58,6 +58,7 @@ export class DialogShortcutsComponent {
       title: 'Arquivo',
       items: [
         { keys: [this.mod, 'S'], label: 'Salvar (ou compartilhar, se ainda não salvo)' },
+        { keys: [this.mod, 'Shift', 'S'], label: 'Baixar JSON (.json)' },
         { keys: [this.mod, 'O'], label: 'Abrir arquivo' },
         { keys: [this.mod, '/'], label: 'Mostrar atalhos' },
       ],
