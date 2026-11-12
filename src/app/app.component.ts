@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, take } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
+import { SeoService } from './services/seo.service';
 
 @Component({
     selector: 'app-root',
@@ -12,9 +13,11 @@ import { AuthService } from './services/auth.service';
 export class AppComponent implements OnInit {
   title = 'Json Formatter';
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(private router: Router, private auth: AuthService, private seo: SeoService) {}
 
   ngOnInit(): void {
+    this.seo.init();
+
     // Tema global (dialogs, menus e snackbars ficam fora dos componentes).
     this.auth.settings$.subscribe((s) => {
       document.documentElement.classList.toggle('dark-theme', !!s?.dark_mode);

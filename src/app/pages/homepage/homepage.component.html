@@ -1,3 +1,4 @@
+<h1 class="sr-only">JSONEdit — Formatador, validador e editor de JSON online</h1>
 <app-header (json)="newJson($event.toString())" (preview)="setPreview($event)" [current_json]="this.visibleData"
   [id]="id" (setDarkMode)="setDark($event)" [DarkMode]="darkMode" [isChecked]="preview" (newId)="changeId($event)"
   (saved)="onSaved()" [unsaved]="isUnsaved" (toggleChart)="setChart($event)" [readOnly]="viewOnce !== 'none'">

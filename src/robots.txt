@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /404
+
+Sitemap: https://jsonedit.com.br/sitemap.xml

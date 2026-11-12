@@ -28,6 +28,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              "src/manifest.webmanifest",
               "src/assets"
             ],
             "styles": [
@@ -95,6 +98,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              "src/manifest.webmanifest",
               "src/assets"
             ],
             "styles": [

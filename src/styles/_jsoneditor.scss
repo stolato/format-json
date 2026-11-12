@@ -198,3 +198,46 @@ textarea.jsoneditor-text,
 .homepage div.jsoneditor-contextmenu ul li button.jsoneditor-selected {
   background-color: var(--primary-accent);
 }
+
+// Caixa de busca do modo árvore: segue o tema em vez do branco fixo da lib.
+// O menu precisa ser o containing block, senão o top: 50% usa um ancestral maior.
+.homepage .jsoneditor-menu {
+  position: relative;
+}
+
+.homepage .jsoneditor-search {
+  top: 50%;
+  transform: translateY(-50%);
+
+  .jsoneditor-frame {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-editor);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  .jsoneditor-frame:focus-within {
+    border-color: var(--mat-sys-primary, #6C5CE7);
+  }
+
+  input {
+    background: transparent;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: var(--fg-default);
+    font-family: inherit;
+    font-size: 13px;
+    width: 140px;
+
+    &::placeholder {
+      color: var(--fg-muted);
+    }
+  }
+
+  .jsoneditor-results {
+    color: var(--fg-muted);
+  }
+}
