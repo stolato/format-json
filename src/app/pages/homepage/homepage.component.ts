@@ -10,7 +10,7 @@ import {
   ElementRef,
   ViewChild,
 } from "@angular/core";
-import { JsonEditorOptions, AngJsoneditorModule } from "@maaxgr/ang-jsoneditor";
+import { JsonEditorOptions, AngJsoneditorModule } from "@stolato/ang-jsoneditor";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute } from "@angular/router";

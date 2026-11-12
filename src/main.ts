@@ -18,7 +18,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatDividerModule } from "@angular/material/divider";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { AngJsoneditorModule } from "@maaxgr/ang-jsoneditor";
+import { AngJsoneditorModule } from "@stolato/ang-jsoneditor";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
