@@ -61,6 +61,30 @@ footer {
     }
   }
 
+  .version {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 2px 4px;
+    color: inherit;
+    font: inherit;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.8; text-decoration: underline; }
+    &:focus-visible { outline: 2px solid var(--primary-accent); outline-offset: 1px; }
+
+    .unseen-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary-accent);
+    }
+  }
+
   .social {
     display: flex;
     align-items: center;

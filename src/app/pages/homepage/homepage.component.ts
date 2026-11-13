@@ -31,6 +31,7 @@ import { PrettyJsonPipe } from "../../pipes/prettyjson.pipe";
 import { DecimalPipe } from "@angular/common";
 import { ModalService } from "../../services/modal.service";
 import { DialogShortcutsComponent } from "../../components/dialogs/dialog-shortcuts/dialog-shortcuts.component";
+import { ChangelogService } from "../../services/changelog.service";
 
 @Component({
   selector: "app-homepage",
@@ -122,6 +123,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private cdr: ChangeDetectorRef,
     private modal: ModalService,
+    public changelog: ChangelogService,
   ) {
     this.editorOptions = new JsonEditorOptions();
     this.editorOptions.mode = "code";
@@ -158,6 +160,11 @@ export class HomepageComponent implements OnInit, OnDestroy {
     );
 
     this.listenSocket();
+
+    // Novidades da versão: só na tela inicial, para não cobrir um JSON compartilhado.
+    if (!this.route.snapshot.paramMap.get('id')) {
+      setTimeout(() => this.changelog.showIfUpdated(), 600);
+    }
 
     // Item privado/de organização que falhou sem login: tenta de novo após logar.
     this.subs.add(

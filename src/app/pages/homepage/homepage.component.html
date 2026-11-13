@@ -109,9 +109,11 @@
     <div class="status-item hide-sm" matTooltip="Total de chaves">{{ stats.keys }} {{ stats.keys === 1 ? 'chave' : 'chaves' }}</div>
   </div>
   <div class="right">
-    <div class="version hide-sm">
-      version: 1.11.0
-    </div>
+    <button type="button" class="version hide-sm" (click)="changelog.open()"
+      matTooltip="Ver novidades" aria-label="Ver novidades da versão {{ changelog.version }}">
+      @if (changelog.hasUnseen()) { <span class="unseen-dot" aria-hidden="true"></span> }
+      version: {{ changelog.version }}
+    </button>
     <div class="term hide-sm">
       Tilt Tecnologia - {{date}}
     </div>
